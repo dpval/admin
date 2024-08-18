@@ -1,0 +1,268 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+  }
+  
+  .container {
+    display: flex;
+  }
+  
+  aside {
+    width: 250px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .top {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: #34495e;
+  }
+  
+  .logo h2 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  
+  .danger {
+    color: #e74c3c;
+  }
+  
+  .close {
+    cursor: pointer;
+  }
+  
+  .sidebar a {
+    display: flex;
+    align-items: center;
+    color: #ecf0f1;
+    text-decoration: none;
+    padding: 1rem;
+  }
+  
+  .sidebar a.active {
+    background-color: #16a085;
+  }
+  
+  .sidebar a span {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+  }
+  
+  .sidebar a h3 {
+    margin: 0;
+  }
+  
+  .sidebar .msg_count {
+    background-color: #e74c3c;
+    color: #fff;
+    border-radius: 50%;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    margin-left: auto;
+  }
+  
+  /* Main Content */
+  main {
+    flex: 1;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .search-filter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .search-filter input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+  }
+  
+  .search-filter button {
+    background-color: #3498db;
+    border: none;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .search-filter button:hover {
+    background-color: #2980b9;
+  }
+  
+  .recent_order h2 {
+    margin-bottom: 1rem;
+  }
+  
+  .filter-btn {
+    background-color: #16a085;
+    border: none;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+  }
+  
+  .filter-btn.green {
+    background-color: #2ecc71;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #34495e;
+    color: #ecf0f1;
+  }
+  
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    width: 80%;
+    max-width: 600px;
+  }
+  
+  .modal-content .close {
+    cursor: pointer;
+    font-size: 1.5rem;
+    float: right;
+  }
+  
+  .modal-content h2 {
+    margin-top: 0;
+  }
+  
+  .success-message {
+    color: #2ecc71;
+    margin-top: 1rem;
+  }
+  
+  /* Right Sidebar */
+  .right {
+    width: 300px;
+    padding: 2rem;
+  }
+  
+  .right .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+  }
+  
+  .theme-toggler {
+    display: flex;
+    align-items: center;
+  }
+  
+  .theme-toggler span {
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin: 0 0.5rem;
+  }
+  
+  .profile {
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile .info {
+    margin-right: 1rem;
+  }
+  
+  .profile-photo img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+  }
+  
+  /* Sales Analytics */
+  .sales-analytics {
+    margin-top: 2rem;
+  }
+  
+  .item {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .item .icon {
+    font-size: 2rem;
+    margin-right: 1rem;
+  }
+  
+  .item .right_text {
+    flex: 1;
+  }
+  
+  .item h3 {
+    margin: 0;
+  }
+  
+  .item h5 {
+    margin: 0;
+  }
+  
+  .item .danger {
+    color: #e74c3c;
+  }
+  
+  .item .success {
+    color: #2ecc71;
+  }
+  
+  /* Add Product */
+  .add_product {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ecf0f1;
+    border-radius: 8px;
+    height: 60px;
+    cursor: pointer;
+  }
+  
+  .add_product .material-symbols-sharp {
+    font-size: 2rem;
+  }
+  

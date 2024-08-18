@@ -1,0 +1,16 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCOC-a_k4IEpdeW_Rms6v_V8jBgdTO2k5M",
+  authDomain: "tradeare-us-2nx4zp.firebaseapp.com",
+  projectId: "tradeare-us-2nx4zp",
+  storageBucket: "tradeare-us-2nx4zp.appspot.com",
+  messagingSenderId: "752862844692",
+  appId: "1:752862844692:web:5d656e58696c44d5ef9401"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+export { db };

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UI/UX</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"
+    />
+    <link rel="stylesheet" href="css/report.css" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  </head>
+  <body>
+    <div class="container">
+      <aside>
+        <div class="top">
+          <div class="logo">
+            <h2><span class="danger">Trade Are Us</span></h2>
+          </div>
+          <div class="close" id="close_btn">
+            <span class="material-symbols-sharp"> close </span>
+          </div>
+        </div>
+        <!-- end top -->
+        <div class="sidebar">
+          <a href="index.html">
+            <span class="material-symbols-sharp">grid_view </span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="user.html">
+            <span class="material-symbols-sharp">person_outline </span>
+            <h3>Users</h3>
+          </a>
+          <a href="post.html" class="active">
+            <span class="material-symbols-sharp">insights </span>
+            <h3>Post</h3>
+          </a>
+          <a href="message.html">
+            <span class="material-symbols-sharp">mail_outline </span>
+            <h3>Messages</h3>
+            <span class="msg_count">0</span>
+          </a>
+          <a href="payment.html">
+            <span class="material-symbols-sharp">receipt_long </span>
+            <h3>Payments</h3>
+          </a>
+          <a href="report.html">
+            <span class="material-symbols-sharp">report_gmailerrorred </span>
+            <h3>Reports</h3>
+          </a>
+          <a href="#">
+            <span class="material-symbols-sharp">settings </span>
+            <h3>Settings</h3>
+          </a>
+          <a href="#">
+            <span class="material-symbols-sharp">add </span>
+            <h3>Add Categories</h3>
+          </a>
+          <a href="#">
+            <span class="material-symbols-sharp">logout </span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+      <!-- --------------
+        end aside
+      -------------------- -->
+
+      <!-- --------------
+        start main part
+      --------------- -->
+
+     
+
+
+ <main class="report-section">
+    <div class="report-content">
+        <h1>Report</h1>
+        <div class="insights">
+            <!-- start seling -->
+            <div class="sales">
+              <span class="material-symbols-sharp">star</span>
+              <h2>Report Data</h2>
+  
+              <div class="statistics">
+                <!-- Token-to-Cash -->
+                <div class="star-card token-to-cash">
+                    <div class="stars">
+                        <span class="material-symbols-sharp">stars</span>
+                        <span class="material-symbols-sharp">stars</span>
+                        <span class="material-symbols-sharp">stars</span>
+                        <span class="material-symbols-sharp">stars</span>
+                        <span class="material-symbols-sharp">stars</span>
+                    </div>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>5 Stars: Excellent </h3>
+                            <h1 id="tokenToCashTotal">0</h1>
+                        </div>
+                    </div>
+                </div>
+                <!-- Cash-to-Token -->
+                <div class="star-card cash-to-token">
+                    <div class="stars">
+                        <span class="material-symbols-sharp">stars</span>
+                        <span class="material-symbols-sharp">stars</span>
+                        <span class="material-symbols-sharp">stars</span>
+                        <span class="material-symbols-sharp">stars</span>
+                    </div>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>4 Stars: Very good</h3>
+                            <h1 id="cashToTokenTotal">0</h1>
+                        </div>
+                    </div>
+                </div>
+                <!-- Total Cash -->
+                <div class="star-card total-cash">
+                    <div class="stars">
+                        <span class="material-symbols-sharp">stars</span>
+                        <span class="material-symbols-sharp">stars</span>
+                        <span class="material-symbols-sharp">stars</span>
+                    </div>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>3 Stars: Good</h3>
+                            <h1 id="totalCash">0</h1>
+                        </div>
+                    </div>
+                </div>
+                <!-- Total Token -->
+                <div class="star-card total-token">
+                    <div class="stars">
+                        <span class="material-symbols-sharp">stars</span>
+                        <span class="material-symbols-sharp">stars</span>
+                    </div>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>2 Stars: Fair</h3>
+                            <h1 id="totalToken">0</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="star-card total-token">
+                    <div class="stars">
+                        <span class="material-symbols-sharp">stars</span>
+                    </div>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>1 Stars: Fair</h3>
+                            <h1 id="totalToken">0</h1>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+ 
+
+        <!-- All Users Section -->
+        <div class="recent_order">
+          <h2>All Report</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>User Type</th>
+                <th>Category</th>
+                <th>Sub-Category</th>
+                <th>Description</th>
+                <th>Salary</th>
+                <th>Feedback</th>
+               
+
+                <th>View</th> <!-- New column for actions -->
+              </tr>
+            </thead>
+            <tbody id="allUsers">
+              <!-- Dynamic content will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Task Description</h2>
+    <div id="modalDetails">
+      <img id="postImage" src="" alt="Post Image" style="width: 500px; height: 500px;" />
+      <p><strong>Description:</strong> <span id="postDescription"></span></p>
+      <p><strong>Starting Time:</strong> <span id="postStartingTime"></span></p>
+      <p><strong>Category:</strong> <span id="postCategory"></span></p> <!-- Added category -->
+      <p><strong>Sub-Category:</strong> <span id="postSubCategory"></span></p> <!-- Added sub-category -->
+    </div>
+
+
+  <!-- Example button structure -->
+<button class="approve-btn">Approve</button>
+<button class="disapprove-btn">Disapprove</button>
+
+    <!-- Success message container -->
+    <div id="successMessage" class="success-message"></div>
+  </div>
+</div>
+
+      </main>
+      <!-- end main -->
+
+      <!-- start right main -->
+      <div class="right">
+        <div class="top">
+          <button id="menu_bar">
+            <span class="material-symbols-sharp">menu</span>
+          </button>
+
+          <div class="theme-toggler">
+            <span class="material-symbols-sharp active">light_mode</span>
+            <span class="material-symbols-sharp">dark_mode</span>
+          </div>
+          <div class="profile">
+            <div class="info">
+              <p><b>Trade</b></p>
+              <p>Admin</p>
+              <small class="text-muted"></small>
+            </div>
+            <div class="profile-photo">
+              <img src="./images/profile-1.jpg" alt="" />
+            </div>
+          </div>
+        </div>
+
+        <div class="sales-analytics">
+            <h2>Task Posted Analytics</h2>
+  
+            <div class="item onlion">
+              <div class="icon">
+                <span class="material-symbols-sharp">task_alt</span>
+              </div>
+              <div class="right_text">
+                <div class="info">
+                  <h3>Top Task</h3>
+                  <small class="text-muted">Last seen 2 Hours</small>
+                </div>
+                <h5 class="danger">-17%</h5>
+                <h3>3849</h3>
+              </div>
+            </div>
+            <div class="item onlion">
+              <div class="icon">
+                <span class="material-symbols-sharp">person_outline</span>
+              </div>
+              <div class="right_text">
+                <div class="info">
+                  <h3>Top Gig Worker</h3>
+                  <small class="text-muted">Last seen 2 Hours</small>
+                </div>
+                <h5 class="success">-17%</h5>
+                <h3>3849</h3>
+              </div>
+            </div>
+            <div class="item onlion">
+              <div class="icon">
+                <span class="material-symbols-sharp">person</span>
+              </div>
+              <div class="right_text">
+                <div class="info">
+                  <h3>Top Client</h3>
+                  <small class="text-muted">Last seen 2 Hours</small>
+                </div>
+                <h5 class="danger">-17%</h5>
+                <h3>3849</h3>
+              </div>
+            </div>
+          </div>
+  
+          <div class="item add_product">
+            <div>
+              <span class="material-symbols-sharp">add</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+
+    <!-- Include your JavaScript files -->
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="script/payment.js"></script>
+  </body>
+</html>
