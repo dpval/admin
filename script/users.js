@@ -80,7 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
             detailsBtn.textContent = "Details";
             detailsBtn.classList.add("details-btn");
 
-        
             actionTd.appendChild(detailsBtn);
 
             tr.appendChild(nameTd);
@@ -101,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error fetching users: ", error);
     }
   }
+
   function showModal(user, userId) {
     const {
       display_name,
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
       photo_url,
       baranggayClearance
     } = user;
-  
+
     modalDetails.innerHTML = `
       <div class="profile-photo">
         <img src="${photo_url || ''}" alt="Profile Photo" />
@@ -146,16 +146,16 @@ document.addEventListener("DOMContentLoaded", () => {
         `}
       </div>
     `;
-  
+
     const editBtn = document.getElementById("editBtn");
     const approveBtn = document.getElementById("approveBtn");
     const disapproveBtn = document.getElementById("disapproveBtn");
-  
+
     if (editBtn) {
       editBtn.addEventListener("click", () => {
         // Hide the Edit button
         editBtn.style.display = "none";
-  
+
         // Add additional actions for editing
         modalDetails.innerHTML += `
           <div class="modal-actions">
@@ -163,26 +163,26 @@ document.addEventListener("DOMContentLoaded", () => {
             <button id="blockedBtn">Blocked</button>
           </div>
         `;
-  
+
         const holdBtn = document.getElementById("holdBtn");
         const blockedBtn = document.getElementById("blockedBtn");
-  
+
         holdBtn.addEventListener("click", () => updateUserStatus(userId, "hold"));
         blockedBtn.addEventListener("click", () => updateUserStatus(userId, "blocked"));
       });
     }
-  
+
     if (approveBtn) {
       approveBtn.addEventListener("click", () => updateUserStatus(userId, "approved"));
     }
-  
+
     if (disapproveBtn) {
       disapproveBtn.addEventListener("click", () => updateUserStatus(userId, "disapproved"));
     }
-  
+
     modal.style.display = "block";
   }
-  
+
   async function updateUserStatus(userId, newStatus) {
     try {
       const userRef = doc(db, "users", userId);
