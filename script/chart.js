@@ -17,12 +17,7 @@ new Chart(cashVsTokenChart, {
                 borderColor: 'rgb(255, 159, 64)',
                 fill: false,
             },
-            {
-                label: 'Token',
-                data: [3000, 4000, 6000, 7000, 8500, 7500],
-                borderColor: 'rgb(153, 102, 255)',
-                fill: false,
-            },
+         
         ],
     },
     options: {
