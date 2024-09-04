@@ -1,5 +1,5 @@
 // Cash - Trade - Token Chart
-const cashVsTokenChart = document.getElementById('cashVsTokenChart').getContext('2d');
+const cashVsTokenChart = document.getElementById('CashOut').getContext('2d');
 new Chart(cashVsTokenChart, {
     type: 'line',
     data: {
@@ -32,7 +32,7 @@ new Chart(cashVsTokenChart, {
 });
 
 // Remaining Cash - Remaining Token Chart
-const remainingCashVsTokenChart = document.getElementById('remainingCashVsTokenChart').getContext('2d');
+const remainingCashVsTokenChart = document.getElementById('TopUp').getContext('2d');
 new Chart(remainingCashVsTokenChart, {
     type: 'line',
     data: {

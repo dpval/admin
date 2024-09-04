@@ -452,3 +452,130 @@ h1 {
   align-items: left;
 
 }
+/* General table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 16px;
+  background-color: #f9f9f9;
+}
+
+thead {
+  background-color: #5c646e; /* Change this to your preferred header color */
+  color: #31344e;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tr:hover {
+  background-color: #ddd;
+}
+
+/* Styles for buttons in the actions column */
+button1 {
+  background-color: #314862; /* Change this to your preferred button color */
+  color: white;
+  border: none;
+  padding: 5px 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 10px;
+  margin: 2px 1px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button1:hover {
+  background-color: #6385ab; /* Change this to a darker shade of your button color */
+}
+button2 {
+  background-color: #970808; /* Change this to your preferred button color */
+  color: white;
+  border: none;
+  padding: 5px 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 10px;
+  margin: 2px 1px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button2:hover {
+  background-color: #a44055; /* Change this to a darker shade of your button color */
+}
+
+/* Styles for input fields in the reference number column */
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin: 4px 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Responsive table adjustments */
+@media (max-width: 768px) {
+  table {
+    font-size: 14px;
+  }
+  
+  th, td {
+    padding: 8px;
+  }
+  
+  button {
+    padding: 4px 7px;
+    font-size: 12px;
+  }
+  
+  input[type="text"] {
+    padding: 6px;
+  }
+}
+/* Add to payment.css */
+/* Add to payment.css */
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Adjust spacing between the input and button as needed */
+  max-width: 30%; /* Restrict the width to half of the screen */
+  margin: 0 auto; /* Center the container horizontally */
+}
+
+#searchInput {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  flex-grow: 1; /* Allow the input to take up available space */
+}
+
+#searchButton {
+  background-color: #28a745; /* Button background color */
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#searchButton .material-symbols-sharp {
+  color: white;
+  font-size: 20px;
+}

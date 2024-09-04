@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
       municipality,
       country,
       streetaddress,
-      status,
+      firsttimestatus,
       photo_url,
       baranggayClearance
     } = user;
@@ -134,11 +134,11 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><b>Municipality:</b> ${municipality || 'N/A'}</p>
         <p><b>Country:</b> ${country || 'N/A'}</p>
         <p><b>Street Address:</b> ${streetaddress || 'N/A'}</p>
-        <p><b>Status:</b> ${status || 'N/A'}</p>
+        <p><b>Status:</b> ${firsttimestatus || 'N/A'}</p>
         <p><b>Baranggay Clearance:</b> ${baranggayClearance ? `<a href="${baranggayClearance}" target="_blank">View Document</a>` : 'N/A'}</p>
       </div>
       <div class="modal-actions">
-        ${status === "approved" ? `
+        ${firsttimestatus === "approved" ? `
           <button id="editBtn">Edit</button>
         ` : `
           <button id="approveBtn">Approve</button>
@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function updateUserStatus(userId, newStatus) {
     try {
       const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, { status: newStatus });
+      await updateDoc(userRef, { firsttimestatus: newStatus });
       fetchAndDisplayUsers(searchInput.value.trim(), selectedUserType);
       modal.style.display = "none";
     } catch (error) {
@@ -208,6 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedUserType = "applicant";
     fetchAndDisplayUsers(searchInput.value.trim(), selectedUserType);
   });
+  
 
   fetchAndDisplayUsers();
 });

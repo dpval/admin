@@ -1,262 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UI/UX</title>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"
-    />
-    <link rel="stylesheet" href="css/payment.css" />
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  </head>
-  <body>
-    <div class="container">
-      <aside>
-        <div class="top">
-          <div class="logo">
-            <h2><span class="danger">Trade Are Us</span></h2>
-          </div>
-          <div class="close" id="close_btn">
-            <span class="material-symbols-sharp"> close </span>
-          </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Dashboard</title>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"/>
+  <link rel="stylesheet" href="css/payment.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+</head>
+<body>
+  <div class="container">
+    <aside>
+      <div class="top">
+        <div class="logo">
+          <h2><span class="danger">Trade Are Us</span></h2>
         </div>
-        <!-- end top -->
-        <div class="sidebar">
-          <a href="index.html">
-            <span class="material-symbols-sharp">grid_view </span>
-            <h3>Dashboard</h3>
-          </a>
-          <a href="user.html">
-            <span class="material-symbols-sharp">person_outline </span>
-            <h3>Users</h3>
-          </a>
-          <a href="post.html" class="active">
-            <span class="material-symbols-sharp">insights </span>
-            <h3>Post</h3>
-          </a>
-          <a href="message.html">
-            <span class="material-symbols-sharp">mail_outline </span>
-            <h3>Messages</h3>
-            <span class="msg_count">0</span>
-          </a>
-          <a href="payment.html">
-            <span class="material-symbols-sharp">receipt_long </span>
-            <h3>Payments</h3>
-          </a>
-          <a href="report.html">
-            <span class="material-symbols-sharp">report_gmailerrorred </span>
-            <h3>Reports</h3>
-          </a>
-          <a href="#">
-            <span class="material-symbols-sharp">settings </span>
-            <h3>Settings</h3>
-          </a>
-          <a href="#">
-            <span class="material-symbols-sharp">add </span>
-            <h3>Add Categories</h3>
-          </a>
-          <a href="#">
-            <span class="material-symbols-sharp">logout </span>
-            <h3>Logout</h3>
-          </a>
+        <div class="close" id="close_btn">
+          <span class="material-symbols-sharp"> close </span>
         </div>
-      </aside>
-      <!-- --------------
-        end aside
-      -------------------- -->
-
-      <!-- --------------
-        start main part
-      --------------- -->
-
-      <main>
-        <h1>Payment Transaction</h1>
-        <div class="insights">
-          <!-- start seling -->
-          <div class="recent_order">
-            <span class="material-symbols-sharp">currency_exchange</span>
-            <h2>Currency Exchange</h2>
-
-
-            
-            <div class="main-container"></div>
-            <div class="cashtokencontainer">
-              <div class="statistics">
-                <!-- Token-to-Cash -->
-                <div class="stat-card token-to-cash">
-                  <span class="material-symbols-sharp">currency_exchange</span>
-                  <div class="middle">
-                    <div class="left">
-                      <h3>Token-to-Cash</h3>
-                      <h1 id="ttoc">0</h1>
-                    </div>
-                  </div>
-                  <span class="material-symbols-sharp">currency_exchange</span>
-                  <div class="middle">
-                    <div class="left">
-                      <h3>Cash-to-Token</h3>
-                      <h1 id="ctot">0</h1>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-        <!---->
+      </div>
+      <div class="sidebar">
+        <a href="index.html">
+          <span class="material-symbols-sharp">grid_view</span>
+          <h3>Dashboard</h3>
+        </a>
+        <a href="user.html">
+          <span class="material-symbols-sharp">person_outline</span>
+          <h3>Users</h3>
+        </a>
+        <a href="post.html">
+          <span class="material-symbols-sharp">insights</span>
+          <h3>Post</h3>
+        </a>
+        <a href="message.html">
+          <span class="material-symbols-sharp">mail_outline</span>
+          <h3>Messages</h3>
+          <span class="msg_count">0</span>
+        </a>
+        <a href="payment.html" class="active">
+          <span class="material-symbols-sharp">receipt_long</span>
+          <h3>Payments</h3>
+        </a>
+        <a href="report.html">
+          <span class="material-symbols-sharp">report_gmailerrorred</span>
+          <h3>Feedback Reports</h3>
+        </a>
        
-        <div class="cashcontainer">
-          <div class="statistics">
-            <!-- Token-to-Cash -->
-            <div class="stat-card token-to-cash">
-              <span class="material-symbols-sharp">currency_exchange</span>
-              <div class="middle">
-                <div class="left">
-                  <h3>Total Cash</h3>
-                  <h1 id="cash">0</h1>
-               
-                  
-                </div>
-              </div>
-              <span class="material-symbols-sharp">currency_exchange</span>
-              <div class="middle">
-                <div class="left">
-                  <h3>Total Token</h3>
-                  <h1 id="token">0</h1>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-            
+        <a href="#">
+          <span class="material-symbols-sharp">add</span>
+          <h3>Add Categories</h3>
+        </a>
+        <a href="#">
+          <span class="material-symbols-sharp">logout</span>
+          <h3>Logout</h3>
+        </a>
+      </div>
+    </aside>
+
+    <main>
+      <h1>Payment Transaction</h1>
+      <div class="insights">
         <div class="recent_order">
-          <h2>Payment</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Name:</th>
-                <th>Account No.:</th>
-                <th>User Type :</th>
-                <th>Payment Method: </th>
-                <th>Ref. No.: <input type="text" id="refNo" /></th>
-                <th>Amount: <span id="amount"></span></th>
-                <th>Token: <span id="token"></span></th>
-                <th>Action: 
-                 
-                  <span id="status"></span>
-                </th>
-              </tr>
-            </thead>
-            <tbody id="paymentTable">
-              <!-- Dynamic content will be inserted here -->
-            </tbody>
-          </table>
-        </div>
-        
-
-       
-        <!-- The Modal -->
-        <div id="myModal" class="modal">
-          <!-- Modal content -->
-          <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Task Description</h2>
-            <div id="modalDetails">
-              <img id="postImage" src="" alt="Post Image" style="width: 500px; height: 500px;" />
-              <p><strong>Description:</strong> <span id="postDescription"></span></p>
-              <p><strong>Starting Time:</strong> <span id="postStartingTime"></span></p>
-              <p><strong>Category:</strong> <span id="postCategory"></span></p>
-              <p><strong>Sub-Category:</strong> <span id="postSubCategory"></span></p>
-            </div>
-            <button class="approve-btn">Approve</button>
-            <button class="disapprove-btn">Disapprove</button>
-            <!-- Success message container -->
-            <div id="successMessage" class="success-message"></div>
-          </div>
-        </div>
-      </main>
-      <!-- end main -->
-
-      <!-- start right main -->
-      <div class="right">
-        <div class="top">
-          <button id="menu_bar">
-            <span class="material-symbols-sharp">menu</span>
-          </button>
-
-          <div class="theme-toggler">
-            <span class="material-symbols-sharp active">light_mode</span>
-            <span class="material-symbols-sharp">dark_mode</span>
-          </div>
-          <div class="profile">
-            <div class="info">
-              <p><b>Trade</b></p>
-              <p>Admin</p>
-              <small class="text-muted"></small>
-            </div>
-            <div class="profile-photo">
-              <img src="./images/profile-1.jpg" alt="" />
-            </div>
-          </div>
-        </div>
-
-        <div class="sales-analytics">
-          <h2>Task Posted Analytics</h2>
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">task_alt</span>
-            </div>
-            <div class="right_text">
-              <div class="info">
-                <h3>Top Task</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
+          <span class="material-symbols-sharp">currency_exchange</span>
+          <h2>Currency Exchange</h2>
+          <div class="cashcontainer">
+            <div class="statistics">
+              <div class="stat-card token-to-cash">
+                <div class="middle">
+                  <div class="left">
+                    <h3>Total Cash</h3>
+                    <h1 id="adminCash">0</h1>
+                  </div>
+                </div>
+                <div class="middle">
+                  <div class="left">
+                    <h3>Total Token</h3>
+                    <h1 id="adminTAUkens">0</h1>
+                  </div>
+                </div>
+                <div class="middle">
+                  <div class="left">
+                    <h3>Earnings</h3>
+                    <h1 id="earnings">0</h1>
+                  </div>
+                </div>
               </div>
-              <h5 class="danger">-17%</h5>
-              <h3>3849</h3>
             </div>
-          </div>
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">person_outline</span>
-            </div>
-            <div class="right_text">
-              <div class="info">
-                <h3>Top Gig Worker</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
-              </div>
-              <h5 class="success">-17%</h5>
-              <h3>3849</h3>
-            </div>
-          </div>
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">person</span>
-            </div>
-            <div class="right_text">
-              <div class="info">
-                <h3>Top Client</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
-              </div>
-              <h5 class="danger">-17%</h5>
-              <h3>3849</h3>
-            </div>
-          </div>
-        </div>
-
-        <div class="item add_product">
-          <div>
-            <span class="material-symbols-sharp">add</span>
           </div>
         </div>
       </div>
-      <!-- end right main -->
-    </div>
+  <!-- Search and View Transactions Container -->
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search transactions..." />
+    <button id="searchButton">
+      <span class="material-symbols-sharp">search</span>
+    </button>
+    <a href="transaction.html" id="viewTransactionsButton" class="button-link">View Transactions</a>
+  </div>
+    
+      <!-- Wallet Data Table -->
+      <h2>Wallet Cash Out Data</h2>
+      <table id="walletTable">
+        <thead>
+          <tr>
+            <th>Name of Account</th>
+            <th>Payment No.</th>
+            <th>User Name</th>
+            <th>Account No.</th>
+            <th>Method</th>
+            <th>Amount</th>
+            <th>Reference No. </th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Wallet data will be inserted here by JavaScript -->
+        </tbody>
+      </table>
 
-    <!-- Include your JavaScript files -->
-    <script type="module" src="firebase.js"></script>
-    <script type="module" src="script/chart.js"></script>
-  </body>
+      <!-- Wallet Top-Up Data Table -->
+      <h2>Wallet Top-Up Data</h2>
+      <table id="paymentTable">
+        <thead>
+          <tr>
+            <th>Name of Account</th>
+            <th>Payment No.</th>
+            <th>User Name</th>
+            <th>Account No.</th>
+            <th>Method</th>
+            <th>Amount</th>
+            <th>Reference No. </th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Wallet Top-Up data will be inserted here by JavaScript -->
+        </tbody>
+      </table>
+
+      <!-- The Modal -->
+      <div id="paymentModal" class="modal">
+        <div class="modal-content">
+          <span id="closePaymentModal" class="close">&times;</span>
+          <h2>Payment Details</h2>
+          <div id="paymentModalDetails">
+            <!-- Payment details will be inserted here by JavaScript -->
+          </div>
+          <div class="modal-actions">
+            <!-- Action buttons will be inserted here by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="right">
+      <div class="top">
+        <button id="menu_bar">
+          <span class="material-symbols-sharp">menu</span>
+        </button>
+        <div class="theme-toggler">
+          <span class="material-symbols-sharp active">light_mode</span>
+          <span class="material-symbols-sharp">dark_mode</span>
+        </div>
+        <div class="profile">
+          <div class="info">
+            <p><b>Trade</b></p>
+            <p>Admin</p>
+          </div>
+          <div class="profile-photo">
+            <img src="./images/profile-1.jpg" alt="" />
+          </div>
+        </div>
+      </div>
+      <div class="sales-analytics">
+        <h2>Analytics</h2>
+        <div class="item onlion">
+          <div class="icon">
+            <span class="material-symbols-sharp">task_alt</span>
+          </div>
+          <div class="right_text">
+            <div class="info">
+              <h3>Top Task</h3>
+              <small class="text-muted">Last seen 2 Hours</small>
+            </div>
+            <h5 class="danger">-17%</h5>
+            <h3>3849</h3>
+          </div>
+        </div>
+        <div class="item onlion">
+          <div class="icon">
+            <span class="material-symbols-sharp">person_outline</span>
+          </div>
+          <div class="right_text">
+            <div class="info">
+              <h3>Top Gig Worker</h3>
+              <small class="text-muted">Last seen 2 Hours</small>
+            </div>
+            <h5 class="success">-17%</h5>
+            <h3>3849</h3>
+          </div>
+        </div>
+        <div class="item onlion">
+          <div class="icon">
+            <span class="material-symbols-sharp">person</span>
+          </div>
+          <div class="right_text">
+            <div class="info">
+              <h3>Top Client</h3>
+              <small class="text-muted">Last seen 2 Hours</small>
+            </div>
+            <h5 class="danger">-17%</h5>
+            <h3>3849</h3>
+          </div>
+        </div>
+      </div>
+      <div class="item add_product">
+        <div>
+          <span class="material-symbols-sharp">add</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Include your JavaScript files -->
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="script/payment.js"></script>
+</body>
 </html>
