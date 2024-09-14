@@ -41,8 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function fetchAndDisplayUsers(searchTerm = "", userType = "") {
     try {
+      // Query to get users with 'firsttimestatus' set to 'pending'
       let userQuery = query(
         collection(db, "users"),
+        where("firsttimestatus", "==", "pending"), // Filter users with firsttimestatus = pending
         orderBy("created_time", "desc")
       );
 
@@ -50,6 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
         userQuery = query(
           collection(db, "users"),
           where("usertype", "==", userType),
+          where("firsttimestatus", "==", "pending"),  // Ensure filtering for pending
           orderBy("created_time", "desc")
         );
       }
@@ -265,5 +268,6 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchAndDisplayUsers(searchInput.value.trim(), selectedUserType);
   });
 
+  // Fetch and display only users with firsttimestatus = "pending"
   fetchAndDisplayUsers();
 });

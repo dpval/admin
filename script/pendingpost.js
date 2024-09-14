@@ -56,7 +56,10 @@ export async function fetchClientPosts() {
       const userData = userDoc.data();
       const clientName = `${userData.display_name} ${userData.lastname}`;
       const postTaskCollection = collection(db, `users/${userDoc.id}/postTask`);
-      const postTaskSnapshot = await getDocs(postTaskCollection);
+      
+      // Filter posts where status is "pending"
+      const pendingPostsQuery = query(postTaskCollection, where("status", "==", "Pending"));
+      const postTaskSnapshot = await getDocs(pendingPostsQuery);
 
       postTaskSnapshot.forEach((postDoc) => {
         const postData = postDoc.data();
@@ -200,76 +203,75 @@ export async function fetchClientPosts() {
   });
 
   // Disapprove the post
-  // Disapprove the post
-disapproveBtn.addEventListener("click", async () => {
-  console.log("Disapprove button clicked");
-  console.log("currentPostId:", currentPostId);
-  console.log("currentUserId:", currentUserId);
+  disapproveBtn.addEventListener("click", async () => {
+    console.log("Disapprove button clicked");
+    console.log("currentPostId:", currentPostId);
+    console.log("currentUserId:", currentUserId);
 
-  try {
-    // Step 1: Change the post status to "Disapproved"
-    const postRef = doc(db, `users/${currentUserId}/postTask`, currentPostId);
-    await updateDoc(postRef, { status: "Disapproved" });
+    try {
+      // Step 1: Change the post status to "Disapproved"
+      const postRef = doc(db, `users/${currentUserId}/postTask`, currentPostId);
+      await updateDoc(postRef, { status: "Disapproved" });
 
-    // Step 2: Send email to the post creator
-    const userEmail = await getUserEmail(currentUserId); // Get user's email
-    sendEmail(
-      userEmail,
-      "Post Disapproved",
-      "Your post has been disapproved."
-    );
+      // Step 2: Send email to the post creator
+      const userEmail = await getUserEmail(currentUserId); // Get user's email
+      sendEmail(
+        userEmail,
+        "Post Disapproved",
+        "Your post has been disapproved."
+      );
 
-    // Step 3: Get the post data to access the salary
-    const postDoc = await getDoc(postRef);
-    if (!postDoc.exists()) {
-      throw new Error("Post document does not exist.");
+      // Step 3: Get the post data to access the salary
+      const postDoc = await getDoc(postRef);
+      if (!postDoc.exists()) {
+        throw new Error("Post document does not exist.");
+      }
+
+      const postData = postDoc.data();
+      const salaryToRefund = postData.salary;
+
+      // Step 4: Get the user's wallet using walletref and refund the salary
+      const userRef = doc(db, `users/${currentUserId}`);
+      const userDoc = await getDoc(userRef);
+      if (!userDoc.exists()) {
+        throw new Error("User document does not exist.");
+      }
+
+      const walletRef = userDoc.data().walletref; // Assume userDoc has walletref
+      if (!walletRef) {
+        throw new Error("User does not have a wallet reference.");
+      }
+
+      // Fetch the user's wallet
+      const walletDoc = await getDoc(walletRef);
+      if (!walletDoc.exists()) {
+        throw new Error("Wallet document does not exist.");
+      }
+
+      const currentBalance = walletDoc.data().balance;
+
+      // Update the wallet's balance by adding the salary back
+      const updatedBalance = currentBalance + salaryToRefund;
+      await updateDoc(walletRef, { balance: updatedBalance });
+
+      // Step 5: Create a new entry in the walletNotification collection
+      const walletNotificationRef = collection(db, "walletNotification");
+      await addDoc(walletNotificationRef, {
+        currentTime: serverTimestamp(), // Current timestamp
+        tokenDeduct: salaryToRefund,    // The salary refunded
+        type: "Plus",                   // Type of transaction
+        typeofTransaction: "Disapproved Post", // Reason for the transaction
+        userID: userRef,                // Reference to the user
+        walletID: walletRef             // Reference to the user's wallet
+      });
+
+      // Step 6: Show success message and log
+      console.log(`Salary of ${salaryToRefund} refunded to user ${currentUserId}`);
+      showSuccessMessage("Post disapproved and salary refunded successfully!");
+    } catch (error) {
+      console.error("Error disapproving post and refunding salary:", error);
     }
-
-    const postData = postDoc.data();
-    const salaryToRefund = postData.salary;
-
-    // Step 4: Get the user's wallet using walletref and refund the salary
-    const userRef = doc(db, `users/${currentUserId}`);
-    const userDoc = await getDoc(userRef);
-    if (!userDoc.exists()) {
-      throw new Error("User document does not exist.");
-    }
-
-    const walletRef = userDoc.data().walletref; // Assume userDoc has walletref
-    if (!walletRef) {
-      throw new Error("User does not have a wallet reference.");
-    }
-
-    // Fetch the user's wallet
-    const walletDoc = await getDoc(walletRef);
-    if (!walletDoc.exists()) {
-      throw new Error("Wallet document does not exist.");
-    }
-
-    const currentBalance = walletDoc.data().balance;
-
-    // Update the wallet's balance by adding the salary back
-    const updatedBalance = currentBalance + salaryToRefund;
-    await updateDoc(walletRef, { balance: updatedBalance });
-
-    // Step 5: Create a new entry in the walletNotification collection
-    const walletNotificationRef = collection(db, "walletNotification");
-    await addDoc(walletNotificationRef, {
-      currentTime: serverTimestamp(), // Current timestamp
-      tokenDeduct: salaryToRefund,    // The salary refunded
-      type: "Plus",                   // Type of transaction
-      typeofTransaction: "Disapproved Post", // Reason for the transaction
-      userID: userRef,                // Reference to the user
-      walletID: walletRef             // Reference to the user's wallet
-    });
-
-    // Step 6: Show success message and log
-    console.log(`Salary of ${salaryToRefund} refunded to user ${currentUserId}`);
-    showSuccessMessage("Post disapproved and salary refunded successfully!");
-  } catch (error) {
-    console.error("Error disapproving post and refunding salary:", error);
-  }
-});
+  });
 
 
   async function getUserEmail(userId) {

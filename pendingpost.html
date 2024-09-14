@@ -10,26 +10,10 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"
     />
     <link rel="stylesheet" href="css/post.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-      .charts-container {
-        display:flex;
-        flex-wrap:wrap;
-        gap: 20px;
-        background-color: rgb(234, 242, 242);
-        padding: 10px 5px;
-        margin: 10px 10px 10px 10px;
-      }
-      canvas {
-        width: 400px; /* Adjust the width as needed */
-        height: 200px; /* Adjust the height as needed */
-        margin-left: 100px;
-      
-       
-      }
-  
-    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
   </head>
   <body>
     <div class="container">
@@ -52,21 +36,22 @@
             <span class="material-symbols-sharp">person_outline </span>
             <h3>Users</h3>
           </a>
-         
+
           <!-- Users dropdown -->
-          <a href="post.html" class="active" onclick="toggleUserDropdown()">
+          <a href="post.html" onclick="toggleUserDropdown()">
             <span class="material-symbols-sharp">insights</span>
             <h3>Post</h3>
           </a>
           <div id="userDropdown" class="dropdown-content">
-            <a href="pendingpost.html" >
+            <a href="pendingpost.html" class="active">
               Pending Posts
               <span id="pendingCount" class="badge"></span>
             </a>
 
             <a href="submission.html">Submission</a>
-            <a href="post_alerts.html">Alerts</a>
-            <a href="archivePost.html">Archive Posts</a>
+            <a href="post_alerts.html"    >Alerts</a>
+            <a href="archivePost.html" >Archive Posts</a>
+  
           </div>
 
           <!-- JavaScript for dropdowns -->
@@ -113,15 +98,11 @@
             <span class="material-symbols-sharp">receipt_long </span>
             <h3>Payments</h3>
           </a>
-          <a href="application.html">
-            <span class="material-symbols-sharp">app_registration</span>
-            <h3>Application</h3>
-          </a>
           <a href="report.html">
             <span class="material-symbols-sharp">report_gmailerrorred</span>
             <h3>Feedback Reports</h3>
           </a>
-        
+
           <a href="categorymanagement.html">
             <span class="material-symbols-sharp">add </span>
             <h3>Add Categories</h3>
@@ -140,31 +121,31 @@
         start main part
       --------------- -->
 
-        <!-- Charts Container -->
-       <div container="cont">
-      <h1>Posting Task</h1>
-        <div class="charts-container">
-          
-          <div>
-           
-            <h3>Pending vs Approved</h3>
-            <canvas id="pendingChart"></canvas>
-          </div>
-          <div>
-            <h3>Submission Status</h3>
-            <canvas id="submissionChart"></canvas>
-          </div>
-          <div>
-            <h3>Alerts</h3>
-            <canvas id="alertsChart"></canvas>
-          </div>
-          <div>
-            <h3>Archive</h3>
-            <canvas id="archiveChart"></canvas>
-          </div>
+      <main>
+        <h1>Task Post</h1>
+
+        <!-- All Users Section -->
+        <div class="recent_order">
+          <h2>Pending Post</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Client</th>
+                <th>Category</th>
+                <th>Sub-Category</th>
+                <th>Location</th>
+                <th>Salary</th>
+                <th>Status</th>
+                <th>View</th>
+                <!-- New column for actions -->
+              </tr>
+            </thead>
+            <tbody id="allUsers">
+              <!-- Dynamic content will be inserted here -->
+            </tbody>
+          </table>
         </div>
-      </div>
-      
 
         <!-- The Modal -->
         <div id="myModal" class="modal">
@@ -173,18 +154,36 @@
             <span class="close">&times;</span>
             <h2>Task Description</h2>
             <div id="modalDetails">
-              <img id="postImage" src="" alt="Post Image" style="width: 500px; height: 500px;" />
-              <p><strong>Description:</strong> <span id="postDescription"></span></p>
-              <p><strong>Starting Time:</strong> <span id="postStartingTime"></span></p>
+              <img
+                id="postImage"
+                src=""
+                alt="Post Image"
+                style="width: 500px; height: 500px"
+              />
+              <p>
+                <strong>Description:</strong> <span id="postDescription"></span>
+              </p>
+              <p>
+                <strong>Starting Time:</strong>
+                <span id="postStartingTime"></span>
+              </p>
               <p><strong>Category:</strong> <span id="postCategory"></span></p>
-              <p><strong>Sub-Category:</strong> <span id="postSubCategory"></span></p>
+              <!-- Added category -->
+              <p>
+                <strong>Sub-Category:</strong>
+                <span id="postSubCategory"></span>
+              </p>
+              <!-- Added sub-category -->
             </div>
+
+            <!-- Example button structure -->
             <button class="approve-btn">Approve</button>
             <button class="disapprove-btn">Disapprove</button>
+
+            <!-- Success message container -->
             <div id="successMessage" class="success-message"></div>
           </div>
         </div>
-
       </main>
       <!-- end main -->
 
@@ -194,6 +193,7 @@
           <button id="menu_bar">
             <span class="material-symbols-sharp">menu</span>
           </button>
+
           <div class="theme-toggler">
             <span class="material-symbols-sharp active">light_mode</span>
             <span class="material-symbols-sharp">dark_mode</span>
@@ -264,63 +264,6 @@
 
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
-    <script type="module" src="script/post.js"></script>
-    <script>
-      // Bar Chart data and configuration
-      const ctxPending = document.getElementById('pendingChart').getContext('2d');
-      const ctxSubmission = document.getElementById('submissionChart').getContext('2d');
-      const ctxAlerts = document.getElementById('alertsChart').getContext('2d');
-      const ctxArchive = document.getElementById('archiveChart').getContext('2d');
-
-      new Chart(ctxPending, {
-        type: 'bar',
-        data: {
-          labels: ['Pending', 'Approved'],
-          datasets: [{
-            label: 'Posts',
-            data: [12, 19], // Example static data
-            backgroundColor: ['#ff6f61', '#4caf50']
-          }]
-        }
-      });
-
-      new Chart(ctxSubmission, {
-        type: 'bar',
-        data: {
-          labels: ['Submission A', 'Submission B'],
-          datasets: [{
-            label: 'Submissions',
-            data: [5, 15], // Example static data
-            backgroundColor: ['#3f51b5', '#f44336']
-          }]
-        }
-      });
-
-      new Chart(ctxAlerts, {
-        type: 'bar',
-        data: {
-          labels: ['Alerts A', 'Alerts B'],
-          datasets: [{
-            label: 'Alerts',
-            data: [7, 10], // Example static data
-            backgroundColor: ['#e91e63', '#9c27b0']
-          }]
-        }
-      });
-
-      new Chart(ctxArchive, {
-        type: 'bar',
-        data: {
-          labels: ['Archive A', 'Archive B'],
-          datasets: [{
-            label: 'Archive',
-            data: [4, 8], // Example static data
-            backgroundColor: ['#2196f3', '#ff9800']
-          }]
-        }
-      });
-    </script>
+    <script type="module" src="script/pendingpost.js"></script>
   </body>
 </html>
-
-

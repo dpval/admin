@@ -4,17 +4,16 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UI/UX</title>
-
-    <!-- Google Fonts -->
+    <title>Users Dashboard</title>
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"
     />
-    <link rel="stylesheet" href="css/index.css" />
-
-    <!-- Include Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/payment.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
   </head>
   <body>
     <div class="container">
@@ -24,43 +23,47 @@
             <h2><span class="danger">Trade Are Us</span></h2>
           </div>
           <div class="close" id="close_btn">
-            <span class="material-symbols-sharp"></span>
+            <span class="material-symbols-sharp">close</span>
           </div>
         </div>
-
         <div class="sidebar">
-          <a href="../index.html" class="active">
+          <a href="index.html">
             <span class="material-symbols-sharp">grid_view</span>
             <h3>Dashboard</h3>
           </a>
-          <a href="../user.html">
+          <!-- Users dropdown -->
+          <a href="user.html" onclick="toggleUserDropdown()">
             <span class="material-symbols-sharp">person_outline</span>
             <h3>Users</h3>
           </a>
-          <a href="../post.html">
+          <div id="userDropdown" class="dropdown-content">
+            <a href="pendingusers.html" class="active">
+              Pending Approvals
+              <span id="pendingCount" class="badge"></span>
+            </a>
+
+            <a href="activeusers.html">Active Users</a>
+            <a href="user-alerts.html">Alerts</a>
+          </div>
+          <a href="post.html">
             <span class="material-symbols-sharp">insights</span>
             <h3>Post</h3>
           </a>
-
-          <a href="../message.html">
+          <a href="message.html">
             <span class="material-symbols-sharp">mail_outline</span>
             <h3>Messages</h3>
             <span class="msg_count">0</span>
           </a>
-          <a href="../payment.html">
-            <span class="material-symbols-sharp">receipt_long</span>
+          <a href="payment.html">
+            <span class="material-symbols-sharp">receipt_long </span>
             <h3>Payments</h3>
           </a>
-          <a href="../application.html">
-            <span class="material-symbols-sharp">app_registration</span>
-            <h3>Application</h3>
-          </a>
-          <a href="../report.html">
+
+          <a href="report.html">
             <span class="material-symbols-sharp">report_gmailerrorred</span>
             <h3>Feedback Reports</h3>
           </a>
-
-          <a href="../categorymanagement.html">
+          <a href="categorymanagement.html">
             <span class="material-symbols-sharp">add</span>
             <h3>Add Categories</h3>
           </a>
@@ -70,120 +73,110 @@
           </a>
         </div>
       </aside>
+      <!-- JavaScript for dropdowns -->
+      <script>
+        function toggleUserDropdown() {
+          var dropdown = document.getElementById("userDropdown");
+          if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+          } else {
+            dropdown.style.display = "block";
+          }
+        }
 
+        function togglePaymentDropdown() {
+          var dropdown = document.getElementById("paymentDropdown");
+          if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+          } else {
+            dropdown.style.display = "block";
+          }
+        }
+
+        // Close dropdown if clicked outside
+        window.onclick = function (event) {
+          if (!event.target.matches(".active")) {
+            var userDropdowns =
+              document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < userDropdowns.length; i++) {
+              var openDropdown = userDropdowns[i];
+              if (openDropdown.style.display === "block") {
+                openDropdown.style.display = "none";
+              }
+            }
+          }
+        };
+      </script>
+      <!-- end aside -->
+
+      <!-- start main part -->
       <main>
-        <div class="date-container">
-          <label id="dateLabel"></label>
+        <h1>Users</h1>
+
+        <!-- Search and Filter Section -->
+        <div class="search-filter">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search by name or baranggay"
+            style="width: 300px; height: 50px"
+          />
+          <button id="searchBtn">
+            <span class="material-symbols-sharp">search</span>
+          </button>
         </div>
 
-        <h1>Dashboard</h1>
-
-        <!-- Existing content -->
-        <div class="insights">
-          <div class="sales">
-            <span class="material-symbols-sharp">group</span>
-            <div class="middle">
-              <div class="left">
-                <h3>Total Gig Workers</h3>
-                <h1 id="totalApplicants">0</h1>
-              </div>
-            </div>
-          </div>
-
-          <div class="expenses">
-            <span class="material-symbols-sharp">person</span>
-            <div class="middle">
-              <div class="left">
-                <h3>Total Clients</h3>
-                <h1 id="totalClients">0</h1>
-              </div>
-            </div>
-          </div>
-
-          <div class="income">
-            <span class="material-symbols-sharp">groups</span>
-            <div class="middle">
-              <div class="left">
-                <h3>Total Users</h3>
-                <h1 id="totalUsers">0</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="ranking-container">
-          <div class="line-graph-container">
-            <h2>Cash - Trade - Token</h2>
-            <canvas id="TopUp"></canvas>
-          </div>
-
-          <div class="line-graph-container">
-            <h2>Remaining Cash - Remaining Token</h2>
-            <canvas id="CashOut"></canvas>
-          </div>
-        </div>
-
-        <h1>Ranking</h1>
-        <div class="ranking-wrapper">
-          <div class="ranking-container">
-            <div class="ranking-chart-container">
-              <h2>Top Tasks</h2>
-              <canvas id="topTasksChart"></canvas>
-            </div>
-
-            <div class="ranking-chart-container">
-              <h2>Top Clients</h2>
-              <canvas id="topClientsChart"></canvas>
-            </div>
-
-            <div class="ranking-chart-container">
-              <h2>Top Gig Workers</h2>
-              <canvas id="topGigWorkersChart"></canvas>
-            </div>
-          </div>
-        </div>
-
+        <!-- All Users Section -->
         <div class="recent_order">
-          <h2>Recent Applications</h2>
+          <h2>All Users</h2>
+          <div>
+            <button class="filter-btn green" data-filter="client">
+              Client
+            </button>
+            <button class="filter-btn green" data-filter="applicant">
+              Gig Worker
+            </button>
+            <br /><br />
+          </div>
           <table>
             <thead>
               <tr>
                 <th>Name</th>
                 <th>User Type</th>
                 <th>Email</th>
-                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody id="recentApplications">
+            <tbody id="allUsers">
               <!-- Dynamic content will be inserted here -->
             </tbody>
           </table>
-          <a href="#">Show All</a>
         </div>
 
+        <!-- The Modal -->
         <div id="myModal" class="modal">
+          <!-- Modal content -->
           <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Application Details</h2>
+            <span id="closeModal" class="close">&times;</span>
+            <h2>Profile</h2>
             <div id="modalDetails">
               <!-- User details will be inserted here -->
             </div>
           </div>
         </div>
       </main>
+      <!-- end main -->
 
+      <!-- start right main -->
       <div class="right">
         <div class="top">
           <button id="menu_bar">
             <span class="material-symbols-sharp">menu</span>
           </button>
-
           <div class="theme-toggler">
             <span class="material-symbols-sharp active">light_mode</span>
             <span class="material-symbols-sharp">dark_mode</span>
           </div>
-
           <div class="profile">
             <div class="info">
               <p><b>Trade</b></p>
@@ -191,21 +184,13 @@
               <small class="text-muted"></small>
             </div>
             <div class="profile-photo">
-              <img src="./images/profile-1.jpg" alt="Profile Photo" />
+              <img src="./images/profile-1.jpg" alt="" />
             </div>
-          </div>
-        </div>
-
-        <div class="recent_updates">
-          <h2>Recently Joined</h2>
-          <div class="updates" id="recentJoinUpdates">
-            <!-- Dynamic updates will be inserted here -->
           </div>
         </div>
 
         <div class="sales-analytics">
           <h2>Task Posted Analytics</h2>
-
           <div class="item onlion">
             <div class="icon">
               <span class="material-symbols-sharp">task_alt</span>
@@ -219,7 +204,6 @@
               <h3>3849</h3>
             </div>
           </div>
-
           <div class="item onlion">
             <div class="icon">
               <span class="material-symbols-sharp">person_outline</span>
@@ -233,7 +217,6 @@
               <h3>3849</h3>
             </div>
           </div>
-
           <div class="item onlion">
             <div class="icon">
               <span class="material-symbols-sharp">person</span>
@@ -259,7 +242,6 @@
 
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
-    <script type="module" src="script/script.js"></script>
-    <script type="module" src="script/chart.js"></script>
+    <script type="module" src="script/pendingusers.js"></script>
   </body>
 </html>

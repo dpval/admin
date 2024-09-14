@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"
+    />
+    <link rel="stylesheet" href="css/payment.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <aside>
+        <div class="top">
+          <div class="logo">
+            <h2><span class="danger">Trade Are Us</span></h2>
+          </div>
+          <div class="close" id="close_btn">
+            <span class="material-symbols-sharp">close</span>
+          </div>
+        </div>
+        <div class="sidebar">
+          <a href="index.html">
+            <span class="material-symbols-sharp">grid_view</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="user.html">
+            <span class="material-symbols-sharp">person_outline</span>
+            <h3>Users</h3>
+          </a>
+          <a href="post.html">
+            <span class="material-symbols-sharp">insights</span>
+            <h3>Post</h3>
+          </a>
+          <a href="message.html">
+            <span class="material-symbols-sharp">mail_outline</span>
+            <h3>Messages</h3>
+            <span class="msg_count">0</span>
+          </a>
+
+          <!-- Payments dropdown -->
+          <a href="payment.html" onclick="togglePaymentDropdown()">
+            <span class="material-symbols-sharp">receipt_long</span>
+            <h3>Payments</h3>
+          </a>
+          <div id="paymentDropdown" class="dropdown-content">
+            <a href="topup.html">Top Up</a>
+            <a href="cashout.html">Cash Out</a>
+            <a href="paymentalerts.html"class="active">Alerts</a>
+            <a href="payment-history.html" >Payment History</a>
+            <a href="earnings.html">Earnings</a>
+          </div>
+          <a href="report.html">
+            <span class="material-symbols-sharp">report_gmailerrorred</span>
+            <h3>Feedback Reports</h3>
+          </a>
+          <a href="categorymanagement.html">
+            <span class="material-symbols-sharp">add</span>
+            <h3>Add Categories</h3>
+          </a>
+          <a href="#">
+            <span class="material-symbols-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+      <!-- JavaScript for dropdowns -->
+      <script>
+        function toggleUserDropdown() {
+          var dropdown = document.getElementById("userDropdown");
+          if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+          } else {
+            dropdown.style.display = "block";
+          }
+        }
+
+        function togglePaymentDropdown() {
+          var dropdown = document.getElementById("paymentDropdown");
+          if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+          } else {
+            dropdown.style.display = "block";
+          }
+        }
+
+        // Close dropdown if clicked outside
+        window.onclick = function (event) {
+          if (!event.target.matches(".active")) {
+            var userDropdowns =
+              document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < userDropdowns.length; i++) {
+              var openDropdown = userDropdowns[i];
+              if (openDropdown.style.display === "block") {
+                openDropdown.style.display = "none";
+              }
+            }
+          }
+        };
+      </script>
+      <main>
+        <h1>Alerts</h1>
+        <div class="insights">
+          <!-- All Users Section -->
+          <div class="recent_order">
+            
+         
+            <h2>Last 7 days</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Client Name</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Account Name</th>
+                  <th>Account Number</th>
+                  <th>Receipt</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="allUsers">
+                <!-- Dynamic content will be inserted here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- The Modal -->
+        <div id="paymentModal" class="modal">
+          <div class="modal-content">
+            <span id="closePaymentModal" class="close">&times;</span>
+            <h2>Payment Details</h2>
+            <div id="paymentModalDetails">
+              <!-- Payment details will be inserted here by JavaScript -->
+            </div>
+            <div class="modal-actions">
+              <!-- Action buttons will be inserted here by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!-- Include your JavaScript files -->
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="script/payment-history.js"></script>
+  </body>
+</html>

@@ -2,36 +2,37 @@ import { db } from "../firebase.js";
 import {
   collection,
   getDocs,
+  doc,
+  getDoc,
   query,
   orderBy,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const allMessagesTable = document.getElementById("allUsers"); // Corrected ID
-  const modal = document.getElementById("myModal");
-  const modalDetails = document.getElementById("modalDetails");
-  const closeBtnModal = document.getElementsByClassName("close")[0];
+  const allMessagesTable = document.getElementById("allUsers");
+  const emailModal = document.getElementById("emailModal");
+  const emailSubjectInput = document.getElementById("emailSubject");
+  const emailMessageTextarea = document.getElementById("emailMessage");
+  const sendEmailBtn = document.getElementById("sendEmailBtn");
+  const closeModalBtn = document.getElementsByClassName("close")[0];
   const cancelBtn = document.getElementById("cancelBtn");
-  const themeToggler = document.querySelector(".theme-toggler");
-    
 
-  themeToggler.addEventListener("click", () => {
-    document.body.classList.toggle("dark-theme-variables");
-    themeToggler.querySelector("span:nth-child(1)").classList.toggle("active");
-    themeToggler.querySelector("span:nth-child(2)").classList.toggle("active");
-  });
+  let currentEmail = ""; // Store current email and name for sending
+  let currentClientName = "";
 
-  // Event listener for modal close button
-  closeBtnModal.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
+  // Show the modal
+  function showModal(email, clientName) {
+    currentEmail = email;
+    currentClientName = clientName;
+    emailModal.style.display = "block";
+  }
 
-  // Event listener for cancel button
-  cancelBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
+  // Close the modal
+  function closeModal() {
+    emailModal.style.display = "none";
+  }
 
-  // Fetch all messages
+  // Fetch all messages from Firestore
   async function fetchAllMessages() {
     try {
       const q = query(
@@ -40,65 +41,95 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
       const querySnapshot = await getDocs(q);
 
-      // Clear existing table rows
-      allMessagesTable.innerHTML = "";
+      allMessagesTable.innerHTML = ""; // Clear existing table rows
 
-      querySnapshot.forEach((doc) => {
-        const message = doc.data();
-        const { display_name, message: userMessage } = message;
+      for (const docSnap of querySnapshot.docs) {
+        const messageData = docSnap.data();
+        const userRef = messageData.sender; // Reference to /users/{userId}
 
-        // Create table row
-        const tr = document.createElement("tr");
+        // Fetch the user document
+        const userDoc = await getDoc(userRef);
 
-        // Create table cells
-        const nameTd = document.createElement("td");
-        nameTd.textContent = display_name;
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const { display_name, lastname, email } = userData;
+          const userMessage = messageData.message;
 
-        const messageTd = document.createElement("td");
-        messageTd.textContent = userMessage;
+          // Create table row
+          const tr = document.createElement("tr");
+          const nameTd = document.createElement("td");
+          nameTd.textContent = `${display_name} ${lastname}`;
 
-        const actionTd = document.createElement("td");
-        const replyBtn = document.createElement("button");
-        replyBtn.textContent = "Reply";
-        replyBtn.classList.add("details-btn");
+          const messageTd = document.createElement("td");
+          messageTd.textContent = userMessage;
 
-        // Append reply button to action cell
-        actionTd.appendChild(replyBtn);
+          const actionTd = document.createElement("td");
+          const replyBtn = document.createElement("button");
+          replyBtn.textContent = "Reply";
+          replyBtn.classList.add("details-btn");
 
-        // Append cells to row
-        tr.appendChild(nameTd);
-        tr.appendChild(messageTd);
-        tr.appendChild(actionTd);
+          actionTd.appendChild(replyBtn); // Append reply button to action cell
+          tr.appendChild(nameTd);
+          tr.appendChild(messageTd);
+          tr.appendChild(actionTd);
 
-        // Append row to table body
-        allMessagesTable.appendChild(tr);
+          allMessagesTable.appendChild(tr); // Append row to table body
 
-        // Add event listener for reply button
-        replyBtn.addEventListener("click", () => {
-          showModal(message);
-        });
-      });
-
+          // Add event listener for reply button to show the modal
+          replyBtn.addEventListener("click", () => {
+            emailSubjectInput.value = "Concern in Mobile App"; // Set predefined subject
+            emailMessageTextarea.value = "Thank you for your message. We will get back to you shortly."; // Predefined message
+            showModal(email, `${display_name} ${lastname}`);
+          });
+        }
+      }
     } catch (error) {
-      console.error("Error fetching all messages: ", error);
+      console.error("Error fetching all messages:", error);
+      alert("Failed to fetch messages. Please check the console for details.");
     }
   }
 
-  // Show modal with message details
-  function showModal(message) {
-    // Populate modal with message details
-    const { display_name, message: userMessage } = message;
+  // Send email via server
+  async function sendEmailNotification(toEmail, clientName, subject, message) {
+    try {
+      const emailMessage = `<p>Dear ${clientName},</p><p>${message}</p>`;
 
-    modalDetails.innerHTML = `
-      <p><b>Name:</b> ${display_name}</p>
-      <p><b>Message:</b> ${userMessage}</p>
-      <textarea id="replyMessage" placeholder="Type your reply here..."></textarea>
-    `;
+      const response = await fetch("http://localhost:3000/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: toEmail,
+          subject: subject,
+          message: emailMessage,
+        }),
+      });
 
-    // Show modal
-    modal.style.display = "block";
+      if (response.ok) {
+        console.log(`Email sent to ${toEmail} with subject: ${subject}`);
+        alert(`Email sent successfully to ${toEmail}`);
+      } else {
+        alert("Failed to send email. Please try again.");
+      }
+
+      closeModal(); // Close the modal after sending email
+    } catch (error) {
+      console.error("Error sending email notification:", error);
+      alert("An error occurred while sending the email.");
+    }
   }
 
-  // Fetch all messages on page load
-  fetchAllMessages();
+  // Event listener for send email button in the modal
+  sendEmailBtn.addEventListener("click", async () => {
+    const subject = emailSubjectInput.value;
+    const message = emailMessageTextarea.value;
+    await sendEmailNotification(currentEmail, currentClientName, subject, message);
+  });
+
+  // Event listeners to close modal
+  closeModalBtn.addEventListener("click", closeModal);
+  cancelBtn.addEventListener("click", closeModal);
+
+  fetchAllMessages(); // Fetch all messages on page load
 });

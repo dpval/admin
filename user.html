@@ -1,191 +1,338 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UI/UX</title>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"
- />
- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <link rel="stylesheet" href="css/user.css" />
-  </head>
-  <body>
+    <title>Users Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="stylesheet" href="css/payment.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+      .charts-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        background-color: rgb(214, 245, 234);
+        padding: 10px 5px;
+      }
+      canvas {
+        width: 300px; /* Adjust the width as needed */
+        height: 300px; /* Adjust the height as needed */
+      }
+    </style>
+</head>
+<body>
     <div class="container">
-      <aside>
-        <div class="top">
-          <div class="logo">
-            <h2><span class="danger">Trade Are Us</span></h2>
+        <aside>
+            <div class="top">
+                <div class="logo">
+                    <h2><span class="danger">Trade Are Us</span></h2>
+                </div>
+                <div class="close" id="close_btn">
+                    <span class="material-symbols-sharp">close</span>
+                </div>
+            </div>
+            <div class="sidebar">
+                <a href="index.html">
+                    <span class="material-symbols-sharp">grid_view</span>
+                    <h3>Dashboard</h3>
+                </a>
+                <!-- Users dropdown -->
+                <a href="user.html" class="active" onclick="toggleUserDropdown()">
+                    <span class="material-symbols-sharp">person_outline</span>
+                    <h3>Users</h3>
+                </a>
+                <div id="userDropdown" class="dropdown-content">
+                    <a href="pendingusers.html">Pending Approvals</a>
+                    <a href="activeusers.html">Active Users</a>
+                    <a href="user-alerts.html">Alerts</a>
+                </div>
+                <a href="post.html">
+                    <span class="material-symbols-sharp">insights</span>
+                    <h3>Post</h3>
+                </a>
+                <a href="message.html">
+                    <span class="material-symbols-sharp">mail_outline</span>
+                    <h3>Messages</h3>
+                    <span class="msg_count">0</span>
+                </a>
+                <a href="payment.html">
+                    <span class="material-symbols-sharp">receipt_long</span>
+                    <h3>Payments</h3>
+                </a>
+                <a href="application.html">
+                    <span class="material-symbols-sharp">app_registration</span>
+                    <h3>Application</h3>
+                </a>
+                <a href="report.html">
+                    <span class="material-symbols-sharp">report_gmailerrorred</span>
+                    <h3>Feedback Reports</h3>
+                </a>
+                <a href="categorymanagement.html">
+                    <span class="material-symbols-sharp">add</span>
+                    <h3>Add Categories</h3>
+                </a>
+                <a href="#">
+                    <span class="material-symbols-sharp">logout</span>
+                    <h3>Logout</h3>
+                </a>
+            </div>
+        </aside>
+        <!-- JavaScript for dropdowns -->
+        <script>
+          function toggleUserDropdown() {
+            const dropdown = document.getElementById("userDropdown");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+          }
+
+          // Close dropdown if clicked outside
+          window.onclick = function(event) {
+            if (!event.target.matches(".active")) {
+              const userDropdowns = document.getElementsByClassName("dropdown-content");
+              for (let i = 0; i < userDropdowns.length; i++) {
+                const openDropdown = userDropdowns[i];
+                if (openDropdown.style.display === "block") {
+                  openDropdown.style.display = "none";
+                }
+              }
+            }
+          };
+        </script>
+        <!-- Main content -->
+        <main>
+          <h2>USERS</h2>
+          <div class="charts-container">
+            <div>
+              <h3>Pending Approvals</h3>
+              <canvas id="pendingApprovalsChart"></canvas>
+            </div>
+            <div>
+              <h3>Active Users</h3>
+              <canvas id="activeUsersChart"></canvas>
+            </div>
+            <div>
+              <h3>Alerts</h3>
+              <canvas id="alertsChart"></canvas>
+            </div>
           </div>
-        </div>
-        <!-- end top -->
-        <div class="sidebar">
-          <a href="index.html">
-            <span class="material-symbols-sharp">grid_view</span>
-            <h3>Dashboard</h3>
-          </a>
-          <a href="user.html" class="active">
-            <span class="material-symbols-sharp">person_outline</span>
-            <h3>Users</h3>
-          </a>
-          <a href="post.html">
-            <span class="material-symbols-sharp">insights</span>
-            <h3>Post</h3>
-          </a>
-          <a href="message.html">
-            <span class="material-symbols-sharp">mail_outline</span>
-            <h3>Messages</h3>
-            <span class="msg_count">0</span>
-          </a>
-          <a href="payment.html">
-            <span class="material-symbols-sharp">receipt_long</span>
-            <h3>Payments</h3>
-          </a>
-          <a href="report.html">
-            <span class="material-symbols-sharp">report_gmailerrorred</span>
-            <h3>Feedback Reports</h3>
-          </a>
+        </main>
         
-          <a href="#">
-            <span class="material-symbols-sharp">add</span>
-            <h3>Add Categories</h3>
-          </a>
-          <a href="#">
-            <span class="material-symbols-sharp">logout</span>
-            <h3>Logout</h3>
-          </a>
-        </div>
-      </aside>
-      <!-- end aside -->
-
-      <!-- start main part -->
-      <main>
-        <h1>Users</h1>
-
-        <!-- Search and Filter Section -->
-        <div class="search-filter">
-          <input type="text" id="searchInput" placeholder="Search by name or baranggay" style="width: 300px; height: 50px;" />
-          <button id="searchBtn">
-            <span class="material-symbols-sharp">search</span>
-          </button>
-        </div>
-
-        <!-- All Users Section -->
-        <div class="recent_order">
-          <h2>All Users</h2>
-          <div>
-            <button class="filter-btn green" data-filter="client">Client</button>
-            <button class="filter-btn green" data-filter="applicant">Gig Worker</button>
-            <br><br>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>User Type</th>
-                <th>Email</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="allUsers">
-              <!-- Dynamic content will be inserted here -->
-            </tbody>
-          </table>
-        </div>
-
-        <!-- The Modal -->
-        <div id="myModal" class="modal">
-          <!-- Modal content -->
-          <div class="modal-content">
-            <span id="closeModal" class="close">&times;</span>
-            <h2>Profile</h2>
-            <div id="modalDetails">
-              <!-- User details will be inserted here -->
+        <!-- Right side content -->
+        <div class="right">
+          <div class="top">
+            <button id="menu_bar">
+              <span class="material-symbols-sharp">menu</span>
+            </button>
+            <div class="theme-toggler">
+              <span class="material-symbols-sharp active">light_mode</span>
+              <span class="material-symbols-sharp">dark_mode</span>
             </div>
-          </div>
-        </div>
-      </main>
-      <!-- end main -->
-
-      <!-- start right main -->
-      <div class="right">
-        <div class="top">
-          <button id="menu_bar">
-            <span class="material-symbols-sharp">menu</span>
-          </button>
-          <div class="theme-toggler">
-            <span class="material-symbols-sharp active">light_mode</span>
-            <span class="material-symbols-sharp">dark_mode</span>
-          </div>
-          <div class="profile">
-            <div class="info">
-              <p><b>Trade</b></p>
-              <p>Admin</p>
-              <small class="text-muted"></small>
-            </div>
-            <div class="profile-photo">
-              <img src="./images/profile-1.jpg" alt="" />
-            </div>
-          </div>
-        </div>
-
-        <div class="sales-analytics">
-          <h2>Task Posted Analytics</h2>
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">task_alt</span>
-            </div>
-            <div class="right_text">
+            <div class="profile">
               <div class="info">
-                <h3>Top Task</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
+                <p><b>Trade</b></p>
+                <p>Admin</p>
+                <small class="text-muted"></small>
               </div>
-              <h5 class="danger">-17%</h5>
-              <h3>3849</h3>
+              <div class="profile-photo">
+                <img src="./images/profile-1.jpg" alt="" />
+              </div>
             </div>
           </div>
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">person_outline</span>
-            </div>
-            <div class="right_text">
-              <div class="info">
-                <h3>Top Gig Worker</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
+          <div class="sales-analytics">
+            <h2>Task Posted Analytics</h2>
+            <div class="item onlion">
+              <div class="icon">
+                <span class="material-symbols-sharp">task_alt</span>
               </div>
-              <h5 class="success">-17%</h5>
-              <h3>3849</h3>
+              <div class="right_text">
+                <div class="info">
+                  <h3>Top Task</h3>
+                  <small class="text-muted">Last seen 2 Hours</small>
+                </div>
+                <h5 class="danger">-17%</h5>
+                <h3>3849</h3>
+              </div>
+            </div>
+            <div class="item onlion">
+              <div class="icon">
+                <span class="material-symbols-sharp">person_outline</span>
+              </div>
+              <div class="right_text">
+                <div class="info">
+                  <h3>Top Gig Worker</h3>
+                  <small class="text-muted">Last seen 2 Hours</small>
+                </div>
+                <h5 class="success">-17%</h5>
+                <h3>3849</h3>
+              </div>
+            </div>
+            <div class="item onlion">
+              <div class="icon">
+                <span class="material-symbols-sharp">person</span>
+              </div>
+              <div class="right_text">
+                <div class="info">
+                  <h3>Top Client</h3>
+                  <small class="text-muted">Last seen 2 Hours</small>
+                </div>
+                <h5 class="danger">-17%</h5>
+                <h3>3849</h3>
+              </div>
             </div>
           </div>
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">person</span>
-            </div>
-            <div class="right_text">
-              <div class="info">
-                <h3>Top Client</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
-              </div>
-              <h5 class="danger">-17%</h5>
-              <h3>3849</h3>
+          <div class="item add_product">
+            <div>
+              <span class="material-symbols-sharp">add</span>
             </div>
           </div>
         </div>
-
-        <div class="item add_product">
-          <div>
-            <span class="material-symbols-sharp">add</span>
-          </div>
-        </div>
-      </div>
     </div>
-
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
-    <script type="module" src="script/users.js"></script>
-  </body>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js';
+  import { getFirestore, collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js';
+
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCOC-a_k4IEpdeW_Rms6v_V8jBgdTO2k5M",
+    authDomain: "tradeare-us-2nx4zp.firebaseapp.com",
+    projectId: "tradeare-us-2nx4zp",
+    storageBucket: "tradeare-us-2nx4zp.appspot.com",
+    messagingSenderId: "752862844692",
+    appId: "1:752862844692:web:5d656e58696c44d5ef9401"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const fetchData = async () => {
+      try {
+        const usersRef = collection(db, 'users');
+
+        // Fetch pending approvals with specific firsttimestatus
+        const pendingQuery = query(
+          usersRef, 
+          where('firsttimestatus', '==', 'pending'),
+          where('usertype', 'in', ['client', 'applicant'])
+        );
+        const pendingSnapshot = await getDocs(pendingQuery);
+
+        let clients = 0;
+        let applicants = 0;
+
+        pendingSnapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.usertype === 'client') {
+            clients++;
+          } else if (data.usertype === 'applicant') {
+            applicants++;
+          }
+        });
+
+        // Fetch active users
+        const activeQuery = query(usersRef, where('status', 'in', ['active', 'inactive']));
+        const activeSnapshot = await getDocs(activeQuery);
+
+        let active = 2;
+        let inactive = 4;
+
+        activeSnapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.status === 'active') {
+            active++;
+          } else if (data.status === 'inactive') {
+            inactive++;
+          }
+        });
+
+        // Fetch alerts (assuming you have a separate collection for alerts)
+        const alertsRef = collection(db, 'alerts');
+        const alertsSnapshot = await getDocs(alertsRef);
+
+        let good = 10;
+        let excellent = 5;
+        let needAction = 19;
+
+        alertsSnapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.alertType === 'good') {
+            good++;
+          } else if (data.alertType === 'excellent') {
+            excellent++;
+          } else if (data.alertType === 'needAction') {
+            needAction++;
+          }
+        });
+
+        return {
+          pendingApprovals: { clients, applicants },
+          activeUsers: { active, inactive },
+          alerts: { good, excellent, needAction }
+        };
+
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    // Function to create a Pie Chart
+    const createPieChart = (chartId, chartData) => {
+      const ctx = document.getElementById(chartId).getContext('2d');
+      new Chart(ctx, {
+        type: 'pie',
+        data: chartData,
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+          },
+        },
+      });
+    };
+
+    // Fetch and process data
+    fetchData().then(data => {
+      // Data for Pie Charts
+      const pendingApprovalsData = {
+        labels: ["Applicants", "Clients"],
+        datasets: [{
+          label: 'Pending Approvals',
+          data: [data.pendingApprovals.applicants, data.pendingApprovals.clients],
+          backgroundColor: ['#FF6384', '#36A2EB'],
+        }],
+      };
+
+      const activeUsersData = {
+        labels: ["Active", "Inactive"],
+        datasets: [{
+          label: 'Active Users',
+          data: [data.activeUsers.active, data.activeUsers.inactive],
+          backgroundColor: ['#4BC0C0', '#FFCE56'],
+        }],
+      };
+
+      const alertsData = {
+        labels: ["Good", "Excellent", "Need Action"],
+        datasets: [{
+          label: 'Alerts',
+          data: [data.alerts.good, data.alerts.excellent, data.alerts.needAction],
+          backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384'],
+        }],
+      };
+
+      // Create Pie Charts
+      createPieChart('pendingApprovalsChart', pendingApprovalsData);
+      createPieChart('activeUsersChart', activeUsersData);
+      createPieChart('alertsChart', alertsData);
+    });
+  });
+</script>
+</body>
 </html>

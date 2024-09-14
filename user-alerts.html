@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Users Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"
+    />
+    <link rel="stylesheet" href="css/payment.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <aside>
+        <div class="top">
+          <div class="logo">
+            <h2><span class="danger">Trade Are Us</span></h2>
+          </div>
+          <div class="close" id="close_btn">
+            <span class="material-symbols-sharp">close</span>
+          </div>
+        </div>
+        <div class="sidebar">
+          <a href="index.html">
+            <span class="material-symbols-sharp">grid_view</span>
+            <h3>Dashboard</h3>
+          </a>
+          <!-- Users dropdown -->
+          <a href="user.html" onclick="toggleUserDropdown()">
+            <span class="material-symbols-sharp">person_outline</span>
+            <h3>Users</h3>
+          </a>
+          <div id="userDropdown" class="dropdown-content">
+            <a href="pendingusers.html">Pending Approvals</a>
+            <a href="activeusers.html">Active Users</a>
+            <a href="user-alerts.html" class="active">Alerts</a>
+          </div>
+          <a href="post.html">
+            <span class="material-symbols-sharp">insights</span>
+            <h3>Post</h3>
+          </a>
+          <a href="message.html">
+            <span class="material-symbols-sharp">mail_outline</span>
+            <h3>Messages</h3>
+            <span class="msg_count">0</span>
+          </a>
+          <a href="payment.html">
+            <span class="material-symbols-sharp">receipt_long </span>
+            <h3>Payments</h3>
+          </a>
+
+          <a href="report.html">
+            <span class="material-symbols-sharp">report_gmailerrorred</span>
+            <h3>Feedback Reports</h3>
+          </a>
+          <a href="ategorymanagement.html">
+            <span class="material-symbols-sharp">add</span>
+            <h3>Add Categories</h3>
+          </a>
+          <a href="#">
+            <span class="material-symbols-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
+        </div>
+      </aside>
+      <!-- JavaScript for dropdowns -->
+      <script>
+        function toggleUserDropdown() {
+          var dropdown = document.getElementById("userDropdown");
+          if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+          } else {
+            dropdown.style.display = "block";
+          }
+        }
+
+        function togglePaymentDropdown() {
+          var dropdown = document.getElementById("paymentDropdown");
+          if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+          } else {
+            dropdown.style.display = "block";
+          }
+        }
+
+        // Close dropdown if clicked outside
+        window.onclick = function (event) {
+          if (!event.target.matches(".active")) {
+            var userDropdowns =
+              document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < userDropdowns.length; i++) {
+              var openDropdown = userDropdowns[i];
+              if (openDropdown.style.display === "block") {
+                openDropdown.style.display = "none";
+              }
+            }
+          }
+        };
+      </script>
+      <!-- end aside -->
+
+      <!-- start main part -->
+      <main>
+        <h1>Alerts</h1>
+
+        <div class="filter-container">
+            <label for="searchInput">Search by Name or Email:</label>
+            <input type="text" id="searchInput" placeholder="Enter name or email">
+            
+            <label for="dateFrom">From:</label>
+            <input type="date" id="dateFrom">
+            
+            <label for="dateTo">To:</label>
+            <input type="date" id="dateTo">
+          
+            <label for="statusFilter">Status:</label>
+            <select id="statusFilter">
+              <option value="">All</option>
+              <option value="Needs Action">Needs Action</option>
+              <option value="Good">Good</option>
+              <option value="Excellent">Excellent</option>
+            </select>
+          
+            <button id="searchBtn">Search</button>
+            
+            
+            <button class="userTypeBtn" data-filter="admin">Refersh</button>
+          </div>
+          
+          <table id="userAlerts">
+            <thead>
+              <tr>
+                <th>Alert Name</th>
+                <th>Barangay Clearance</th>
+                <th>Expired On</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+                   
+        </div>
+
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+          <!-- Modal content -->
+          <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <h2>Profile</h2>
+            <div id="modalDetails">
+              <!-- User details will be inserted here -->
+            </div>
+          </div>
+        </div>
+      </main>
+      <!-- end main -->
+
+     
+    <!-- Include your JavaScript files -->
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="script/user-alerts.js"></script>
+  </body>
+</html>

@@ -36,7 +36,7 @@
             <span class="material-symbols-sharp">insights </span>
             <h3>Post</h3>
           </a>
-          <a href=".html" class="active">
+          <a href="message.html" class="active">
             <span class="material-symbols-sharp">mail_outline </span>
             <h3>Messages</h3>
             <span class="msg_count">0</span>
@@ -79,13 +79,17 @@
             <span class="material-symbols-sharp">receipt_long </span>
             <h3>Payments</h3>
           </a>
+          <a href="application.html">
+            <span class="material-symbols-sharp">app_registration</span>
+            <h3>Application</h3>
+          </a>
           <a href="report.html">
             <span class="material-symbols-sharp">report_gmailerrorred</span>
             <h3>Feedback Reports</h3>
           </a>
         
           </a>
-          <a href="#">
+          <a href="categorymanagement.html">
             <span class="material-symbols-sharp">add </span>
             <h3>Add Categories</h3>
           </a>
@@ -123,21 +127,23 @@
     </table>
   </div>
   
-  <!-- The Modal -->
-  <div id="myModal" class="modal">
-    <!-- Modal content -->
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Reply to the Message</h2>
-      <div id="modalDetails">
-        <!-- User details will be inserted here -->
-      </div>
-      <div class="modal-buttons">
-        <button class="approve-btn">Send</button>
-        <button class="disapprove-btn" id="cancelBtn">Cancel</button>
-      </div>
-    </div>
+
+<!-- Modal structure -->
+<div id="emailModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Reply to Message</h2>
+    <label for="emailSubject">Subject:</label>
+    <input type="text" id="emailSubject" value="Concern in Mobile App">
+    <label for="emailMessage">Message:</label>
+    <textarea id="emailMessage" rows="5">Thank you for your message. We will get back to you shortly.</textarea>
+    <button id="sendEmailBtn">Send Email</button>
+    <button id="cancelBtn">Cancel</button>
   </div>
+</div>
+
+
+
   
       </main>
       <!------------------
