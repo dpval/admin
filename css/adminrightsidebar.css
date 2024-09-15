@@ -1,0 +1,157 @@
+/* Right Sidebar */
+.right {
+    width: 300px;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Top Section */
+.right .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+}
+
+.profile .info {
+    margin-right: 1rem;
+}
+
+.profile .info p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.profile .info p:first-child {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.profile .profile-photo img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border: 2px solid #3498db; /* Add border for a professional look */
+}
+
+#menu_bar {
+    background-color: #3498db;
+    border: none;
+    color: #fff;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+#menu_bar:hover {
+    background-color: #2980b9;
+}
+
+/* Recently Joined Section */
+.recent_updates {
+    background-color: #ecf0f1;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.recent_updates h2 {
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
+}
+
+.updates {
+    /* Style for dynamic updates goes here */
+}
+
+/* Sales Analytics Section */
+.sales-analytics {
+    background-color: #ecf0f1;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sales-analytics h2 {
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
+}
+
+/* Individual Analytics Item */
+.item {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.item .icon {
+    font-size: 2rem;
+    margin-right: 1rem;
+    color: #3498db;
+}
+
+.item .right_text {
+    flex: 1;
+}
+
+.item .info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.item .info small {
+    color: #7f8c8d;
+}
+
+.item h5 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.item h5.danger {
+    color: #e74c3c;
+}
+
+.item h5.success {
+    color: #2ecc71;
+}
+
+.item h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+/* Add Product Button */
+.add_product {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ecf0f1;
+    border-radius: 8px;
+    height: 60px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add_product .material-symbols-sharp {
+    font-size: 2rem;
+    color: #3498db;
+}
+
+.add_product:hover {
+    background-color: #d0d8e1;
+}

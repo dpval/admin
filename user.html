@@ -8,14 +8,23 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
     <link rel="stylesheet" href="css/payment.css" />
+    <link rel="stylesheet" href="css/rightsidebar.css" />
+    <link rel="stylesheet" href="css/adminrightsidebar.css" />
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
       .charts-container {
         display: flex;
         justify-content: space-between;
         gap: 20px;
-        background-color: rgb(214, 245, 234);
+        
         padding: 10px 5px;
+        background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    flex: 1;
+    margin-right: 1rem;
       }
       canvas {
         width: 300px; /* Adjust the width as needed */
@@ -123,13 +132,7 @@
         <!-- Right side content -->
         <div class="right">
           <div class="top">
-            <button id="menu_bar">
-              <span class="material-symbols-sharp">menu</span>
-            </button>
-            <div class="theme-toggler">
-              <span class="material-symbols-sharp active">light_mode</span>
-              <span class="material-symbols-sharp">dark_mode</span>
-            </div>
+          
             <div class="profile">
               <div class="info">
                 <p><b>Trade</b></p>
@@ -137,12 +140,25 @@
                 <small class="text-muted"></small>
               </div>
               <div class="profile-photo">
-                <img src="./images/profile-1.jpg" alt="" />
+                <img src="./images/profile-1.jpg" alt="Profile Photo" />
               </div>
+             
+            </div>
+            <button id="menu_bar">
+              <span class="material-symbols-sharp">menu</span>
+            </button>
+          </div>
+  
+          <div class="recent_updates">
+            <h2>Recently Joined</h2>
+            <div class="updates" id="recentJoinUpdates">
+              <!-- Dynamic updates will be inserted here -->
             </div>
           </div>
+  
           <div class="sales-analytics">
             <h2>Task Posted Analytics</h2>
+  
             <div class="item onlion">
               <div class="icon">
                 <span class="material-symbols-sharp">task_alt</span>
@@ -156,6 +172,7 @@
                 <h3>3849</h3>
               </div>
             </div>
+  
             <div class="item onlion">
               <div class="icon">
                 <span class="material-symbols-sharp">person_outline</span>
@@ -169,6 +186,7 @@
                 <h3>3849</h3>
               </div>
             </div>
+  
             <div class="item onlion">
               <div class="icon">
                 <span class="material-symbols-sharp">person</span>
@@ -183,13 +201,15 @@
               </div>
             </div>
           </div>
+  
           <div class="item add_product">
             <div>
               <span class="material-symbols-sharp">add</span>
             </div>
           </div>
         </div>
-    </div>
+      </div>
+  
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
 <script type="module">
@@ -306,7 +326,7 @@
         datasets: [{
           label: 'Pending Approvals',
           data: [data.pendingApprovals.applicants, data.pendingApprovals.clients],
-          backgroundColor: ['#FF6384', '#36A2EB'],
+          backgroundColor: ['#227B94', '#CBE2B5'],
         }],
       };
 
@@ -315,7 +335,7 @@
         datasets: [{
           label: 'Active Users',
           data: [data.activeUsers.active, data.activeUsers.inactive],
-          backgroundColor: ['#4BC0C0', '#FFCE56'],
+          backgroundColor: ['#A1DD70', '#FFA27F'],
         }],
       };
 
@@ -324,7 +344,7 @@
         datasets: [{
           label: 'Alerts',
           data: [data.alerts.good, data.alerts.excellent, data.alerts.needAction],
-          backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384'],
+          backgroundColor: ['#387F39', '#A2CA71', '#F6E96B'],
         }],
       };
 

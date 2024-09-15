@@ -10,6 +10,8 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"
     />
     <link rel="stylesheet" href="css/report.css" />
+    <link rel="stylesheet" href="css/rightsidebar.css" />
+    <link rel="stylesheet" href="css/adminrightsidebar.css" />
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
@@ -216,14 +218,7 @@
       <!-- start right main -->
       <div class="right">
         <div class="top">
-          <button id="menu_bar">
-            <span class="material-symbols-sharp">menu</span>
-          </button>
-
-          <div class="theme-toggler">
-            <span class="material-symbols-sharp active">light_mode</span>
-            <span class="material-symbols-sharp">dark_mode</span>
-          </div>
+        
           <div class="profile">
             <div class="info">
               <p><b>Trade</b></p>
@@ -231,62 +226,76 @@
               <small class="text-muted"></small>
             </div>
             <div class="profile-photo">
-              <img src="./images/profile-1.jpg" alt="" />
+              <img src="./images/profile-1.jpg" alt="Profile Photo" />
             </div>
+           
+          </div>
+          <button id="menu_bar">
+            <span class="material-symbols-sharp">menu</span>
+          </button>
+        </div>
+
+        <div class="recent_updates">
+          <h2>Recently Joined</h2>
+          <div class="updates" id="recentJoinUpdates">
+            <!-- Dynamic updates will be inserted here -->
           </div>
         </div>
 
         <div class="sales-analytics">
-            <h2>Task Posted Analytics</h2>
-  
-            <div class="item onlion">
-              <div class="icon">
-                <span class="material-symbols-sharp">task_alt</span>
-              </div>
-              <div class="right_text">
-                <div class="info">
-                  <h3>Top Task</h3>
-                  <small class="text-muted">Last seen 2 Hours</small>
-                </div>
-                <h5 class="danger">-17%</h5>
-                <h3>3849</h3>
-              </div>
+          <h2>Task Posted Analytics</h2>
+
+          <div class="item onlion">
+            <div class="icon">
+              <span class="material-symbols-sharp">task_alt</span>
             </div>
-            <div class="item onlion">
-              <div class="icon">
-                <span class="material-symbols-sharp">person_outline</span>
+            <div class="right_text">
+              <div class="info">
+                <h3>Top Task</h3>
+                <small class="text-muted">Last seen 2 Hours</small>
               </div>
-              <div class="right_text">
-                <div class="info">
-                  <h3>Top Gig Worker</h3>
-                  <small class="text-muted">Last seen 2 Hours</small>
-                </div>
-                <h5 class="success">-17%</h5>
-                <h3>3849</h3>
-              </div>
-            </div>
-            <div class="item onlion">
-              <div class="icon">
-                <span class="material-symbols-sharp">person</span>
-              </div>
-              <div class="right_text">
-                <div class="info">
-                  <h3>Top Client</h3>
-                  <small class="text-muted">Last seen 2 Hours</small>
-                </div>
-                <h5 class="danger">-17%</h5>
-                <h3>3849</h3>
-              </div>
+              <h5 class="danger">-17%</h5>
+              <h3>3849</h3>
             </div>
           </div>
-  
-          <div class="item add_product">
-            <div>
-              <span class="material-symbols-sharp">add</span>
+
+          <div class="item onlion">
+            <div class="icon">
+              <span class="material-symbols-sharp">person_outline</span>
+            </div>
+            <div class="right_text">
+              <div class="info">
+                <h3>Top Gig Worker</h3>
+                <small class="text-muted">Last seen 2 Hours</small>
+              </div>
+              <h5 class="success">-17%</h5>
+              <h3>3849</h3>
+            </div>
+          </div>
+
+          <div class="item onlion">
+            <div class="icon">
+              <span class="material-symbols-sharp">person</span>
+            </div>
+            <div class="right_text">
+              <div class="info">
+                <h3>Top Client</h3>
+                <small class="text-muted">Last seen 2 Hours</small>
+              </div>
+              <h5 class="danger">-17%</h5>
+              <h3>3849</h3>
             </div>
           </div>
         </div>
+
+        <div class="item add_product">
+          <div>
+            <span class="material-symbols-sharp">add</span>
+          </div>
+        </div>
       </div>
+    </div>
+
   
 
     <!-- Include your JavaScript files -->
