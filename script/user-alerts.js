@@ -92,14 +92,24 @@ async function updateExpirationDate(userId, newExpirationDate) {
 
 // Main function to fetch and display users with status and send email
 async function fetchAndDisplayUsers(searchTerm = "", fromDate = "", toDate = "", statusFilter = "") {
-  let userQuery = query(collection(db, "users"), orderBy("created_time", "desc"));
+  // Query to fetch only users with 'firsttimestatus' as 'approved'
+  let userQuery = query(
+    collection(db, "users"),
+    orderBy("created_time", "desc")
+  );
 
+  // Listen for real-time updates to the query
   onSnapshot(userQuery, (querySnapshot) => {
     const userAlertsTable = document.getElementById("userAlerts").querySelector("tbody");
     userAlertsTable.innerHTML = ""; // Clear the table before appending new rows
 
     querySnapshot.forEach((userDoc) => {
       const user = userDoc.data();
+
+      // Check if firsttimestatus is "approved"
+      if (user.firsttimestatus !== "approved") {
+        return; // Skip users who don't have firsttimestatus as "approved"
+      }
 
       // Apply Search Filter
       if (
@@ -226,3 +236,4 @@ document.querySelector(".userTypeBtn").addEventListener("click", () => {
 
 // Initial fetch and display of users
 fetchAndDisplayUsers();
+

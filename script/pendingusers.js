@@ -18,19 +18,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchInput");
   const searchBtn = document.getElementById("searchBtn");
   const clientBtn = document.querySelector('button[data-filter="client"]');
-  const applicantBtn = document.querySelector(
-    'button[data-filter="applicant"]'
-  );
+  const applicantBtn = document.querySelector('button[data-filter="applicant"]');
   const themeToggler = document.querySelector(".theme-toggler");
 
-  themeToggler.addEventListener("click", () => {
-    document.body.classList.toggle("dark-theme-variables");
-    themeToggler.querySelector("span:nth-child(1)").classList.toggle("active");
-    themeToggler.querySelector("span:nth-child(2)").classList.toggle("active");
-  });
+  // Check if themeToggler exists
+  if (themeToggler) {
+    themeToggler.addEventListener("click", () => {
+      document.body.classList.toggle("dark-theme-variables");
+      themeToggler.querySelector("span:nth-child(1)").classList.toggle("active");
+      themeToggler.querySelector("span:nth-child(2)").classList.toggle("active");
+    });
+  }
 
-  let selectedUserType = "";
-
+  // Check if close button exists
   if (closeBtnModal) {
     closeBtnModal.addEventListener("click", () => {
       modal.style.display = "none";
@@ -253,21 +253,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  searchBtn.addEventListener("click", () => {
-    const searchTerm = searchInput.value.trim();
-    fetchAndDisplayUsers(searchTerm, selectedUserType);
-  });
+  // Check if search button exists
+  if (searchBtn) {
+    searchBtn.addEventListener("click", () => {
+      const searchTerm = searchInput.value.trim();
+      fetchAndDisplayUsers(searchTerm, selectedUserType);
+    });
+  } else {
+    console.error("Search button not found");
+  }
 
-  clientBtn.addEventListener("click", () => {
-    selectedUserType = "client";
-    fetchAndDisplayUsers(searchInput.value.trim(), selectedUserType);
-  });
+  // Check if client button exists
+  if (clientBtn) {
+    clientBtn.addEventListener("click", () => {
+      selectedUserType = "client";
+      fetchAndDisplayUsers(searchInput.value.trim(), selectedUserType);
+    });
+  } else {
+    console.error("Client button not found");
+  }
 
-  applicantBtn.addEventListener("click", () => {
-    selectedUserType = "applicant";
-    fetchAndDisplayUsers(searchInput.value.trim(), selectedUserType);
-  });
+  // Check if applicant button exists
+  if (applicantBtn) {
+    applicantBtn.addEventListener("click", () => {
+      selectedUserType = "applicant";
+      fetchAndDisplayUsers(searchInput.value.trim(), selectedUserType);
+    });
+  } else {
+    console.error("Applicant button not found");
+  }
 
-  // Fetch and display only users with firsttimestatus = "pending"
+  // Initial fetch and display users with pending status
   fetchAndDisplayUsers();
 });

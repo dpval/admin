@@ -39,14 +39,10 @@
             <h3>Users</h3>
           </a>
           <div id="userDropdown" class="dropdown-content">
-            <a href="pendingusers.html" class="active">
-              Pending Approvals
-              <span id="pendingCount" class="badge"></span>
-            </a>
-
+            <a href="pendingusers.html"  >Pending Approvals</a>
             <a href="activeusers.html">Active Users</a>
             <a href="user-alerts.html">Alerts</a>
-            <a href="requestRole.html">Request</a>
+            <a href="requestRole.html" class="active" >Request</a>
           </div>
           <a href="post.html">
             <span class="material-symbols-sharp">insights</span>
@@ -65,6 +61,7 @@
             <span class="material-symbols-sharp">app_registration</span>
             <h3>Application</h3>
         </a>
+
           <a href="report.html">
             <span class="material-symbols-sharp">report_gmailerrorred</span>
             <h3>Feedback Reports</h3>
@@ -117,14 +114,14 @@
 
       <!-- start main part -->
       <main>
-        <h1>Users</h1>
+        <h1>Request to Change Roles</h1>
 
-        <!-- Search and Filter Section -->
+        Search and Filter Section
         <div class="search-filter">
           <input
             type="text"
             id="searchInput"
-            placeholder="Search by name or baranggay"
+            placeholder="Search by active user list"
             style="width: 300px; height: 50px"
           />
           <button id="searchBtn">
@@ -134,29 +131,24 @@
 
         <!-- All Users Section -->
         <div class="recent_order">
-          <h2>All Users</h2>
-          <div>
-            <button class="filter-btn green" data-filter="client">
-              Client
-            </button>
-            <button class="filter-btn green" data-filter="applicant">
-              Gig Worker
-            </button>
-            <br /><br />
-          </div>
-          <table>
+          
+          <table id="requestroles">
             <thead>
               <tr>
                 <th>Name</th>
-                <th>User Type</th>
-                <th>Email</th>
+                <th>Reason</th>
+                <th>Usertype</th>
+                <th>Request Role</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Days Count</th>
+                <th>Role Back</th>
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody id="allUsers">
-              <!-- Dynamic content will be inserted here -->
-            </tbody>
+            <tbody></tbody>
           </table>
+          
         </div>
 
         <!-- The Modal -->
@@ -173,12 +165,13 @@
       </main>
       <!-- end main -->
 
-      <!-- start right main -->
-      
+     
     </div>
+
 
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
-    <script type="module" src="script/pendingusers.js"></script>
+    <script type="module" src="script/requestRole.js"></script>
+    
   </body>
 </html>
