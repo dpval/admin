@@ -305,3 +305,135 @@ disapproveBtn.addEventListener("click", async () => {
 }
 
 document.addEventListener("DOMContentLoaded", fetchClientPosts);
+const ctxPending = document.getElementById('pendingPostsChart').getContext('2d');
+new Chart(ctxPending, {
+  type: 'doughnut',
+  data: {
+    labels: ['Pending'],
+    datasets: [{
+      label: 'Pending Posts',
+      data: [10], // Static data
+      backgroundColor: ['rgba(75, 192, 192, 0.2)'],
+      borderColor: ['rgba(75, 192, 192, 1)'],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            let label = context.label || '';
+            if (label) {
+              label += ': ' + context.raw;
+            }
+            return label;
+          }
+        }
+      }
+    }
+  }
+});
+const ctxSubmission = document.getElementById('submissionStatusChart').getContext('2d');
+new Chart(ctxSubmission, {
+  type: 'line',
+  data: {
+    labels: ['2024-09-01', '2024-09-02', '2024-09-03', '2024-09-04'], // Example dates
+    datasets: [
+      {
+        label: 'Approved',
+        data: [5, 10, 7, 15], // Example data
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 2,
+        fill: false
+      },
+      {
+        label: 'Disapproved',
+        data: [2, 3, 4, 6], // Example data
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 2,
+        fill: false
+      },
+      {
+        label: 'Archived',
+        data: [1, 2, 1, 3], // Example data
+        borderColor: 'rgba(153, 102, 255, 1)',
+        borderWidth: 2,
+        fill: false
+      },
+      {
+        label: 'Pending',
+        data: [3, 7, 5, 10], // Example data
+        borderColor: 'rgba(255, 159, 64, 1)',
+        borderWidth: 2,
+        fill: false
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: {
+        type: 'time',
+        time: {
+          unit: 'day'
+        },
+        title: {
+          display: true,
+          text: 'Date'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Count'
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        position: 'top'
+      }
+    }
+  }
+});
+const ctxArchive = document.getElementById('archivePostsChart').getContext('2d');
+new Chart(ctxArchive, {
+  type: 'bar',
+  data: {
+    labels: ['Archived', 'Reposted'],
+    datasets: [{
+      label: 'Archive Posts',
+      data: [12, 8], // Example data
+      backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)'],
+      borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Category'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Count'
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        position: 'top'
+      }
+    }
+  }
+});

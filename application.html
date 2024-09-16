@@ -13,7 +13,65 @@
     <link rel="stylesheet" href="css/rightsidebar.css" />
     <link rel="stylesheet" href="css/adminrightsidebar.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+      /* Styles for the main container and its child containers */
+      .main-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        gap: 20px; /* Space between containers */
+        padding: 20px; /* Padding around the grid container */
+        background-color: #f5f5f5; /* Background color for the container */
+      }
 
+      .container-item {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Center content vertically */
+        align-items: center; /* Center content horizontally */
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        height: 300px; /* Fixed height for all items */
+        overflow: hidden; /* Hide overflow */
+      }
+
+      .container-item h2 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      .container-item p {
+        font-size: 1rem;
+        color: #666;
+      }
+
+      .scroll-container {
+        height: 100%;
+        overflow-y: auto;
+        width: 100%;
+      }
+
+      .client-status-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .client-status-item:last-child {
+        border-bottom: none;
+      }
+
+      .client-name {
+        font-weight: bold;
+      }
+
+      .status {
+        color: #666;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -23,97 +81,91 @@
             <h2><span class="danger">Trade Are Us</span></h2>
           </div>
           <div class="close" id="close_btn">
-            <span class="material-symbols-sharp"> close </span>
+            <span class="material-symbols-sharp">close</span>
           </div>
         </div>
         <!-- end top -->
         <div class="sidebar">
           <a href="index.html">
-            <span class="material-symbols-sharp">grid_view </span>
+            <span class="material-symbols-sharp">grid_view</span>
             <h3>Dashboard</h3>
           </a>
           <a href="user.html">
-            <span class="material-symbols-sharp">person_outline </span>
+            <span class="material-symbols-sharp">person_outline</span>
             <h3>Users</h3>
           </a>
           <a href="post.html">
             <span class="material-symbols-sharp">insights</span>
             <h3>Post</h3>
           </a>
-         
-           <!-- JavaScript for dropdowns -->
-      <script>
-        function toggleUserDropdown() {
-          var dropdown = document.getElementById("userDropdown");
-          if (dropdown.style.display === "block") {
-            dropdown.style.display = "none";
-          } else {
-            dropdown.style.display = "block";
-          }
-        }
-
-        function togglePaymentDropdown() {
-          var dropdown = document.getElementById("paymentDropdown");
-          if (dropdown.style.display === "block") {
-            dropdown.style.display = "none";
-          } else {
-            dropdown.style.display = "block";
-          }
-        }
-
-        // Close dropdown if clicked outside
-        window.onclick = function (event) {
-          if (!event.target.matches(".active")) {
-            var userDropdowns =
-              document.getElementsByClassName("dropdown-content");
-            for (var i = 0; i < userDropdowns.length; i++) {
-              var openDropdown = userDropdowns[i];
-              if (openDropdown.style.display === "block") {
-                openDropdown.style.display = "none";
+          <!-- JavaScript for dropdowns -->
+          <script>
+            function toggleUserDropdown() {
+              var dropdown = document.getElementById("userDropdown");
+              if (dropdown.style.display === "block") {
+                dropdown.style.display = "none";
+              } else {
+                dropdown.style.display = "block";
               }
             }
-          }
-        };
-      </script>
-      <!-- end aside -->
+
+            function togglePaymentDropdown() {
+              var dropdown = document.getElementById("paymentDropdown");
+              if (dropdown.style.display === "block") {
+                dropdown.style.display = "none";
+              } else {
+                dropdown.style.display = "block";
+              }
+            }
+
+            // Close dropdown if clicked outside
+            window.onclick = function (event) {
+              if (!event.target.matches(".active")) {
+                var userDropdowns =
+                  document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < userDropdowns.length; i++) {
+                  var openDropdown = userDropdowns[i];
+                  if (openDropdown.style.display === "block") {
+                    openDropdown.style.display = "none";
+                  }
+                }
+              }
+            };
+          </script>
+          <!-- end aside -->
           <a href="message.html">
-            <span class="material-symbols-sharp">mail_outline </span>
+            <span class="material-symbols-sharp">mail_outline</span>
             <h3>Messages</h3>
             <span class="msg_count">0</span>
           </a>
           <a href="payment.html">
-            <span class="material-symbols-sharp">receipt_long </span>
+            <span class="material-symbols-sharp">receipt_long</span>
             <h3>Payments</h3>
           </a>
-           <!-- Application dropdown -->
-           <a href="application.html"class="active" onclick="toggleUserDropdown()">
+          <!-- Application dropdown -->
+          <a href="application.html" class="active" onclick="toggleUserDropdown()">
             <span class="material-symbols-sharp">app_registration</span>
             <h3>Application</h3>
           </a>
           <div id="userDropdown" class="dropdown-content">
-            <a href="applicationstatus.html" >
+            <a href="applicationstatus.html">
               Application Status
               <span id="pendingCount" class="badge"></span>
             </a>
-
             <a href="salary.html">Salary</a>
-            <a href="salary-history.html" >Salary History</a>
-            <a href="archivePost.html" >Alerts </a>
-           
+            <a href="salary-history.html">Salary History</a>
+            <a href="archivePost.html">Alerts</a>
           </div>
-         
-          
           <a href="report.html">
             <span class="material-symbols-sharp">report_gmailerrorred</span>
             <h3>Feedback Reports</h3>
           </a>
-        
           <a href="categorymanagement.html">
-            <span class="material-symbols-sharp">add </span>
+            <span class="material-symbols-sharp">add</span>
             <h3>Add Categories</h3>
           </a>
           <a href="#">
-            <span class="material-symbols-sharp">logout </span>
+            <span class="material-symbols-sharp">logout</span>
             <h3>Logout</h3>
           </a>
         </div>
@@ -125,21 +177,143 @@
       <!-- --------------
         start main part
       --------------- -->
-
       <main>
-        <h1>Recent Application  </h1>
+        <h1>Recent Application</h1>
 
-        <!-- All Users Section -->
-        <div class="recent_order">
-          <h2>All Application</h2>
-          
+        <!-- Main Container -->
+        <div class="main-container">
+          <!-- Application Status -->
+          <div class="container-item">
+            <h2>Application Status</h2>
+            <div class="scroll-container" id="scrollContainer">
+              <!-- Client Status List -->
+              <div class="client-status-item">
+                <span class="client-name">Client 1</span>
+                <span class="status">Pending</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 2</span>
+                <span class="status">Ongoing</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 3</span>
+                <span class="status">Completed</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 4</span>
+                <span class="status">Pending</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 5</span>
+                <span class="status">Ongoing</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 6</span>
+                <span class="status">Completed</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 7</span>
+                <span class="status">Pending</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 8</span>
+                <span class="status">Ongoing</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 9</span>
+                <span class="status">Completed</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 10</span>
+                <span class="status">Pending</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Salary -->
+          <div class="container-item">
+            <h2>Salary</h2>
+            <div class="scroll-container" id="scrollContainer">
+              <!-- Client Status List -->
+              <div class="client-status-item">
+                <span class="client-name">Client 1</span>
+                <span class="status">Sended</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 2</span>
+                <span class="status">Sended</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 3</span>
+                <span class="status">Sended</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 4</span>
+                <span class="status">UnSended</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 5</span>
+                <span class="status">Sended</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 6</span>
+                <span class="status">UnSended</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 7</span>
+                <span class="status">Sended</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 8</span>
+                <span class="status">Sended</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 9</span>
+                <span class="status">Sended</span>
+              </div>
+              <div class="client-status-item">
+                <span class="client-name">Client 10</span>
+                <span class="status">Sended</span>
+              </div>
+            </div>
+          </div>
+          </div>
+
+          <!-- Salary History -->
+          <div class="container-item">
+            <h2>Salary History</h2>
+            <p>Details about salary history go here.</p>
+          </div>
+
+          <!-- Alerts -->
+          <div class="container-item">
+            <h2>Alerts</h2>
+            <p>Details about alerts go here.</p>
+          </div>
         </div>
- 
       </main>
-      <!-- end main -->
+      <!--rightsidebar-->
+      <div class="right">
+        <!-- Right sidebar content omitted for brevity -->
+      </div>
+    </div>
 
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
     <script type="module" src="script/post.js"></script>
+    <script>
+      // JavaScript for automatic scrolling
+      const scrollContainer = document.getElementById('scrollContainer');
+      let scrollHeight = scrollContainer.scrollHeight;
+
+      function scroll() {
+        scrollContainer.scrollTop += 1;
+        if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollHeight) {
+          scrollContainer.scrollTop = 0;
+        }
+      }
+
+      setInterval(scroll, 20); // Adjust interval as needed
+    </script>
   </body>
 </html>

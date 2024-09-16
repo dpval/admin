@@ -11,34 +11,9 @@
     />
     <link rel="stylesheet" href="css/post.css" />
     <link rel="stylesheet" href="css/rightsidebar.css" />
-    <link rel="stylesheet" href="css/adminrightsidebar.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-      .charts-container {
-        display:flex;
-        flex-wrap:wrap;
-        gap: 20px;
-   
-        padding: 10px 5px;
-        margin: 10px 10px 10px 10px;
-        background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-    flex: 1;
-    margin-right: 1rem;
-      }
-      canvas {
-        width: 400px; /* Adjust the width as needed */
-        height: 200px; /* Adjust the height as needed */
-        margin-left: 100px;
-      
-       
-      }
-  
-    </style>
   </head>
+
   <body>
     <div class="container">
       <aside>
@@ -67,29 +42,19 @@
             <h3>Post</h3>
           </a>
           <div id="userDropdown" class="dropdown-content">
-            <a href="pendingpost.html" >
+            <a href="pendingpost.html">
               Pending Posts
               <span id="pendingCount" class="badge"></span>
             </a>
-
             <a href="submission.html">Submission</a>
             <a href="post_alerts.html">Alerts</a>
             <a href="archivePost.html">Archive Posts</a>
           </div>
-
+         
           <!-- JavaScript for dropdowns -->
           <script>
             function toggleUserDropdown() {
               var dropdown = document.getElementById("userDropdown");
-              if (dropdown.style.display === "block") {
-                dropdown.style.display = "none";
-              } else {
-                dropdown.style.display = "block";
-              }
-            }
-
-            function togglePaymentDropdown() {
-              var dropdown = document.getElementById("paymentDropdown");
               if (dropdown.style.display === "block") {
                 dropdown.style.display = "none";
               } else {
@@ -148,195 +113,53 @@
         start main part
       --------------- -->
 
-        <!-- Charts Container -->
-       <div container="cont">
-      <h1>Posting Task</h1>
+      <main>
         <div class="charts-container">
-          
-          <div>
-           
-            <h3>Pending vs Approved</h3>
-            <canvas id="pendingChart"></canvas>
-          </div>
-          <div>
-            <h3>Submission Status</h3>
-            <canvas id="submissionChart"></canvas>
-          </div>
-          <div>
-            <h3>Alerts</h3>
-            <canvas id="alertsChart"></canvas>
-          </div>
-          <div>
-            <h3>Archive</h3>
-            <canvas id="archiveChart"></canvas>
-          </div>
-        </div>
-      </div>
-      
-
-        <!-- The Modal -->
-        <div id="myModal" class="modal">
-          <!-- Modal content -->
-          <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Task Description</h2>
-            <div id="modalDetails">
-              <img id="postImage" src="" alt="Post Image" style="width: 500px; height: 500px;" />
-              <p><strong>Description:</strong> <span id="postDescription"></span></p>
-              <p><strong>Starting Time:</strong> <span id="postStartingTime"></span></p>
-              <p><strong>Category:</strong> <span id="postCategory"></span></p>
-              <p><strong>Sub-Category:</strong> <span id="postSubCategory"></span></p>
+          <!-- Pending Posts -->
+          <div class="analytics-item pending-posts-container">
+            <h3>Pending Posts</h3>
+            <div class="circle-status">
+              <canvas id="pendingPostsChart"></canvas>
+              <p class="count">10</p> <!-- Static count for now -->
             </div>
-            <button class="approve-btn">Approve</button>
-            <button class="disapprove-btn">Disapprove</button>
-            <div id="successMessage" class="success-message"></div>
+          </div>
+      
+          <!-- Submission Line Graph -->
+          <div class="analytics-item submission-status-container">
+            <h3>Submission Status</h3>
+            <canvas id="submissionStatusChart"></canvas>
+          </div>
+      
+          <!-- Alerts -->
+          <div class="analytics-item alerts-container">
+            <h3>Alerts</h3>
+            <div class="alert-warning">
+              <span class="material-symbols-sharp large-icon">warning</span>
+              <p>No new alerts</p>
+            </div>
+          </div>
+      
+          <!-- Archive Posts Bar Graph -->
+          <div class="analytics-item archive-posts-container">
+            <h3>Archive Posts</h3>
+            <canvas id="archivePostsChart"></canvas>
           </div>
         </div>
-
       </main>
+      
+      
       <!-- end main -->
 
       <!-- start right main -->
-      <div class="right">
-        <div class="top">
-        
-          <div class="profile">
-            <div class="info">
-              <p><b>Trade</b></p>
-              <p>Admin</p>
-              <small class="text-muted"></small>
-            </div>
-            <div class="profile-photo">
-              <img src="./images/profile-1.jpg" alt="Profile Photo" />
-            </div>
-           
-          </div>
-          <button id="menu_bar">
-            <span class="material-symbols-sharp">menu</span>
-          </button>
-        </div>
-
-        <div class="recent_updates">
-          <h2>Recently Joined</h2>
-          <div class="updates" id="recentJoinUpdates">
-            <!-- Dynamic updates will be inserted here -->
-          </div>
-        </div>
-
-        <div class="sales-analytics">
-          <h2>Task Posted Analytics</h2>
-
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">task_alt</span>
-            </div>
-            <div class="right_text">
-              <div class="info">
-                <h3>Top Task</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
-              </div>
-              <h5 class="danger">-17%</h5>
-              <h3>3849</h3>
-            </div>
-          </div>
-
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">person_outline</span>
-            </div>
-            <div class="right_text">
-              <div class="info">
-                <h3>Top Gig Worker</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
-              </div>
-              <h5 class="success">-17%</h5>
-              <h3>3849</h3>
-            </div>
-          </div>
-
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">person</span>
-            </div>
-            <div class="right_text">
-              <div class="info">
-                <h3>Top Client</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
-              </div>
-              <h5 class="danger">-17%</h5>
-              <h3>3849</h3>
-            </div>
-          </div>
-        </div>
-
-        <div class="item add_product">
-          <div>
-            <span class="material-symbols-sharp">add</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
+     
 
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
     <script type="module" src="script/post.js"></script>
-    <script>
-      // Bar Chart data and configuration
-      const ctxPending = document.getElementById('pendingChart').getContext('2d');
-      const ctxSubmission = document.getElementById('submissionChart').getContext('2d');
-      const ctxAlerts = document.getElementById('alertsChart').getContext('2d');
-      const ctxArchive = document.getElementById('archiveChart').getContext('2d');
-
-      new Chart(ctxPending, {
-        type: 'bar',
-        data: {
-          labels: ['Pending', 'Approved'],
-          datasets: [{
-            label: 'Posts',
-            data: [12, 19], // Example static data
-            backgroundColor: ['#ff6f61', '#4caf50']
-          }]
-        }
-      });
-
-      new Chart(ctxSubmission, {
-        type: 'bar',
-        data: {
-          labels: ['Submission A', 'Submission B'],
-          datasets: [{
-            label: 'Submissions',
-            data: [5, 15], // Example static data
-            backgroundColor: ['#3f51b5', '#f44336']
-          }]
-        }
-      });
-
-      new Chart(ctxAlerts, {
-        type: 'bar',
-        data: {
-          labels: ['Alerts A', 'Alerts B'],
-          datasets: [{
-            label: 'Alerts',
-            data: [7, 10], // Example static data
-            backgroundColor: ['#e91e63', '#9c27b0']
-          }]
-        }
-      });
-
-      new Chart(ctxArchive, {
-        type: 'bar',
-        data: {
-          labels: ['Archive A', 'Archive B'],
-          datasets: [{
-            label: 'Archive',
-            data: [4, 8], // Example static data
-            backgroundColor: ['#2196f3', '#ff9800']
-          }]
-        }
-      });
-    </script>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <!-- Include your chart scripts -->
+    <script src="script/charts.js"></script>
   </body>
 </html>
-
-

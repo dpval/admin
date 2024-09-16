@@ -12,8 +12,8 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"
     />
     <link rel="stylesheet" href="css/index.css" />
-    <link rel="stylesheet" href="css/rightsidebar.css" />
     <link rel="stylesheet" href="css/adminrightsidebar.css" />
+ <link rel="stylesheet" href="css/rightsidebar.css" />
 
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -22,49 +22,47 @@
     <div class="container">
       <aside>
         <div class="top">
-    <div class="logo">
-        <img src="./images/logo.png" alt="Trade Are Us Logo" class="logo-img" />
-        <h2><span class="danger">Trade Are Us</span></h2>
-    </div>
-    <div class="close" id="close_btn">
-        <span class="material-symbols-sharp">close</span>
-    </div>
-</div>
-
+          <div class="logo">
+            <h2><span class="danger">Trade Are Us</span></h2>
+          </div>
+          <div class="close" id="close_btn">
+            <span class="material-symbols-sharp"></span>
+          </div>
+        </div>
 
         <div class="sidebar">
-          <a href="../index.html" class="active">
+          <a href="index.html" class="active">
             <span class="material-symbols-sharp">grid_view</span>
             <h3>Dashboard</h3>
           </a>
-          <a href="../user.html">
+          <a href="user.html">
             <span class="material-symbols-sharp">person_outline</span>
             <h3>Users</h3>
           </a>
-          <a href="../post.html">
+          <a href="post.html">
             <span class="material-symbols-sharp">insights</span>
             <h3>Post</h3>
           </a>
 
-          <a href="../message.html">
+          <a href="message.html">
             <span class="material-symbols-sharp">mail_outline</span>
             <h3>Messages</h3>
             <span class="msg_count">0</span>
           </a>
-          <a href="../payment.html">
+          <a href="payment.html">
             <span class="material-symbols-sharp">receipt_long</span>
             <h3>Payments</h3>
           </a>
-          <a href="../application.html">
+          <a href="application.html">
             <span class="material-symbols-sharp">app_registration</span>
             <h3>Application</h3>
           </a>
-          <a href="../report.html">
+          <a href="report.html">
             <span class="material-symbols-sharp">report_gmailerrorred</span>
             <h3>Feedback Reports</h3>
           </a>
 
-          <a href="../categorymanagement.html">
+          <a href="categorymanagement.html">
             <span class="material-symbols-sharp">add</span>
             <h3>Add Categories</h3>
           </a>
@@ -176,10 +174,17 @@
           </div>
         </div>
       </main>
-
+<!--ri-->
       <div class="right">
         <div class="top">
-        
+          <button id="menu_bar">
+            <span class="material-symbols-sharp">menu</span>
+          </button>
+
+          <div class="theme-toggler">
+           
+          </div>
+
           <div class="profile">
             <div class="info">
               <p><b>Trade</b></p>
@@ -189,71 +194,16 @@
             <div class="profile-photo">
               <img src="./images/profile-1.jpg" alt="Profile Photo" />
             </div>
-           
           </div>
-          <button id="menu_bar">
-            <span class="material-symbols-sharp">menu</span>
-          </button>
         </div>
 
         <div class="recent_updates">
           <h2>Recently Joined</h2>
           <div class="updates" id="recentJoinUpdates">
-            <!-- Dynamic updates will be inserted here -->
+    
           </div>
         </div>
 
-        <div class="sales-analytics">
-          <h2>Task Posted Analytics</h2>
-
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">task_alt</span>
-            </div>
-            <div class="right_text">
-              <div class="info">
-                <h3>Top Task</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
-              </div>
-              <h5 class="danger">-17%</h5>
-              <h3>3849</h3>
-            </div>
-          </div>
-
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">person_outline</span>
-            </div>
-            <div class="right_text">
-              <div class="info">
-                <h3>Top Gig Worker</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
-              </div>
-              <h5 class="success">-17%</h5>
-              <h3>3849</h3>
-            </div>
-          </div>
-
-          <div class="item onlion">
-            <div class="icon">
-              <span class="material-symbols-sharp">person</span>
-            </div>
-            <div class="right_text">
-              <div class="info">
-                <h3>Top Client</h3>
-                <small class="text-muted">Last seen 2 Hours</small>
-              </div>
-              <h5 class="danger">-17%</h5>
-              <h3>3849</h3>
-            </div>
-          </div>
-        </div>
-
-        <div class="item add_product">
-          <div>
-            <span class="material-symbols-sharp">add</span>
-          </div>
-        </div>
       </div>
     </div>
 
