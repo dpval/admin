@@ -5,7 +5,7 @@ import {
   query,
   orderBy,
   Timestamp,
-  where, // Import 'where' here
+  where,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 // Define time constants
@@ -20,6 +20,32 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!activeUsersTable) {
     console.error("Element with ID 'activeUsers' not found.");
     return; // Exit if element is not found
+  }
+
+  let activeUserCount = 0;
+  let inactiveUserCount = 0;
+
+  // Function to update the pie chart
+  function updatePieChart(activeCount, inactiveCount) {
+    const activeUsersData = {
+      labels: ["Active", "Inactive"],
+      datasets: [
+        {
+          label: "Active Users",
+          data: [activeCount, inactiveCount],
+          backgroundColor: ["#A1DD70", "#FFA27F"],
+        },
+      ],
+    };
+
+    const ctx = document.getElementById("activeUsersChart").getContext("2d");
+    if (window.activeUsersChart) {
+      window.activeUsersChart.destroy(); // Destroy the previous instance if exists
+    }
+    window.activeUsersChart = new Chart(ctx, {
+      type: "pie",
+      data: activeUsersData,
+    });
   }
 
   // Format the date and time
@@ -56,82 +82,88 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Fetch and display active users
-  // Fetch and display active users
-function fetchAndDisplayActiveUsers(userTypeFilter = "") {
-  try {
-    let userQuery = query(
-      collection(db, "users"),
-      orderBy("created_time", "desc"),
-      where("firsttimestatus", "==", "approved") // Add this filter
-    );
+  function fetchAndDisplayActiveUsers(userTypeFilter = "") {
+    try {
+      let userQuery = query(
+        collection(db, "users"),
+        orderBy("created_time", "desc"),
+        where("firsttimestatus", "==", "approved")
+      );
 
-    if (userTypeFilter && userTypeFilter !== "all") {
-      userQuery = query(userQuery, where("usertype", "==", userTypeFilter));
-    }
+      if (userTypeFilter && userTypeFilter !== "all") {
+        userQuery = query(userQuery, where("usertype", "==", userTypeFilter));
+      }
 
-    onSnapshot(userQuery, (querySnapshot) => {
-      console.log("Snapshot received");
-      activeUsersTable.querySelector("tbody").innerHTML = ""; // Clear previous data
+      onSnapshot(userQuery, (querySnapshot) => {
+        activeUserCount = 0;
+        inactiveUserCount = 0;
+        activeUsersTable.querySelector("tbody").innerHTML = ""; // Clear previous data
 
-      querySnapshot.forEach((doc) => {
-        const user = doc.data();
-        console.log("User data:", user); // Log user data
+        querySnapshot.forEach((doc) => {
+          const user = doc.data();
+          const { display_name, lastname, password, uid, isLogin, photo_url } = user;
 
-        const { display_name, lastname, password, uid, isLogin, photo_url } = user;
+          // Determine status based on last login
+          let status = "Inactive";
+          let statusColor = "#f8d7da"; // Light red
+          if (isLogin instanceof Timestamp) {
+            const lastLogin = isLogin.toMillis();
+            status = currentTime - lastLogin <= ONE_DAY_IN_MS ? "Active" : "Inactive";
+            statusColor = status === "Active" ? "#d4edda" : "#f8d7da"; // Light green for active
+          }
 
-        // Determine status based on last login
-        let status = "Inactive";
-        let statusColor = "#f8d7da"; // Light red
-        if (isLogin instanceof Timestamp) {
-          const lastLogin = isLogin.toMillis();
-          status =
-            currentTime - lastLogin <= ONE_DAY_IN_MS ? "Active" : "Inactive";
-          statusColor = status === "Active" ? "#d4edda" : "#f8d7da"; // Light green for active
-        }
+          // Increment counts for the pie chart
+          if (status === "Active") {
+            activeUserCount++;
+          } else {
+            inactiveUserCount++;
+          }
 
-        const tr = document.createElement("tr");
+          const tr = document.createElement("tr");
 
-        // Name column with photo
-        const nameTd = document.createElement("td");
-        const photoElement = createPhotoElement(photo_url);
-        const nameText = document.createElement("span");
-        nameText.textContent = `${display_name || "N/A"} ${lastname || "N/A"}`;
-        
-        nameTd.appendChild(photoElement);
-        nameTd.appendChild(nameText);
+          // Name column with photo
+          const nameTd = document.createElement("td");
+          const photoElement = createPhotoElement(photo_url);
+          const nameText = document.createElement("span");
+          nameText.textContent = `${display_name || "N/A"} ${lastname || "N/A"}`;
+          
+          nameTd.appendChild(photoElement);
+          nameTd.appendChild(nameText);
 
-        const passwordTd = document.createElement("td");
-        passwordTd.textContent = "******"; // Masked password
+          const passwordTd = document.createElement("td");
+          passwordTd.textContent = "******"; // Masked password
 
-        const uidTd = document.createElement("td");
-        uidTd.textContent = uid || "N/A";
+          const uidTd = document.createElement("td");
+          uidTd.textContent = uid || "N/A";
 
-        const statusTd = document.createElement("td");
-        statusTd.textContent = status;
-        statusTd.style.backgroundColor = statusColor;
-        statusTd.style.color = status === "Active" ? "#155724" : "#721c24"; // Dark green for active, dark red for inactive
-        statusTd.style.padding = "5px";
-        statusTd.style.textAlign = "center";
+          const statusTd = document.createElement("td");
+          statusTd.textContent = status;
+          statusTd.style.backgroundColor = statusColor;
+          statusTd.style.color = status === "Active" ? "#155724" : "#721c24"; // Dark green for active, dark red for inactive
+          statusTd.style.padding = "5px";
+          statusTd.style.textAlign = "center";
 
-        const lastLoginTd = document.createElement("td");
-        lastLoginTd.textContent = formatDateTime(isLogin);
+          const lastLoginTd = document.createElement("td");
+          lastLoginTd.textContent = formatDateTime(isLogin);
 
-        // Append all columns to the row
-        tr.appendChild(nameTd); // Name column with photo
-        tr.appendChild(passwordTd);
-        tr.appendChild(uidTd);
-        tr.appendChild(statusTd);
-        tr.appendChild(lastLoginTd);
+          // Append all columns to the row
+          tr.appendChild(nameTd); // Name column with photo
+          tr.appendChild(passwordTd);
+          tr.appendChild(uidTd);
+          tr.appendChild(statusTd);
+          tr.appendChild(lastLoginTd);
 
-        // Append the row to the table
-        activeUsersTable.querySelector("tbody").appendChild(tr);
+          // Append the row to the table
+          activeUsersTable.querySelector("tbody").appendChild(tr);
+        });
+
+        // Update the pie chart with the counts
+        updatePieChart(activeUserCount, inactiveUserCount);
       });
-    });
-  } catch (error) {
-    console.error("Error fetching active users: ", error);
+    } catch (error) {
+      console.error("Error fetching active users: ", error);
+    }
   }
-}
-
 
   // Event listener for search input
   searchInput.addEventListener("input", () => {

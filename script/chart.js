@@ -96,3 +96,4 @@ const createRankingChart = (id, label, data, color) => {
 createRankingChart('topTasksChart', 'Tasks', [15, 10, 8], 'rgba(75, 192, 192, 0.6)');
 createRankingChart('topClientsChart', 'Clients', [20, 14, 9], 'rgba(255, 159, 64, 0.6)');
 createRankingChart('topGigWorkersChart', 'Gig Workers', [18, 16, 12], 'rgba(153, 102, 255, 0.6)');
+

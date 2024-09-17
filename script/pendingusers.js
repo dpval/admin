@@ -21,6 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const applicantBtn = document.querySelector('button[data-filter="applicant"]');
   const themeToggler = document.querySelector(".theme-toggler");
 
+  // Initialize selectedUserType
+  let selectedUserType = "";
+
   // Check if themeToggler exists
   if (themeToggler) {
     themeToggler.addEventListener("click", () => {
@@ -170,39 +173,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (editBtn) {
       editBtn.addEventListener("click", () => {
-        // Hide the Edit button
         editBtn.style.display = "none";
-
-        // Add additional actions for editing
         modalDetails.innerHTML += `
           <div class="modal-actions">
             <button id="holdBtn">Hold</button>
             <button id="blockedBtn">Blocked</button>
           </div>
         `;
-
+    
         const holdBtn = document.getElementById("holdBtn");
         const blockedBtn = document.getElementById("blockedBtn");
-
-        holdBtn.addEventListener("click", () =>
-          updateUserStatus(userId, "hold")
-        );
-        blockedBtn.addEventListener("click", () =>
-          updateUserStatus(userId, "blocked")
-        );
+    
+        holdBtn.addEventListener("click", async () => {
+          await updateUserStatus(userId, "hold");
+          modal.style.display = "none"; // Automatically hide modal
+        });
+    
+        blockedBtn.addEventListener("click", async () => {
+          await updateUserStatus(userId, "blocked");
+          modal.style.display = "none"; // Automatically hide modal
+        });
       });
     }
 
     if (approveBtn) {
-      approveBtn.addEventListener("click", () =>
-        updateUserStatus(userId, "approved")
-      );
+      approveBtn.addEventListener("click", async () => {
+        await updateUserStatus(userId, "approved");
+        modal.style.display = "none"; // Automatically hide modal
+      });
     }
 
     if (disapproveBtn) {
-      disapproveBtn.addEventListener("click", () =>
-        updateUserStatus(userId, "disapproved")
-      );
+      disapproveBtn.addEventListener("click", async () => {
+        await updateUserStatus(userId, "disapproved");
+        modal.style.display = "none"; // Automatically hide modal
+      });
     }
 
     modal.style.display = "block";
@@ -241,48 +246,32 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({
           to: userEmail,
           subject: subject,
-          message: message,
+          html: message,
         }),
       });
 
-      // Refresh UI and close modal
-      fetchAndDisplayUsers(searchInput.value.trim(), selectedUserType);
-      modal.style.display = "none";
+      console.log(`User status updated to: ${newStatus}`);
     } catch (error) {
-      console.error("Error updating user status or sending email: ", error);
+      console.error("Error updating user status:", error);
     }
   }
 
-  // Check if search button exists
-  if (searchBtn) {
-    searchBtn.addEventListener("click", () => {
-      const searchTerm = searchInput.value.trim();
-      fetchAndDisplayUsers(searchTerm, selectedUserType);
-    });
-  } else {
-    console.error("Search button not found");
-  }
+  // Event listeners for filtering users
+  clientBtn.addEventListener("click", () => {
+    selectedUserType = "client";
+    fetchAndDisplayUsers("", selectedUserType);
+  });
 
-  // Check if client button exists
-  if (clientBtn) {
-    clientBtn.addEventListener("click", () => {
-      selectedUserType = "client";
-      fetchAndDisplayUsers(searchInput.value.trim(), selectedUserType);
-    });
-  } else {
-    console.error("Client button not found");
-  }
+  applicantBtn.addEventListener("click", () => {
+    selectedUserType = "applicant";
+    fetchAndDisplayUsers("", selectedUserType);
+  });
 
-  // Check if applicant button exists
-  if (applicantBtn) {
-    applicantBtn.addEventListener("click", () => {
-      selectedUserType = "applicant";
-      fetchAndDisplayUsers(searchInput.value.trim(), selectedUserType);
-    });
-  } else {
-    console.error("Applicant button not found");
-  }
+  searchBtn.addEventListener("click", () => {
+    const searchTerm = searchInput.value;
+    fetchAndDisplayUsers(searchTerm, selectedUserType);
+  });
 
-  // Initial fetch and display users with pending status
+  // Initial fetch
   fetchAndDisplayUsers();
 });
