@@ -10,7 +10,7 @@ import {
   serverTimestamp,
   runTransaction,
   collectionGroup,
-  addDoc
+  addDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 // Functions related to posts
@@ -31,11 +31,14 @@ export async function fetchClientPosts() {
   let currentPostId = ""; // Variable to store the current post ID for approval/disapproval
   let currentUserId = ""; // Variable to store the current user ID
 
-  themeToggler.addEventListener("click", () => {
-    document.body.classList.toggle("dark-theme-variables");
-    themeToggler.querySelector("span:nth-child(1)").classList.toggle("active");
-    themeToggler.querySelector("span:nth-child(2)").classList.toggle("active");
-  });
+  // Check if the themeToggler exists before attaching the event listener
+  if (themeToggler) {
+    themeToggler.addEventListener("click", () => {
+      document.body.classList.toggle("dark-theme-variables");
+      themeToggler.querySelector("span:nth-child(1)").classList.toggle("active");
+      themeToggler.querySelector("span:nth-child(2)").classList.toggle("active");
+    });
+  }
 
   function showSuccessMessage(message) {
     successMessage.innerText = message;
@@ -56,7 +59,7 @@ export async function fetchClientPosts() {
       const userData = userDoc.data();
       const clientName = `${userData.display_name} ${userData.lastname}`;
       const postTaskCollection = collection(db, `users/${userDoc.id}/postTask`);
-      
+
       // Filter posts where status is "pending"
       const pendingPostsQuery = query(postTaskCollection, where("status", "==", "Pending"));
       const postTaskSnapshot = await getDocs(pendingPostsQuery);
@@ -66,9 +69,7 @@ export async function fetchClientPosts() {
         const row = document.createElement("tr");
         row.innerHTML = `
           <tr>
-            <td>${new Date(
-              postData.createdtime.seconds * 1000
-            ).toLocaleDateString()}</td>
+            <td>${new Date(postData.createdtime.seconds * 1000).toLocaleDateString()}</td>
             <td>${clientName}</td>
             <td>${postData.category}</td>
             <td>${postData.subcategory}</td>
@@ -76,9 +77,7 @@ export async function fetchClientPosts() {
             <td>${postData.salary}</td>
             <td>${postData.status}</td>
             <td>
-              <button class="view-details-btn" data-id="${
-                postDoc.id
-              }" data-user-id="${userDoc.id}">
+              <button class="view-details-btn" data-id="${postDoc.id}" data-user-id="${userDoc.id}">
                 <i class="fas fa-list-alt"></i>
               </button>
             </td>
@@ -87,18 +86,12 @@ export async function fetchClientPosts() {
         allPosts.appendChild(row);
 
         // Set currentPostId and currentUserId on button click
-        row
-          .querySelector(".view-details-btn")
-          .addEventListener("click", (event) => {
-            currentPostId = event.target
-              .closest(".view-details-btn")
-              .getAttribute("data-id");
-            currentUserId = event.target
-              .closest(".view-details-btn")
-              .getAttribute("data-user-id");
+        row.querySelector(".view-details-btn").addEventListener("click", (event) => {
+          currentPostId = event.target.closest(".view-details-btn").getAttribute("data-id");
+          currentUserId = event.target.closest(".view-details-btn").getAttribute("data-user-id");
 
-            showModal(postData); // Show modal with post details
-          });
+          showModal(postData); // Show modal with post details
+        });
       });
     }
   } catch (error) {
@@ -109,9 +102,7 @@ export async function fetchClientPosts() {
   function showModal(postData) {
     postImage.src = postData.image;
     postDescription.textContent = postData.description;
-    postStartingTime.textContent = new Date(
-      postData.startingtime.seconds * 1000
-    ).toLocaleString();
+    postStartingTime.textContent = new Date(postData.startingtime.seconds * 1000).toLocaleString();
     postCategory.textContent = postData.category;
     postSubCategory.textContent = postData.subcategory;
 
@@ -119,7 +110,7 @@ export async function fetchClientPosts() {
   }
 
   // Approve the post
-  approveBtn.addEventListener("click", async () => {
+  approveBtn?.addEventListener("click", async () => {
     console.log("Approve button clicked");
     console.log("currentPostId:", currentPostId);
     console.log("currentUserId:", currentUserId);
@@ -134,16 +125,11 @@ export async function fetchClientPosts() {
 
       // Sanitize and normalize postCategory: trim spaces and normalize
       postCategory = postCategory.trim().replace(/\s+/g, " ");
-      console.log(
-        "Sanitized Post category from the post:",
-        `"${postCategory}" (Length: ${postCategory.length})"`
-      );
+      console.log("Sanitized Post category from the post:", `"${postCategory}" (Length: ${postCategory.length})"`);
 
       // Step 2: Query all skills across all users using collectionGroup
       const allSkillsSnapshot = await getDocs(collectionGroup(db, "skills"));
-      console.log(
-        "Fetching all skill documents from 'skills' subcollections across users..."
-      );
+      console.log("Fetching all skill documents from 'skills' subcollections across users...");
 
       let foundMatch = false;
 
@@ -203,7 +189,7 @@ export async function fetchClientPosts() {
   });
 
   // Disapprove the post
-  disapproveBtn.addEventListener("click", async () => {
+  disapproveBtn?.addEventListener("click", async () => {
     console.log("Disapprove button clicked");
     console.log("currentPostId:", currentPostId);
     console.log("currentUserId:", currentUserId);
@@ -215,11 +201,7 @@ export async function fetchClientPosts() {
 
       // Step 2: Send email to the post creator
       const userEmail = await getUserEmail(currentUserId); // Get user's email
-      sendEmail(
-        userEmail,
-        "Post Disapproved",
-        "Your post has been disapproved."
-      );
+      sendEmail(userEmail, "Post Disapproved", "Your post has been disapproved.");
 
       // Step 3: Get the post data to access the salary
       const postDoc = await getDoc(postRef);
@@ -242,68 +224,71 @@ export async function fetchClientPosts() {
         throw new Error("User does not have a wallet reference.");
       }
 
-      // Fetch the user's wallet
-      const walletDoc = await getDoc(walletRef);
-      if (!walletDoc.exists()) {
-        throw new Error("Wallet document does not exist.");
-      }
+      // Fetch the user's wallet data
+      await runTransaction(db, async (transaction) => {
+        const walletDoc = await transaction.get(walletRef);
+        if (!walletDoc.exists()) {
+          throw new Error("Wallet document does not exist.");
+        }
 
-      const currentBalance = walletDoc.data().balance;
+        const walletData = walletDoc.data();
+        const currentBalance = walletData.balance;
 
-      // Update the wallet's balance by adding the salary back
-      const updatedBalance = currentBalance + salaryToRefund;
-      await updateDoc(walletRef, { balance: updatedBalance });
+        // Step 5: Refund the salary to the user's wallet
+        const newBalance = currentBalance + salaryToRefund;
+        transaction.update(walletRef, { balance: newBalance });
 
-      // Step 5: Create a new entry in the walletNotification collection
-      const walletNotificationRef = collection(db, "walletNotification");
-      await addDoc(walletNotificationRef, {
-        currentTime: serverTimestamp(), // Current timestamp
-        tokenDeduct: salaryToRefund,    // The salary refunded
-        type: "Plus",                   // Type of transaction
-        typeofTransaction: "Disapproved Post", // Reason for the transaction
-        userID: userRef,                // Reference to the user
-        walletID: walletRef             // Reference to the user's wallet
+        // Step 6: Add a wallet notification
+        const walletNotificationRef = collection(db, "walletNotification");
+        await addDoc(walletNotificationRef, {
+          balance: salaryToRefund,
+          description: "Salary refund from disapproved post",
+          userID: currentUserId,
+          createdtime: serverTimestamp(),
+        });
       });
 
-      // Step 6: Show success message and log
-      console.log(`Salary of ${salaryToRefund} refunded to user ${currentUserId}`);
-      showSuccessMessage("Post disapproved and salary refunded successfully!");
+      showSuccessMessage("Post disapproved, and salary refunded successfully!");
     } catch (error) {
-      console.error("Error disapproving post and refunding salary:", error);
+      console.error("Error disapproving post:", error);
     }
   });
 
+  // Close modal event
+  closeModal.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
 
-  async function getUserEmail(userId) {
-    const userRef = doc(db, "users", userId);
-    const userDoc = await getDoc(userRef);
-    return userDoc.exists() ? userDoc.data().email : null;
-  }
-
-  function sendEmail(toEmail, subject, body) {
+  // Function to send email via Node.js backend
+  function sendEmail(to, subject, text) {
     fetch("http://localhost:3000/send-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        to: toEmail,
-        subject: subject,
-        message: body,
-      }),
+      body: JSON.stringify({ to, subject, text }),
     })
-      .then((response) => response.text())
-      .then((data) => {
-        console.log("Email sent:", data);
+      .then((response) => {
+        if (response.ok) {
+          console.log("Email sent successfully");
+        } else {
+          console.error("Failed to send email:", response.statusText);
+        }
       })
       .catch((error) => {
         console.error("Error sending email:", error);
       });
   }
 
-  closeModal.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
+  // Helper function to get user email
+  async function getUserEmail(userId) {
+    const userRef = doc(db, `users/${userId}`);
+    const userDoc = await getDoc(userRef);
+    if (userDoc.exists()) {
+      return userDoc.data().email;
+    }
+    throw new Error("User document does not exist.");
+  }
 }
 
 document.addEventListener("DOMContentLoaded", fetchClientPosts);

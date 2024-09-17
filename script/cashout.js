@@ -8,8 +8,8 @@ import {
   query,
   where,
   orderBy,
-  addDoc,
   Timestamp,
+  addDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -18,6 +18,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   const filterApprovedBtn = document.getElementById("filterApproved");
   const filterDisapprovedBtn = document.getElementById("filterDisapproved");
   const refreshBtn = document.getElementById("refresh");
+
+  // Format Firestore Timestamp into a readable date
+  function formatTimestamp(timestamp) {
+    const date = timestamp.toDate();
+    const options = { 
+      year: 'numeric', month: 'long', day: 'numeric', 
+      hour: 'numeric', minute: 'numeric', second: 'numeric', 
+      hour12: true 
+    };
+    return date.toLocaleString('en-US', options);
+  }
 
   // Fetch cash-out requests based on status filter
   async function fetchCashOutRequests(status = null) {
@@ -45,6 +56,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       allUsersTable.innerHTML = ""; // Clear the table before adding rows
 
+      // Fetch all related users before processing the cash-out requests
+      const usersSnapshot = await getDocs(collection(db, "users"));
+      const usersMap = new Map();
+      usersSnapshot.forEach(userDoc => {
+        usersMap.set(userDoc.id, userDoc.data());
+      });
+
       // Loop through each cash-out request
       for (const docSnap of querySnapshot.docs) {
         const cashOutData = docSnap.data();
@@ -58,15 +76,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           nameofAccount,
           numberofAccount,
           note,
-          recepit,
           status,
+          currentTime,
         } = cashOutData;
 
-        // Fetch the user document to get the display_name, lastname, and email
-        const userDoc = await getDoc(userRef);
+        // Get the user data from the map
+        const userData = usersMap.get(userRef.id);
 
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
+        if (userData) {
           const clientName = `${userData.display_name} ${userData.lastname}`;
           const { email } = userData;
 
@@ -103,14 +120,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           noteTd.textContent = note;
           tr.appendChild(noteTd);
 
-          // Receipt (Link to the image, opens in a new tab)
-          const receiptTd = document.createElement("td");
-          const receiptLink = document.createElement("a");
-          receiptLink.href = recepit;
-          receiptLink.textContent = "View Receipt";
-          receiptLink.target = "_blank";
-          receiptTd.appendChild(receiptLink);
-          tr.appendChild(receiptTd);
+          // Date (formatted)
+          const dateTd = document.createElement("td");
+          dateTd.textContent = formatTimestamp(currentTime);
+          tr.appendChild(dateTd);
 
           // Actions: Conditional display of Approve/Disapprove buttons or text
           const actionsTd = document.createElement("td");
@@ -170,13 +183,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           tr.appendChild(actionsTd);
           allUsersTable.appendChild(tr);
         } else {
-          console.error("No user found for reference: ", userRef.id);
+          console.error("No user found for reference: ", userRef);
         }
       }
     } catch (error) {
       console.error("Error fetching cash-out requests:", error);
     }
   }
+
 
   // Approve cash-out and update the user's wallet and admin earnings
   async function approveCashOut(
@@ -217,7 +231,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       // Create document in /admin_WalletNotification collection
-      const adminWalletNotificationRef = collection(db, "admin_WalletNotification");
+      const adminWalletNotificationRef = collection(
+        db,
+        "admin_WalletNotification"
+      );
       await addDoc(adminWalletNotificationRef, {
         amount: amount, // The cash-out amount
         currentTime: Timestamp.now(), // Firestore Timestamp for current time
@@ -236,12 +253,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Disapprove cash-out
-  async function disapproveCashOut(
-    cashOutId,
-    email,
-    method,
-    numberofAccount
-  ) {
+  async function disapproveCashOut(cashOutId, email, method, numberofAccount) {
     try {
       // Update cash-out status to "Disapproved"
       const cashOutRef = doc(db, "walletTopUp", cashOutId);
@@ -299,6 +311,3 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Initial load of all cash-out requests
   fetchCashOutRequests();
 });
-
-
-     
