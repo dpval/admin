@@ -22,12 +22,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Format Firestore Timestamp into a readable date
   function formatTimestamp(timestamp) {
     const date = timestamp.toDate();
-    const options = { 
-      year: 'numeric', month: 'long', day: 'numeric', 
-      hour: 'numeric', minute: 'numeric', second: 'numeric', 
-      hour12: true 
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      hour12: true,
     };
-    return date.toLocaleString('en-US', options);
+    return date.toLocaleString("en-US", options);
   }
 
   // Fetch cash-out requests based on status filter
@@ -39,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Query by status if a filter is applied
         cashOutQuery = query(
           collection(db, "walletTopUp"),
-          where("typeoftransaction", "==", "CashOut"),
+          where("typeoftransaction", "==", "Cash Out"),
           where("status", "==", status),
           orderBy("amount", "desc")
         );
@@ -47,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Fetch all records when no status filter is applied
         cashOutQuery = query(
           collection(db, "walletTopUp"),
-          where("typeoftransaction", "==", "CashOut"),
+          where("typeoftransaction", "==", "Cash Out"),
           orderBy("amount", "desc")
         );
       }
@@ -59,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Fetch all related users before processing the cash-out requests
       const usersSnapshot = await getDocs(collection(db, "users"));
       const usersMap = new Map();
-      usersSnapshot.forEach(userDoc => {
+      usersSnapshot.forEach((userDoc) => {
         usersMap.set(userDoc.id, userDoc.data());
       });
 
@@ -190,7 +194,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error("Error fetching cash-out requests:", error);
     }
   }
-
 
   // Approve cash-out and update the user's wallet and admin earnings
   async function approveCashOut(
