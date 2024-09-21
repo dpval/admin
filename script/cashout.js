@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Fetch all records when no status filter is applied
         cashOutQuery = query(
           collection(db, "walletTopUp"),
-          where("typeoftransaction", "==", "Cash Out"),
+          where("typeoftransaction", "==", "Cash Out"), 
           orderBy("amount", "desc")
         );
       }
