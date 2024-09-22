@@ -313,6 +313,43 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
   refreshBtn.addEventListener("click", () => fetchWalletTopUps());
 
+
+
+// Function to export to Word
+function exportToWord() {
+  const table = document.querySelector("table").outerHTML;
+  const blob = new Blob(['<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>' + table + '</body></html>'], {
+      type: 'application/msword'
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "wallet_top_up_list.doc";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Function to export to Excel
+function exportToExcel() {
+  const table = document.querySelector("table").outerHTML;
+  const blob = new Blob(['\uFEFF' + table], {
+      type: 'application/vnd.ms-excel'
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "wallet_top_up_list.xls";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Add event listener for the button
+
+
+document.getElementById("exportWord").addEventListener("click", exportToWord);
+document.getElementById("exportExcel").addEventListener("click", exportToExcel);
+
+
   // Initial fetch to show all data
   fetchWalletTopUps();
 });
