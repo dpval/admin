@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Fetch all records when no status filter is applied
         cashOutQuery = query(
           collection(db, "walletTopUp"),
-          where("typeoftransaction", "==", "Cash Out"), 
+          where("typeoftransaction", "==", "Cash Out"),
           orderBy("amount", "desc")
         );
       }
@@ -293,6 +293,52 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error("Error sending email notification:", error);
     }
   }
+
+  // Export to PDF
+  async function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const table = document.getElementById("allUsers");
+    const rows = Array.from(table.rows).map((row) =>
+      Array.from(row.cells).map((cell) => cell.textContent)
+    );
+
+    // Adding rows to the PDF
+    rows.forEach((row, index) => {
+      doc.text(row.join(" | "), 10, 10 + index * 10);
+    });
+
+    doc.save("cash_out_requests.pdf");
+  }
+
+  // Export to Excel
+  async function exportToExcel() {
+    const table = document.getElementById("allUsers");
+    const workbook = XLSX.utils.table_to_book(table, {
+      sheet: "CashOutRequests",
+    });
+    XLSX.writeFile(workbook, "cash_out_requests.xlsx");
+  }
+
+  // Export to Word
+  async function exportToWord() {
+    const table = document.getElementById("allUsers");
+    let html = table.outerHTML;
+    let blob = new Blob([html], {
+      type: "application/msword",
+    });
+    let link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "cash_out_requests.doc";
+    link.click();
+  }
+
+  // Event listeners for export buttons
+  document.getElementById("exportPdf").addEventListener("click", exportToPDF);
+  document
+    .getElementById("exportExcel")
+    .addEventListener("click", exportToExcel);
+  document.getElementById("exportWord").addEventListener("click", exportToWord);
 
   // Event listeners for filtering
   filterPendingBtn.addEventListener("click", () => {
