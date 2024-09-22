@@ -289,6 +289,95 @@ export async function fetchClientPosts() {
     }
     throw new Error("User document does not exist.");
   }
+  // Function to export data to PDF
+function exportToPDF(posts) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.text("Client Posts", 10, 10);
+  posts.forEach((post, index) => {
+    doc.text(`Post ${index + 1}: ${post.category}, ${post.location}, ${post.salary}`, 10, 20 + index * 10);
+  });
+  
+  doc.save("client_posts.pdf");
+}
+
+// Function to export data to Word
+function exportToWord(posts) {
+  const doc = new window.docx.Document();
+  const tableRows = posts.map(post => [
+    new window.docx.TableCell({ text: post.category }),
+    new window.docx.TableCell({ text: post.location }),
+    new window.docx.TableCell({ text: post.salary }),
+  ]);
+
+  const table = new window.docx.Table({
+    rows: tableRows,
+  });
+
+  doc.addSection({ children: [table] });
+
+  window.docx.Packer.toBlob(doc).then((blob) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = "client_posts.docx";
+    link.click();
+  });
+}
+
+// Function to export data to Excel
+function exportToExcel(posts) {
+  const ws = XLSX.utils.json_to_sheet(posts);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Client Posts");
+
+  XLSX.writeFile(wb, "client_posts.xlsx");
+}
+
+// Add event listeners for export buttons
+document.addEventListener("DOMContentLoaded", () => {
+  fetchClientPosts();
+  
+  // Add event listeners for export buttons here
+  document.getElementById("exportPdf")?.addEventListener("click", () => {
+    const posts = getPostsData(); // Implement this function to retrieve the current posts data
+    exportToPDF(posts);
+  });
+
+  document.getElementById("exportWord")?.addEventListener("click", () => {
+    const posts = getPostsData(); // Implement this function to retrieve the current posts data
+    exportToWord(posts);
+  });
+
+  document.getElementById("exportExcel")?.addEventListener("click", () => {
+    const posts = getPostsData(); // Implement this function to retrieve the current posts data
+    exportToExcel(posts);
+  });
+});
+
+function getPostsData() {
+  const rows = document.querySelectorAll("#allUsers tr");
+  const posts = [];
+
+  rows.forEach(row => {
+    const cells = row.querySelectorAll("td");
+    if (cells.length) {
+      posts.push({
+        createdTime: cells[0].innerText,
+        clientName: cells[1].innerText,
+        category: cells[2].innerText,
+        subcategory: cells[3].innerText,
+        location: cells[4].innerText,
+        salary: cells[5].innerText,
+        status: cells[6].innerText,
+      });
+    }
+  });
+
+  return posts;
+}
+
 }
 
 document.addEventListener("DOMContentLoaded", fetchClientPosts);

@@ -146,6 +146,10 @@
             
             
             <button class="userTypeBtn" data-filter="admin">Refersh</button>
+            <button id="exportPDF">Export to PDF</button>
+<button id="exportExcel">Export to Excel</button>
+<button id="exportWord">Export to Word</button>
+
           </div>
           
           <table id="userAlerts">
@@ -180,5 +184,10 @@
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
     <script type="module" src="script/user-alerts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
   </body>
 </html>

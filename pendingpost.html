@@ -141,6 +141,11 @@
         <!-- All Users Section -->
         <div class="recent_order">
           <h2>Pending Post</h2>
+          <button id="exportPdf">Export to PDF</button>
+          <button id="exportWord">Export to Word</button>
+          <button id="exportExcel">Export to Excel</button>
+          
+
           <table>
             <thead>
               <tr>
@@ -208,5 +213,9 @@
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
     <script type="module" src="script/pendingpost.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.2.1/docx.min.js"></script>
+
   </body>
 </html>

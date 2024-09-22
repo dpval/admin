@@ -8,6 +8,7 @@ import {
   where,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
+
 // Define time constants
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const currentTime = new Date().getTime();
@@ -25,29 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let activeUserCount = 0;
   let inactiveUserCount = 0;
 
-  // Function to update the pie chart
-  function updatePieChart(activeCount, inactiveCount) {
-    const activeUsersData = {
-      labels: ["Active", "Inactive"],
-      datasets: [
-        {
-          label: "Active Users",
-          data: [activeCount, inactiveCount],
-          backgroundColor: ["#A1DD70", "#FFA27F"],
-        },
-      ],
-    };
-
-    const ctx = document.getElementById("activeUsersChart").getContext("2d");
-    if (window.activeUsersChart) {
-      window.activeUsersChart.destroy(); // Destroy the previous instance if exists
-    }
-    window.activeUsersChart = new Chart(ctx, {
-      type: "pie",
-      data: activeUsersData,
-    });
-  }
-
   // Format the date and time
   function formatDateTime(timestamp) {
     if (!(timestamp instanceof Timestamp)) {
@@ -55,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const date = new Date(timestamp.toMillis());
-
     const options = {
       year: "numeric",
       month: "long",
@@ -101,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         querySnapshot.forEach((doc) => {
           const user = doc.data();
-          const { display_name, lastname, password, uid, isLogin, photo_url } = user;
+          const { display_name, lastname, uid, isLogin, photo_url } = user;
 
           // Determine status based on last login
           let status = "Inactive";
@@ -112,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
             statusColor = status === "Active" ? "#d4edda" : "#f8d7da"; // Light green for active
           }
 
-          // Increment counts for the pie chart
+          // Increment counts for potential use (removed pie chart logic)
           if (status === "Active") {
             activeUserCount++;
           } else {
@@ -126,12 +103,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const photoElement = createPhotoElement(photo_url);
           const nameText = document.createElement("span");
           nameText.textContent = `${display_name || "N/A"} ${lastname || "N/A"}`;
-          
+
           nameTd.appendChild(photoElement);
           nameTd.appendChild(nameText);
-
-          const passwordTd = document.createElement("td");
-          passwordTd.textContent = "******"; // Masked password
 
           const uidTd = document.createElement("td");
           uidTd.textContent = uid || "N/A";
@@ -148,7 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // Append all columns to the row
           tr.appendChild(nameTd); // Name column with photo
-          tr.appendChild(passwordTd);
           tr.appendChild(uidTd);
           tr.appendChild(statusTd);
           tr.appendChild(lastLoginTd);
@@ -156,9 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
           // Append the row to the table
           activeUsersTable.querySelector("tbody").appendChild(tr);
         });
-
-        // Update the pie chart with the counts
-        updatePieChart(activeUserCount, inactiveUserCount);
       });
     } catch (error) {
       console.error("Error fetching active users: ", error);
@@ -182,6 +152,45 @@ document.addEventListener("DOMContentLoaded", () => {
       fetchAndDisplayActiveUsers(userTypeFilter);
     });
   });
+
+  document.getElementById("exportPdf").addEventListener("click", exportToPDF);
+  document.getElementById("exportWord").addEventListener("click", exportToWord);
+  document.getElementById("exportExcel").addEventListener("click", exportToExcel);
+
+  function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    let rows = [];
+    const rowsData = document.querySelectorAll("#activeUsers tbody tr");
+    rowsData.forEach(row => {
+      const rowData = [];
+      row.querySelectorAll("td").forEach(cell => {
+        rowData.push(cell.textContent);
+      });
+      rows.push(rowData);
+    });
+
+    doc.autoTable({
+      head: [['Name', 'UID', 'Status', 'Last Login']],
+      body: rows,
+    });
+
+    doc.save("active_users.pdf");
+  }
+
+  function exportToWord() {
+    let table = document.getElementById("activeUsers").outerHTML;
+    let blob = new Blob([table], {
+      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    });
+    saveAs(blob, "active_users.doc");
+  }
+
+  function exportToExcel() {
+    const wb = XLSX.utils.table_to_book(document.getElementById("activeUsers"), { sheet: "Active Users" });
+    XLSX.writeFile(wb, "active_users.xlsx");
+  }
 
   // Initial fetch of active users with no filter
   fetchAndDisplayActiveUsers();

@@ -233,6 +233,52 @@ document.getElementById("searchBtn").addEventListener("click", () => {
 document.querySelector(".userTypeBtn").addEventListener("click", () => {
   fetchAndDisplayUsers(); // Fetch all users without filters
 });
+// Function to export data to PDF
+function exportToPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const rows = [];
+
+  const userAlertsTable = document.getElementById("userAlerts").querySelector("tbody");
+  const dataRows = userAlertsTable.querySelectorAll("tr");
+
+  dataRows.forEach(row => {
+    const rowData = [];
+    const cells = row.querySelectorAll("td");
+    cells.forEach(cell => {
+      rowData.push(cell.textContent);
+    });
+    rows.push(rowData);
+  });
+
+  doc.autoTable({
+    head: [['Name', 'Barangay Clearance', 'Expired On', 'Status']],
+    body: rows,
+  });
+
+  doc.save("alertsinUsers.pdf");
+}
+
+// Function to export data to Excel
+function exportToExcel() {
+  const userAlertsTable = document.getElementById("userAlerts");
+  const wb = XLSX.utils.table_to_book(userAlertsTable);
+  XLSX.writeFile(wb, "alertsinUsers.xlsx");
+}
+
+// Function to export data to Word
+function exportToWord() {
+  const userAlertsTable = document.getElementById("userAlerts").outerHTML;
+  const blob = new Blob([userAlertsTable], {
+    type: "application/vnd.ms-word"
+  });
+  saveAs(blob, "alertsinUsers.doc");
+}
+
+// Event Listeners for Export Buttons
+document.getElementById("exportPDF").addEventListener("click", exportToPDF);
+document.getElementById("exportExcel").addEventListener("click", exportToExcel);
+document.getElementById("exportWord").addEventListener("click", exportToWord);
 
 // Initial fetch and display of users
 fetchAndDisplayUsers();

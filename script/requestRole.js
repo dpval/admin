@@ -67,18 +67,12 @@ function displayRequests(requests) {
   requests.forEach((request) => {
     const row = document.createElement("tr");
 
-    // Format the usertype based on conditions
-    const userTypeText =
-      request.user.usertype === "applicant"
-        ? "Gig Worker"
-        : request.user.usertype;
-    const requestRoleText =
-      request.requestRole === "applicant" ? "Gig Worker" : request.requestRole;
+    // Formatting usertype and requestRole
+    const userTypeText = request.user.usertype === "applicant" ? "Gig Worker" : request.user.usertype;
+    const requestRoleText = request.requestRole === "applicant" ? "Gig Worker" : request.requestRole;
 
-    // Format the date to "September 17, 2024 at 12:02:05 AM UTC+8"
-    const formattedDate = new Date(
-      request.currentTime.seconds * 1000
-    ).toLocaleString("en-US", {
+    // Formatting date
+    const formattedDate = new Date(request.currentTime.seconds * 1000).toLocaleString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -86,41 +80,18 @@ function displayRequests(requests) {
       minute: "numeric",
       second: "numeric",
       hour12: true,
-      timeZoneName: "short", // This includes the timezone info
+      timeZoneName: "short",
     });
 
-    // Calculate days left for reverting
+    // Calculating days left for reverting
     const now = new Date();
     let daysLeft = "";
     let roleBackPrediction = "";
 
     if (request.status === "Approved") {
-      const daysRemaining = Math.ceil(
-        (request.revertDate - now) / (1000 * 60 * 60 * 24)
-      );
-      const hoursRemaining = Math.ceil(
-        ((request.revertDate - now) / (1000 * 60 * 60)) % 24
-      );
-      const minutesRemaining = Math.ceil(
-        ((request.revertDate - now) / (1000 * 60)) % 60
-      );
-      const secondsRemaining = Math.ceil(
-        ((request.revertDate - now) / 1000) % 60
-      );
-
-      daysLeft = `${daysRemaining} days ${hoursRemaining} hours ${minutesRemaining} minutes ${secondsRemaining} seconds left`;
-
-      // Calculate role-back prediction date
-      roleBackPrediction = request.revertDate.toLocaleString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-        hour12: true,
-        timeZoneName: "short",
-      });
+      const daysRemaining = Math.ceil((request.revertDate - now) / (1000 * 60 * 60 * 24));
+      daysLeft = `${daysRemaining} days left`;
+      roleBackPrediction = request.revertDate.toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric" });
     } else {
       daysLeft = request.daysCount;
     }
@@ -130,9 +101,8 @@ function displayRequests(requests) {
     if (request.status === "Pending") {
       actionButtons = `
         <button onclick="approveRequest('${request.id}', '${request.userRef.path}', '${request.requestRole}', '${request.originalUsertype}')">Approve</button>
-<button onclick="disapproveRequest('${request.id}')">Disapprove</button>
-
-        `;
+        <button onclick="disapproveRequest('${request.id}')">Disapprove</button>
+      `;
     } else if (request.status === "Approved") {
       actionButtons = `Approved - Reverting in ${daysLeft}`;
     } else {
@@ -140,20 +110,24 @@ function displayRequests(requests) {
     }
 
     row.innerHTML = `
-        <td>${request.user.display_name} ${request.user.lastname}</td>
-        <td>${request.reason}</td>
-        <td>${userTypeText}</td>
-        <td>${requestRoleText}</td>
-        <td>${formattedDate}</td>
-        <td>${request.status}</td>
-        <td>${daysLeft}</td>
-        <td>${roleBackPrediction}</td> <!-- New column for role back -->
-        <td>${actionButtons}</td>
-      `;
+      <td>${request.user.display_name} ${request.user.lastname}</td>
+      <td>${request.reason}</td>
+      <td>${userTypeText}</td>
+      <td>${requestRoleText}</td>
+      <td>${formattedDate}</td>
+      <td>${request.status}</td>
+      <td>${daysLeft}</td>
+      <td>${roleBackPrediction}</td>
+      <td>${actionButtons}</td>
+    `;
 
     tableBody.appendChild(row);
   });
+
+  // Pass requests to add export buttons
+  addExportButtons(requests);
 }
+
 
 // Function to send email
 function sendEmail(toEmail, subject, body) {
@@ -262,6 +236,80 @@ async function disapproveRequest(requestId) {
   // Reload the page to reflect the updated status
   fetchRequestChanges();
 }
+// Function to export requests to PDF
+async function exportToPDF(requests) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Set up the document content
+  let content = "Role Change Requests\n\n";
+  requests.forEach(request => {
+    content += `User: ${request.user.display_name} ${request.user.lastname}\n`;
+    content += `Reason: ${request.reason}\n`;
+    content += `Requested Role: ${request.requestRole}\n`;
+    content += `Status: ${request.status}\n`;
+    content += `Date: ${new Date(request.currentTime.seconds * 1000).toLocaleString()}\n`;
+    content += "--------------------------\n";
+  });
+
+  doc.text(content, 10, 10);
+  doc.save('role_change_requests.pdf');
+}
+
+// Function to export requests to Excel
+async function exportToExcel(requests) {
+  const worksheet = XLSX.utils.json_to_sheet(requests.map(request => ({
+    User: `${request.user.display_name} ${request.user.lastname}`,
+    Reason: request.reason,
+    RequestedRole: request.requestRole,
+    Status: request.status,
+    Date: new Date(request.currentTime.seconds * 1000).toLocaleString(),
+  })));
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Requests');
+  XLSX.writeFile(workbook, 'role_change_requests.xlsx');
+}
+
+// Function to export requests to Word (as an HTML file)
+async function exportToWord(requests) {
+  let content = `<h1>Role Change Requests</h1>`;
+  requests.forEach(request => {
+    content += `<h2>User: ${request.user.display_name} ${request.user.lastname}</h2>`;
+    content += `<p>Reason: ${request.reason}</p>`;
+    content += `<p>Requested Role: ${request.requestRole}</p>`;
+    content += `<p>Status: ${request.status}</p>`;
+    content += `<p>Date: ${new Date(request.currentTime.seconds * 1000).toLocaleString()}</p>`;
+    content += `<hr>`;
+  });
+
+  const blob = new Blob([content], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'role_change_requests.doc';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// Add buttons for exporting
+// Add buttons for exporting
+function addExportButtons(requests) {
+  const exportDiv = document.createElement('div');
+  exportDiv.innerHTML = `
+    <button id="exportPDF">Export to PDF</button>
+    <button id="exportExcel">Export to Excel</button>
+    <button id="exportWord">Export to Word</button>
+  `;
+  document.body.appendChild(exportDiv);
+
+  // Attach event listeners to the buttons
+  document.getElementById('exportPDF').onclick = () => exportToPDF(requests);
+  document.getElementById('exportExcel').onclick = () => exportToExcel(requests);
+  document.getElementById('exportWord').onclick = () => exportToWord(requests);
+}
+
 // Attach functions to the window object
 window.approveRequest = approveRequest;
 window.disapproveRequest = disapproveRequest;

@@ -140,22 +140,18 @@
         <!-- All Users Section -->
         <div class="recent_order">
           <div>
-            <button class="filter-btn green" data-filter="client">
-              Client
-            </button>
-            <button class="filter-btn green" data-filter="applicant">
-              Gig Worker
-            </button>
-            <button class="filter-btn green" data-filter="all">
-                Refersh
-              </button>
+            <button class="filter-btn green" data-filter="client">Client</button>
+            <button class="filter-btn green" data-filter="applicant">Gig Worker</button>
+            <button class="filter-btn green" data-filter="all">Refresh</button>
+            <button id="exportPdf" class="export-btn">Export to PDF</button>
+            <button id="exportWord" class="export-btn">Export to Word</button>
+            <button id="exportExcel" class="export-btn">Export to Excel</button>
             <br /><br />
           </div>
           <table id="activeUsers">
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Password</th>
                 <th>UID</th>
                 <th>Status</th>
                 <th>Last Login</th>
@@ -163,8 +159,8 @@
             </thead>
             <tbody></tbody>
           </table>
-          
         </div>
+        
 
         <!-- The Modal -->
         <div id="myModal" class="modal">
@@ -187,6 +183,18 @@
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
     <script type="module" src="script/activeusers.js"></script>
+    <!-- For exporting to PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+    
+    
+
+<!-- For exporting to Word -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<!-- For exporting to Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+
     
   </body>
 </html>
