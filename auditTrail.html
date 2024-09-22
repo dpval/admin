@@ -82,40 +82,86 @@
       </aside>
 
       <main>
-        <div class="date-container">
-          <label id="dateLabel"></label>
-        </div>
+      
 
         <h1>Audit Trail</h1>
 
-        <!-- Existing content -->
-
         <div class="recent_order">
-            <h2>Recent Trails</h2>
-            
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>User Type</th>
-                  <th>Action</th>
-                  <th>Time</th>
-                </tr>
-              </thead>
-              <tbody id="recenttrails">
-                <!-- Dynamic content will be inserted here -->
-              </tbody>
-            </table>
-            <a>
-              Row per page 1 - 50 of how many pages < for back > for next page
-            </a>
-          </div>
-          
+          <h2>Recent Trails</h2>
 
-    
+          <!-- Search and Filter -->
+          <input type="text" id="searchInput" placeholder="Search by name" />
+          <select id="userTypeFilter">
+            <option value="">All User Types</option>
+            <option value="admin">Admin</option>
+            <option value="client">Client</option>
+            <option value="applicant">Applicant</option>
+          </select>
+          
+          <button id="exportPdf">Export to PDF</button>
+          <button id="exportWord">Export to Word</button>
+          <button id="exportExcel">Export to Excel</button>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>User Type</th>
+                <th>Action</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="recenttrails">
+              <!-- Dynamic content will be inserted here -->
+            </tbody>
+          </table>
+          <a>
+            Row per page 1 - 50 of how many pages < for back > for next page
+          </a>
         </div>
       </main>
       <!--ri-->
+      <div id="previewModal" class="modal">
+        <div class="modal-content">
+          <span class="close" id="closeModal">&times;</span>
+          <h2>Export Preview</h2>
+          <table id="previewTable">
+            <thead>
+              <tr>
+                <th>Display Name</th>
+                <th>User Type</th>
+                <th>Action</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <button id="confirmExport">Confirm Export</button>
+        </div>
+      </div>
+      
+      <style>
+        .modal {
+          display: none; /* Hidden by default */
+          position: fixed;
+          z-index: 1; /* Sit on top */
+          left: 0;
+          top: 0;
+          width: 100%; /* Full width */
+          height: 100%; /* Full height */
+          overflow: auto; /* Enable scroll if needed */
+          background-color: rgb(0,0,0); /* Fallback color */
+          background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .modal-content {
+          background-color: #fefefe;
+          margin: 15% auto; /* 15% from the top and centered */
+          padding: 20px;
+          border: 1px solid #888;
+          width: 80%; /* Could be more or less, depending on screen size */
+        }
+      </style>
+      
      
       </div>
     </div>
