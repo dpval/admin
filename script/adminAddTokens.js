@@ -1,4 +1,4 @@
-import { db } from "../firebase.js";  // Import `db` from firebase.js
+import { db } from "../firebase.js"; // Import `db` from firebase.js
 import {
   collection,
   getDocs,
@@ -59,16 +59,21 @@ addButton.addEventListener("click", async () => {
         });
 
         // Add to history collection
-        const historyRef = collection(db, "admin_CashFunds", "V1eVx88jTZdaaHru6zRK", "history");
+        const historyRef = collection(
+          db,
+          "admin_CashFunds",
+          "V1eVx88jTZdaaHru6zRK",
+          "history"
+        );
         await addDoc(historyRef, {
           taukensAdded: addedTaukens,
-          addedBy: "admin",  // Since admin is static
+          addedBy: "admin", // Since admin is static
           timestamp: Timestamp.now(),
         });
 
         // Update UI to reflect new values
         totalApplicantsElement.textContent = updatedTaukens;
-        addInput.value = "";  // Clear input field after successful addition
+        addInput.value = ""; // Clear input field after successful addition
 
         // Refresh the history table
         fetchHistory();
@@ -93,7 +98,7 @@ async function fetchHistory() {
       orderBy("timestamp", "desc")
     );
     const historySnapshot = await getDocs(historyQuery);
-    recentApplicationsElement.innerHTML = "";  // Clear current history
+    recentApplicationsElement.innerHTML = ""; // Clear current history
 
     historySnapshot.forEach((doc) => {
       const historyData = doc.data();
