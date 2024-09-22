@@ -16,6 +16,18 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
+<!-- For PDF export -->
+<!-- Load jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Load jsPDF AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.11/jspdf.plugin.autotable.min.js"></script>
+
+
+
+<!-- For Excel export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+
   </head>
   <body>
     <div class="container">
@@ -127,18 +139,25 @@
             
             <!-- Filter buttons -->
             <div class="filters">
-              <button id="">Last 7 Days</button>
-              <button id="">Filter</button>
-
+              <button id="last7Days">Last 7 Days</button>
+              <button id="filter">Filter</button>
+          
               <!-- Replace button with input field for searching by client name -->
               <input
-                type="text"
-                id="clientSearch"
-                placeholder="Search by Client Name"
+                  type="text"
+                  id="clientSearch"
+                  placeholder="Search by Client Name"
               />
-
-              <button id="">Refresh</button>
-            </div>
+          
+              <button id="refresh">Refresh</button>
+          
+              <!-- Export Buttons -->
+              <button id="exportPdf">Export PDF</button>
+              <button id="exportExcel">Export Excel</button>
+              <button id="exportWord">Export Word</button>
+              
+          </div>
+          
             <h2>Last 7 days</h2>
             <table>
               <thead>
