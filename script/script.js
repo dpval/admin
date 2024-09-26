@@ -45,16 +45,27 @@ document.addEventListener("DOMContentLoaded", () => {
   // Function to format the date and time
   function updateDateTime() {
     const now = new Date();
-    
+
     // Options for date formatting
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    const dateOptions = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    const timeOptions = {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
 
     const date = now.toLocaleDateString(undefined, dateOptions);
     const time = now.toLocaleTimeString(undefined, timeOptions);
 
     // Update the label with formatted date and time
-    document.getElementById('dateLabel').textContent = `Today: ${date} Time is ${time}`;
+    document.getElementById(
+      "dateLabel"
+    ).textContent = `Today: ${date} Time is ${time}`;
   }
 
   // Update the date and time every second
@@ -62,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial call to display date and time immediately on page load
   updateDateTime();
-  
+
   // Modal functionality
   closeBtnModal.addEventListener("click", () => {
     modal.style.display = "none";
@@ -85,139 +96,190 @@ document.addEventListener("DOMContentLoaded", () => {
   // Real-time listener for total users count
   function listenToTotalUsers() {
     const usersCollection = collection(db, "users");
-    onSnapshot(usersCollection, (snapshot) => {
-      totalUsersElement.textContent = snapshot.size;
-    }, (error) => {
-      console.error("Error fetching total users: ", error);
-    });
+    onSnapshot(
+      usersCollection,
+      (snapshot) => {
+        totalUsersElement.textContent = snapshot.size;
+      },
+      (error) => {
+        console.error("Error fetching total users: ", error);
+      }
+    );
   }
 
   // Real-time listener for applicant count
   function listenToApplicantCount() {
-    const q = query(collection(db, "users"), where("usertype", "==", "applicant"));
-    onSnapshot(q, (snapshot) => {
-      totalApplicants.textContent = snapshot.size;
-    }, (error) => {
-      console.error("Error fetching applicant count: ", error);
-    });
+    const q = query(
+      collection(db, "users"),
+      where("usertype", "==", "applicant")
+    );
+    onSnapshot(
+      q,
+      (snapshot) => {
+        totalApplicants.textContent = snapshot.size;
+      },
+      (error) => {
+        console.error("Error fetching applicant count: ", error);
+      }
+    );
   }
 
   // Real-time listener for client count
   function listenToClientCount() {
     const q = query(collection(db, "users"), where("usertype", "==", "client"));
-    onSnapshot(q, (snapshot) => {
-      totalClients.textContent = snapshot.size;
-    }, (error) => {
-      console.error("Error fetching client count: ", error);
-    });
+    onSnapshot(
+      q,
+      (snapshot) => {
+        totalClients.textContent = snapshot.size;
+      },
+      (error) => {
+        console.error("Error fetching client count: ", error);
+      }
+    );
   }
 
   // Real-time listener for gig worker count
   function listenToGigWorkerCount() {
-    const q = query(collection(db, "users"), where("usertype", "==", "applicant")); // Adjust if different field
-    onSnapshot(q, (snapshot) => {
-      totalGigWorkers.textContent = snapshot.size;
-    }, (error) => {
-      console.error("Error fetching gig worker count: ", error);
-    });
+    const q = query(
+      collection(db, "users"),
+      where("usertype", "==", "applicant")
+    ); // Adjust if different field
+    onSnapshot(
+      q,
+      (snapshot) => {
+        totalGigWorkers.textContent = snapshot.size;
+      },
+      (error) => {
+        console.error("Error fetching gig worker count: ", error);
+      }
+    );
   }
 
   // Real-time listener for recent joins
   function listenToRecentJoins() {
-    const q = query(collection(db, "users"), orderBy("created_time", "desc"), limit(8));
-    onSnapshot(q, (snapshot) => {
-      recentJoinUpdates.innerHTML = "";
+    const q = query(
+      collection(db, "users"),
+      orderBy("created_time", "desc"),
+      limit(8)
+    );
+    onSnapshot(
+      q,
+      (snapshot) => {
+        recentJoinUpdates.innerHTML = "";
 
-      snapshot.forEach((doc) => {
-        const user = doc.data();
-        const { display_name, usertype, photo_url, created_time } = user;
+        snapshot.forEach((doc) => {
+          const user = doc.data();
+          const { display_name, usertype, photo_url, created_time } = user;
 
-        // Calculate time ago
-        const timeAgo = getTimeAgoString(created_time.toDate());
+          // Calculate time ago
+          const timeAgo = getTimeAgoString(created_time.toDate());
 
-        // Create update elements
-        const updateDiv = document.createElement("div");
-        updateDiv.classList.add("update");
+          // Create update elements
+          const updateDiv = document.createElement("div");
+          updateDiv.classList.add("update");
 
-        const profilePhotoDiv = document.createElement("div");
-        profilePhotoDiv.classList.add("profile-photo");
-        const profilePhotoImg = document.createElement("img");
-        profilePhotoImg.src = photo_url || "./images/default-profile-photo.jpg"; // Default photo if no URL
+          const profilePhotoDiv = document.createElement("div");
+          profilePhotoDiv.classList.add("profile-photo");
+          const profilePhotoImg = document.createElement("img");
+          profilePhotoImg.src =
+            photo_url || "./images/default-profile-photo.jpg"; // Default photo if no URL
 
-        const messageDiv = document.createElement("div");
-        messageDiv.classList.add("message");
-        const messageContent = `<p><b>${display_name}</b> joined as <b>${usertype}</b></p><small>${timeAgo}</small>`;
-        messageDiv.innerHTML = messageContent;
+          const messageDiv = document.createElement("div");
+          messageDiv.classList.add("message");
+          const messageContent = `<p><b>${display_name}</b> joined as <b>${usertype}</b></p><small>${timeAgo}</small>`;
+          messageDiv.innerHTML = messageContent;
 
-        // Append elements
-        profilePhotoDiv.appendChild(profilePhotoImg);
-        updateDiv.appendChild(profilePhotoDiv);
-        updateDiv.appendChild(messageDiv);
-        recentJoinUpdates.appendChild(updateDiv);
-      });
-    }, (error) => {
-      console.error("Error fetching recent joins: ", error);
-    });
+          // Append elements
+          profilePhotoDiv.appendChild(profilePhotoImg);
+          updateDiv.appendChild(profilePhotoDiv);
+          updateDiv.appendChild(messageDiv);
+          recentJoinUpdates.appendChild(updateDiv);
+        });
+      },
+      (error) => {
+        console.error("Error fetching recent joins: ", error);
+      }
+    );
   }
 
   // Real-time listener for recent applications
   function listenToRecentApplications() {
-    const q = query(collection(db, "users"), where("firsttimestatus", "==", "pending"), orderBy("created_time", "desc"));
-    onSnapshot(q, (snapshot) => {
-      recentApplications.innerHTML = "";
+    const q = query(
+      collection(db, "users"),
+      where("firsttimestatus", "==", "pending"),
+      orderBy("created_time", "desc")
+    );
+    onSnapshot(
+      q,
+      (snapshot) => {
+        recentApplications.innerHTML = "";
 
-      snapshot.forEach((doc) => {
-        const user = doc.data();
-        const { display_name, lastname, usertype, email, firsttimestatus } = user;
+        snapshot.forEach((doc) => {
+          const user = doc.data();
+          const { display_name, lastname, usertype, email, firsttimestatus } =
+            user;
 
-        // Create table row
-        const tr = document.createElement("tr");
+          // Create table row
+          const tr = document.createElement("tr");
 
-        // Create table cells
-        const nameTd = document.createElement("td");
-        nameTd.textContent = `${display_name} ${lastname}`;
+          // Create table cells
+          const nameTd = document.createElement("td");
+          nameTd.textContent = `${display_name} ${lastname}`;
 
-        const usertypeTd = document.createElement("td");
-        usertypeTd.textContent = usertype;
+          const usertypeTd = document.createElement("td");
+          usertypeTd.textContent = usertype;
 
-        const emailTd = document.createElement("td");
-        emailTd.textContent = email;
+          const emailTd = document.createElement("td");
+          emailTd.textContent = email;
 
-        const statusTd = document.createElement("td");
-        statusTd.classList.add("warning");
-        statusTd.textContent = firsttimestatus;
+          const statusTd = document.createElement("td");
+          statusTd.classList.add("warning");
+          statusTd.textContent = firsttimestatus;
 
-        const actionTd = document.createElement("td");
-        actionTd.classList.add("primary");
-        actionTd.textContent = "Details";
+          const actionTd = document.createElement("td");
+          actionTd.classList.add("primary");
+          actionTd.textContent = "Details";
 
-        // Append cells to row
-        tr.appendChild(nameTd);
-        tr.appendChild(usertypeTd);
-        tr.appendChild(emailTd);
-        tr.appendChild(statusTd);
-        tr.appendChild(actionTd);
+          // Append cells to row
+          tr.appendChild(nameTd);
+          tr.appendChild(usertypeTd);
+          tr.appendChild(emailTd);
+          tr.appendChild(statusTd);
+          tr.appendChild(actionTd);
 
-        // Append row to table body
-        recentApplications.appendChild(tr);
+          // Append row to table body
+          recentApplications.appendChild(tr);
 
-        // Add event listener for the "Details" button
-        actionTd.addEventListener("click", () => {
-          showModal(doc.id, user);
+          // Add event listener for the "Details" button
+          actionTd.addEventListener("click", () => {
+            showModal(doc.id, user);
+          });
         });
-      });
-    }, (error) => {
-      console.error("Error fetching recent applications: ", error);
-    });
+      },
+      (error) => {
+        console.error("Error fetching recent applications: ", error);
+      }
+    );
   }
 
   // Show modal with user details
   function showModal(userId, user) {
     currentUserId = userId;
     const {
-      display_name, lastname, usertype, email, phone_number, gender,
-      dateofbirth, baranggay, municipality, country, streetaddress, 
-      status, photo_url, baranggayClearance
+      display_name,
+      lastname,
+      usertype,
+      email,
+      phone_number,
+      gender,
+      dateofbirth,
+      baranggay,
+      municipality,
+      country,
+      streetaddress,
+      status,
+      photo_url,
+      baranggayClearance,
     } = user;
 
     modalDetails.innerHTML = `
@@ -229,8 +291,16 @@ document.addEventListener("DOMContentLoaded", () => {
       <p><b>Date of Birth:</b> ${dateofbirth.toDate().toLocaleDateString()}</p>
       <p><b>Address:</b> ${streetaddress}, ${baranggay}, ${municipality}, ${country}</p>
       <p><b>Status:</b> ${status}</p>
-      ${photo_url ? `<img src="${photo_url}" alt="Profile Photo" class="modal-photo">` : ''}
-      ${baranggayClearance ? `<img src="${baranggayClearance}" alt="Barangay Clearance" class="modal-photo">` : ''}
+      ${
+        photo_url
+          ? `<img src="${photo_url}" alt="Profile Photo" class="modal-photo">`
+          : ""
+      }
+      ${
+        baranggayClearance
+          ? `<img src="${baranggayClearance}" alt="Barangay Clearance" class="modal-photo">`
+          : ""
+      }
     `;
 
     modal.style.display = "block";
