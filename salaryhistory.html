@@ -36,7 +36,7 @@
             <span class="material-symbols-sharp">person_outline </span>
             <h3>Users</h3>
           </a>
-          <a href="post.html"">
+          <a href="post.html">
             <span class="material-symbols-sharp">insights</span>
             <h3>Post</h3>
           </a>
@@ -88,18 +88,18 @@
            <!-- Application dropdown -->
            <a href="application.html"onclick="toggleUserDropdown()">
             <span class="material-symbols-sharp">app_registration</span>
-            <h3>Application</h3>
+            <h3>Application</h3>    
           </a>
           <div id="userDropdown" class="dropdown-content">
-            <a href="applicationstatus.html"class="active"  >
+            <a href="applicationstatus.html"  >
               Application Status
               <span id="pendingCount" class="badge"></span>
             </a>
 
             <a href="salary.html">Salary</a>
-            <a href="salaryhistory.html" >Salary History</a>
-            <!-- <a href="archivePost.html" >Alerts </a> -->
-  
+           <a href="salaryhistory.html" class="active">Salary History</a>
+            <!-- <a href="archivePost.html" >Alerts </a>  -->
+           
           </div>
          
           
@@ -149,26 +149,26 @@
 
         <!-- All Users Section -->
         <div class="recent_order">
-          <h2>All Users Application</h2>
-          
-          <table>
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Client Name</th>
-                <th>Post Category</th>
-                <th>Status in Client</th>
-                <th>Status in Gig Worker</th>
-                <th>Track in Client</th>
-                <th>Track in Gig Worker</th>
-                <th>Gig Worker Name</th>
-              </tr>
-            </thead>
-            <tbody id="allUsers">
-              <!-- Dynamic content will be inserted here -->
-            </tbody>
-          </table>
+            <h2 id="adminTAUkensValue">Current Admin TAUkens:</h2>
+            <div id="adminTAUkens">
+            
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Type of Transaction</th>
+                    </tr>
+                </thead>
+                <tbody id="allUsers">
+                    <!-- Dynamic content will be inserted here -->
+                </tbody>
+            </table>
         </div>
+        
 
        
       </main>
@@ -176,6 +176,6 @@
 
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
-    <script type="module" src="script/applicationstatus.js"></script>
+    <script type="module" src="script/salaryhistory.js"></script>
   </body>
 </html>
