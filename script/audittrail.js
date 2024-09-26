@@ -7,6 +7,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 let auditDataArray = []; // Store audit data for pagination
+let currentPage = 0; // Track current page
+const rowsPerPage = 6; // Number of rows to display per page
 
 async function fetchAuditTrailData() {
   const auditTrailRef = collection(db, 'auditTrail');
@@ -60,90 +62,60 @@ function renderTable() {
   const searchInput = document.getElementById('searchInput').value.toLowerCase();
   const userTypeFilter = document.getElementById('userTypeFilter').value;
 
-  const filteredData = auditDataArray.filter(item => {
-    const matchesSearch = item.displayName.toLowerCase().includes(searchInput);
-    const matchesUserType = userTypeFilter === '' || item.userType === userTypeFilter;
-
-    // Only include specified user types
-    const allowedUserTypes = ['admin', 'client', 'applicant'];
-    const isAllowedUserType = allowedUserTypes.includes(item.userType);
-
-    return matchesSearch && matchesUserType && isAllowedUserType;
+  const filteredData = auditDataArray.filter(data => {
+    const matchesName = data.displayName.toLowerCase().includes(searchInput);
+    const matchesUserType = userTypeFilter === '' || data.userType === userTypeFilter;
+    return matchesName && matchesUserType;
   });
 
-  filteredData.forEach(({ displayName, userType, action, formattedTime }) => {
-    const newRow = `
-      <tr>
-        <td>${displayName}</td>
-        <td>${userType}</td>
-        <td>${action}</td>
-        <td>${formattedTime}</td>
-      </tr>
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  const start = currentPage * rowsPerPage;
+  const end = start + rowsPerPage;
+
+  filteredData.slice(start, end).forEach(data => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${data.displayName}</td>
+      <td>${data.userType}</td>
+      <td>${data.action}</td>
+      <td>${data.formattedTime}</td>
     `;
-    recentTrailsElement.innerHTML += newRow;
+    recentTrailsElement.appendChild(row);
   });
+
+  document.getElementById('prevPage').disabled = currentPage === 0;
+  document.getElementById('nextPage').disabled = currentPage >= totalPages - 1;
+
+  document.getElementById('pageInfo').textContent = `Page ${currentPage + 1} of ${totalPages}`;
 }
 
-// Event listeners for search and filter
-document.getElementById('searchInput').addEventListener('input', renderTable);
-document.getElementById('userTypeFilter').addEventListener('change', renderTable);
+// Function to handle search input changes
+document.getElementById('searchInput').addEventListener('input', () => {
+  currentPage = 0; // Reset to the first page on new search
+  renderTable();
+});
 
-// Export functions
-document.getElementById('exportPdf').addEventListener('click', () => exportData('pdf'));
-document.getElementById('exportWord').addEventListener('click', () => exportData('word'));
-document.getElementById('exportExcel').addEventListener('click', () => exportData('excel'));
+// Function to handle user type filter changes
+document.getElementById('userTypeFilter').addEventListener('change', () => {
+  currentPage = 0; // Reset to the first page on new filter
+  renderTable();
+});
 
-function exportData(format) {
-    const allowedUserTypes = ['admin', 'client', 'applicant']; // Define allowed user types
-  
-    // Filter the audit data based on allowed user types
-    const filteredData = auditDataArray.filter(item => {
-      return allowedUserTypes.includes(item.userType);
-    });
-  
-    // Populate the preview table
-    const previewTableBody = document.getElementById('previewTable').querySelector('tbody');
-    previewTableBody.innerHTML = ''; // Clear existing rows
-  
-    filteredData.forEach(({ displayName, userType, action, formattedTime }) => {
-      const newRow = `
-        <tr>
-          <td>${displayName}</td>
-          <td>${userType}</td>
-          <td>${action}</td>
-          <td>${formattedTime}</td>
-        </tr>
-      `;
-      previewTableBody.innerHTML += newRow;
-    });
-  
-    // Show the preview modal
-    const modal = document.getElementById('previewModal');
-    modal.style.display = 'block';
-  
-    // Handle confirm export
-    document.getElementById('confirmExport').onclick = () => {
-      // Call your actual export logic here based on the format
-      alert(`Exporting data to ${format}`);
-      modal.style.display = 'none'; // Close the modal after export
-    };
+// Function for pagination
+document.getElementById('prevPage').addEventListener('click', () => {
+  if (currentPage > 0) {
+    currentPage--;
+    renderTable();
   }
-  
+});
 
-// Close the modal when the user clicks the close button
-document.getElementById('closeModal').onclick = () => {
-  const modal = document.getElementById('previewModal');
-  modal.style.display = 'none';
-};
-
-// Close the modal if the user clicks anywhere outside of it
-window.onclick = (event) => {
-  const modal = document.getElementById('previewModal');
-  if (event.target === modal) {
-    modal.style.display = 'none';
+document.getElementById('nextPage').addEventListener('click', () => {
+  const totalPages = Math.ceil(auditDataArray.length / rowsPerPage);
+  if (currentPage < totalPages - 1) {
+    currentPage++;
+    renderTable();
   }
-};
+});
 
-
-// Call the function to load the data when the page loads
-window.onload = fetchAuditTrailData;
+// Call fetchAuditTrailData on page load
+fetchAuditTrailData();

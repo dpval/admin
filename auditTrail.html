@@ -31,7 +31,7 @@
         </div>
 
         <div class="sidebar">
-          <a href="homepage.html" >
+          <a href="homepage.html">
             <span class="material-symbols-sharp">grid_view</span>
             <h3>Dashboard</h3>
           </a>
@@ -43,7 +43,6 @@
             <span class="material-symbols-sharp">insights</span>
             <h3>Post</h3>
           </a>
-
           <a href="message.html">
             <span class="material-symbols-sharp">mail_outline</span>
             <h3>Messages</h3>
@@ -61,17 +60,16 @@
             <span class="material-symbols-sharp">report_gmailerrorred</span>
             <h3>Feedback Reports</h3>
           </a>
-
           <a href="categorymanagement.html">
             <span class="material-symbols-sharp">add</span>
             <h3>Add Categories</h3>
           </a>
           <a href="adminAddTokens.html">
-            <span class="material-symbols-sharp">monetization_on</span> <!-- New icon for currency -->
+            <span class="material-symbols-sharp">monetization_on</span>
             <h3>Add TAUkens</h3>
           </a>
           <a href="auditTrail.html">
-            <span class="material-symbols-sharp">history</span> <!-- New icon for audit trail -->
+            <span class="material-symbols-sharp">history</span>
             <h3>Audit Trail</h3>
           </a>
           <a href="#">
@@ -82,8 +80,6 @@
       </aside>
 
       <main>
-      
-
         <h1>Audit Trail</h1>
 
         <div class="recent_order">
@@ -97,7 +93,7 @@
             <option value="client">Client</option>
             <option value="applicant">Applicant</option>
           </select>
-          
+
           <button id="exportPdf">Export to PDF</button>
           <button id="exportWord">Export to Word</button>
           <button id="exportExcel">Export to Excel</button>
@@ -115,12 +111,20 @@
               <!-- Dynamic content will be inserted here -->
             </tbody>
           </table>
+
+          <div class="pagination">
+            <button id="prevPage" disabled>&lt; Previous</button>
+            <span id="pageInfo">Page 1</span>
+            <button id="nextPage">Next &gt;</button>
+          </div>
+
           <a>
             Row per page 1 - 50 of how many pages < for back > for next page
           </a>
         </div>
       </main>
-      <!--ri-->
+
+      <!-- Modal for Export Preview -->
       <div id="previewModal" class="modal">
         <div class="modal-content">
           <span class="close" id="closeModal">&times;</span>
@@ -139,7 +143,7 @@
           <button id="confirmExport">Confirm Export</button>
         </div>
       </div>
-      
+
       <style>
         .modal {
           display: none; /* Hidden by default */
@@ -150,9 +154,10 @@
           width: 100%; /* Full width */
           height: 100%; /* Full height */
           overflow: auto; /* Enable scroll if needed */
-          background-color: rgb(0,0,0); /* Fallback color */
-          background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+          background-color: rgb(0, 0, 0); /* Fallback color */
+          background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
         }
+
         .modal-content {
           background-color: #fefefe;
           margin: 15% auto; /* 15% from the top and centered */
@@ -160,10 +165,21 @@
           border: 1px solid #888;
           width: 80%; /* Could be more or less, depending on screen size */
         }
+
+        .pagination {
+          margin-top: 20px;
+        }
+
+        #prevPage,
+        #nextPage {
+          padding: 10px 15px;
+          cursor: pointer;
+        }
+
+        #pageInfo {
+          margin: 0 10px;
+        }
       </style>
-      
-     
-      </div>
     </div>
 
     <!-- Include your JavaScript files -->
