@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Function to fetch and display wallet notifications with filter
   async function fetchWalletNotifications() {
       const notificationsRef = collection(db, "admin_WalletNotification");
-      const filteredQuery = query(notificationsRef, where("typeofTransaction", "==", "Pay for Post Task"));
+      const filteredQuery = query(notificationsRef, where("typeofTransaction", "==", "Salary Pay for PostTask"));
       const snapshot = await getDocs(filteredQuery);
       
       // Clear any existing rows

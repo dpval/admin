@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Real-time listener for recent joins
   function listenToRecentJoins() {
-    const q = query(collection(db, "users"), orderBy("created_time", "desc"), limit(3));
+    const q = query(collection(db, "users"), orderBy("created_time", "desc"), limit(8));
     onSnapshot(q, (snapshot) => {
       recentJoinUpdates.innerHTML = "";
 

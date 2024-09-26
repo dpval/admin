@@ -189,70 +189,78 @@ export async function fetchClientPosts() {
   });
 
   // Disapprove the post
-  disapproveBtn?.addEventListener("click", async () => {
-    console.log("Disapprove button clicked");
-    console.log("currentPostId:", currentPostId);
-    console.log("currentUserId:", currentUserId);
+// Disapprove the post
+disapproveBtn?.addEventListener("click", async () => {
+  console.log("Disapprove button clicked");
+  console.log("currentPostId:", currentPostId);
+  console.log("currentUserId:", currentUserId);
 
-    try {
-      // Step 1: Change the post status to "Disapproved"
-      const postRef = doc(db, `users/${currentUserId}/postTask`, currentPostId);
-      await updateDoc(postRef, { status: "Disapproved" });
+  try {
+    // Step 1: Change the post status to "Disapproved"
+    const postRef = doc(db, `users/${currentUserId}/postTask`, currentPostId);
+    await updateDoc(postRef, { status: "Disapproved" });
 
-      // Step 2: Send email to the post creator
-      const userEmail = await getUserEmail(currentUserId); // Get user's email
-      sendEmail(userEmail, "Post Disapproved", "Your post has been disapproved.");
-
-      // Step 3: Get the post data to access the salary
-      const postDoc = await getDoc(postRef);
-      if (!postDoc.exists()) {
-        throw new Error("Post document does not exist.");
-      }
-
-      const postData = postDoc.data();
-      const salaryToRefund = postData.salary;
-
-      // Step 4: Get the user's wallet using walletref and refund the salary
-      const userRef = doc(db, `users/${currentUserId}`);
-      const userDoc = await getDoc(userRef);
-      if (!userDoc.exists()) {
-        throw new Error("User document does not exist.");
-      }
-
-      const walletRef = userDoc.data().walletref; // Assume userDoc has walletref
-      if (!walletRef) {
-        throw new Error("User does not have a wallet reference.");
-      }
-
-      // Fetch the user's wallet data
-      await runTransaction(db, async (transaction) => {
-        const walletDoc = await transaction.get(walletRef);
-        if (!walletDoc.exists()) {
-          throw new Error("Wallet document does not exist.");
-        }
-
-        const walletData = walletDoc.data();
-        const currentBalance = walletData.balance;
-
-        // Step 5: Refund the salary to the user's wallet
-        const newBalance = currentBalance + salaryToRefund;
-        transaction.update(walletRef, { balance: newBalance });
-
-        // Step 6: Add a wallet notification
-        const walletNotificationRef = collection(db, "walletNotification");
-        await addDoc(walletNotificationRef, {
-          balance: salaryToRefund,
-          description: "Salary refund from disapproved post",
-          userID: currentUserId,
-          createdtime: serverTimestamp(),
-        });
-      });
-
-      showSuccessMessage("Post disapproved, and salary refunded successfully!");
-    } catch (error) {
-      console.error("Error disapproving post:", error);
+    // Step 2: Get the post data to access the salary and urgency
+    const postDoc = await getDoc(postRef);
+    if (!postDoc.exists()) {
+      throw new Error("Post document does not exist.");
     }
-  });
+
+    const postData = postDoc.data();
+    let salaryToRefund = postData.salary;
+
+    // Step 3: Check if the post's urgency is "Yes"
+    if (postData.urgent === "Yes") {
+      salaryToRefund -= 100; // Deduct 100 TAUkens if urgent
+      console.log(`Urgent post detected. Deducting 100 TAUkens. New refund amount: ${salaryToRefund}`);
+    }
+
+    // Step 4: Send email to the post creator
+    const userEmail = await getUserEmail(currentUserId); // Get user's email
+    sendEmail(userEmail, "Post Disapproved", "Your post has been disapproved.");
+
+    // Step 5: Get the user's wallet using walletref and refund the salary
+    const userRef = doc(db, `users/${currentUserId}`);
+    const userDoc = await getDoc(userRef);
+    if (!userDoc.exists()) {
+      throw new Error("User document does not exist.");
+    }
+
+    const walletRef = userDoc.data().walletref; // Assume userDoc has walletref
+    if (!walletRef) {
+      throw new Error("User does not have a wallet reference.");
+    }
+
+    // Fetch the user's wallet data
+    await runTransaction(db, async (transaction) => {
+      const walletDoc = await transaction.get(walletRef);
+      if (!walletDoc.exists()) {
+        throw new Error("Wallet document does not exist.");
+      }
+
+      const walletData = walletDoc.data();
+      const currentBalance = walletData.balance;
+
+      // Step 6: Refund the salary to the user's wallet
+      const newBalance = currentBalance + salaryToRefund;
+      transaction.update(walletRef, { balance: newBalance });
+
+      // Step 7: Add a wallet notification
+      const walletNotificationRef = collection(db, "walletNotification");
+      await addDoc(walletNotificationRef, {
+        balance: salaryToRefund,
+        description: "Salary refund from disapproved post",
+        userID: currentUserId,
+        createdtime: serverTimestamp(),
+      });
+    });
+
+    showSuccessMessage("Post disapproved, and salary refunded successfully!");
+  } catch (error) {
+    console.error("Error disapproving post:", error);
+  }
+});
+
 
   // Close modal event
   closeModal.addEventListener("click", () => {
