@@ -1,219 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UI/UX</title>
-
-    <!-- Google Fonts -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"
-    />
-    <link rel="stylesheet" href="css/index.css" />
-    <link rel="stylesheet" href="css/adminrightsidebar.css" />
-    <link rel="stylesheet" href="css/rightsidebar.css" />
-
-    <!-- Include Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Are Us</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a81368914c.js"></script>
+</head>
+<body>
     <div class="container">
-      <aside>
-        <div class="top">
-          <div class="logo">
-            <h2><span class="danger">Trade Are Us</span></h2>
-          </div>
-          <div class="close" id="close_btn">
-            <span class="material-symbols-sharp"></span>
-          </div>
+        <div class="img">
+            <img src="images/undraw_access_account_re_8spm.svg" alt="Access Account">
         </div>
+        <div class="login-content">
+            <form id="loginForm">
+                <img src="images/logo.png" alt="Logo">
+                <h2 class="title">Welcome</h2>
+                
+                <!-- Email Input -->
+                <div class="input-div one">
+                    <div class="i">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="div">
+                        <h5>Email</h5>
+                        <input type="email" id="email" class="input" required>
+                    </div>
+                </div>
 
-        <div class="sidebar">
-          <a href="index.html" class="active">
-            <span class="material-symbols-sharp">grid_view</span>
-            <h3>Dashboard</h3>
-          </a>
-          <a href="user.html">
-            <span class="material-symbols-sharp">person_outline</span>
-            <h3>Users</h3>
-          </a>
-          <a href="post.html">
-            <span class="material-symbols-sharp">insights</span>
-            <h3>Post</h3>
-          </a>
+                <!-- Password Input -->
+                <div class="input-div pass">
+                    <div class="i">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="div">
+                        <h5>Password</h5>
+                        <input type="password" id="password" class="input" required>
+                    </div>
+                </div>
 
-          <a href="message.html">
-            <span class="material-symbols-sharp">mail_outline</span>
-            <h3>Messages</h3>
-            <span class="msg_count">0</span>
-          </a>
-          <a href="payment.html">
-            <span class="material-symbols-sharp">receipt_long</span>
-            <h3>Payments</h3>
-          </a>
-          <a href="application.html">
-            <span class="material-symbols-sharp">app_registration</span>
-            <h3>Application</h3>
-          </a>
-          <a href="report.html">
-            <span class="material-symbols-sharp">report_gmailerrorred</span>
-            <h3>Feedback Reports</h3>
-          </a>
+                <!-- Error Message Display -->
+                <p id="errorMessage" style="color: red; display: none;"></p>
 
-          <a href="categorymanagement.html">
-            <span class="material-symbols-sharp">add</span>
-            <h3>Add Categories</h3>
-          </a>
-          <a href="adminAddTokens.html">
-            <span class="material-symbols-sharp">monetization_on</span> <!-- New icon for currency -->
-            <h3>Add TAUkens</h3>
-          </a>
-          <a href="auditTrail.html">
-            <span class="material-symbols-sharp">history</span> <!-- New icon for audit trail -->
-            <h3>Audit Trail</h3>
-          </a>
-          
-          <a href="#">
-            <span class="material-symbols-sharp">logout</span>
-            <h3>Logout</h3>
-          </a>
+                <!-- Login Button -->
+                <input type="submit" class="btn" value="Login">
+            </form>
         </div>
-      </aside>
-
-      <main>
-        <div class="date-container">
-          <label id="dateLabel"></label>
-        </div>
-
-        <h1>Dashboard</h1>
-
-        <!-- Existing content -->
-        <div class="insights">
-          <div class="sales">
-            <span class="material-symbols-sharp">group</span>
-            <div class="middle">
-              <div class="left">
-                <h3>Total Gig Workers</h3>
-                <h1 id="totalApplicants">0</h1>
-              </div>
-            </div>
-          </div>
-
-          <div class="expenses">
-            <span class="material-symbols-sharp">person</span>
-            <div class="middle">
-              <div class="left">
-                <h3>Total Clients</h3>
-                <h1 id="totalClients">0</h1>
-              </div>
-            </div>
-          </div>
-
-          <div class="income">
-            <span class="material-symbols-sharp">groups</span>
-            <div class="middle">
-              <div class="left">
-                <h3>Total Users</h3>
-                <h1 id="totalUsers">0</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="ranking-container">
-          <div class="line-graph-container">
-            <h2>Cash - Trade - Token</h2>
-            <canvas id="TopUp"></canvas>
-          </div>
-
-          <div class="line-graph-container">
-            <h2>Remaining Cash - Remaining Token</h2>
-            <canvas id="CashOut"></canvas>
-          </div>
-        </div>
-
-        <h1>Ranking</h1>
-        <div class="ranking-wrapper">
-          <div class="ranking-container">
-            <div class="ranking-chart-container">
-              <h2>Top Tasks</h2>
-              <canvas id="topTasksChart"></canvas>
-            </div>
-
-            <div class="ranking-chart-container">
-              <h2>Top Clients</h2>
-              <canvas id="topClientsChart"></canvas>
-            </div>
-
-            <div class="ranking-chart-container">
-              <h2>Top Gig Workers</h2>
-              <canvas id="topGigWorkersChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <div class="recent_order">
-          <h2>Recent Applications</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>User Type</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="recentApplications">
-              <!-- Dynamic content will be inserted here -->
-            </tbody>
-          </table>
-          <a href="#">Show All</a>
-        </div>
-
-        <div id="myModal" class="modal">
-          <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Application Details</h2>
-            <div id="modalDetails">
-              <!-- User details will be inserted here -->
-            </div>
-          </div>
-        </div>
-      </main>
-      <!--ri-->
-      <div class="right">
-        <div class="top">
-          <button id="menu_bar">
-            <span class="material-symbols-sharp">menu</span>
-          </button>
-
-          <div class="theme-toggler"></div>
-
-          <div class="profile">
-            <div class="info">
-              <p><b>Trade</b></p>
-              <p>Admin</p>
-              <small class="text-muted"></small>
-            </div>
-            <div class="profile-photo">
-              <img src="./images/profile-1.jpg" alt="Profile Photo" />
-            </div>
-          </div>
-        </div>
-
-        <div class="recent_updates">
-          <h2>Recently Joined</h2>
-          <div class="updates" id="recentJoinUpdates"></div>
-        </div>
-      </div>
     </div>
-
-    <!-- Include your JavaScript files -->
-    <script type="module" src="firebase.js"></script>
-    <script type="module" src="script/script.js"></script>
-    <script type="module" src="script/chart.js"></script>
-  </body>
+    <script type="module" src="login.js"></script>
+</body>
 </html>
+
+
+<style>*{
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+
+body{
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+}
+
+.wave{
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	height: 100%;
+	z-index: -1;
+}
+
+.container{
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap :7rem;
+    padding: 0 2rem;
+}
+
+.img{
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.login-content{
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	text-align: center;
+}
+
+.img img{
+	width: 500px;
+}
+
+form{
+	width: 360px;
+}
+
+.login-content img{
+    height: 100px;
+}
+
+.login-content h2{
+	margin: 15px 0;
+	color: #333;
+	text-transform: uppercase;
+	font-size: 2.9rem;
+}
+
+.login-content .input-div{
+	position: relative;
+    display: grid;
+    grid-template-columns: 7% 93%;
+    margin: 25px 0;
+    padding: 5px 0;
+    border-bottom: 2px solid #d9d9d9;
+}
+
+.login-content .input-div.one{
+	margin-top: 0;
+}
+
+.i{
+	color: #d9d9d9;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.input-div .div h5 {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 18px;
+    transition: .3s;
+}
+
+.input:focus + h5, .input:not(:placeholder-shown) + h5 {
+    top: 5px;
+    font-size: 14px;
+    color: #5d9cec;
+}
+
+.i i{
+	transition: .3s;
+}
+
+.input-div > div{
+    position: relative;
+	height: 45px;
+}
+
+.input-div > div > h5{
+	position: absolute;
+	left: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: #999;
+	font-size: 18px;
+	transition: .3s;
+}
+
+.input-div:before, .input-div:after{
+	content: '';
+	position: absolute;
+	bottom: -2px;
+	width: 0%;
+	height: 2px;
+	background-color: #158CA4;
+	transition: .4s;
+}
+
+.input-div:before{
+	right: 50%;
+}
+
+.input-div:after{
+	left: 50%;
+}
+
+.input-div.focus:before, .input-div.focus:after{
+	width: 50%;
+}
+
+.input-div.focus > div > h5{
+	top: -5px;
+	font-size: 15px;
+}
+
+.input-div.focus > .i > i{
+	color: #158CA4;
+}
+
+.input-div > div > input{
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	border: none;
+	outline: none;
+	background: none;
+	padding: 0.5rem 0.7rem;
+	font-size: 1.2rem;
+	color: #555;
+	font-family: 'poppins', sans-serif;
+}
+
+.input-div.pass{
+	margin-bottom: 4px;
+}
+
+a{
+	display: block;
+	text-align: right;
+	text-decoration: none;
+	color: #999;
+	font-size: 0.9rem;
+	transition: .3s;
+}
+
+a:hover{
+	color: #158CA4;
+}
+
+.btn{
+	display: block;
+	width: 100%;
+	height: 50px;
+	border-radius: 25px;
+	outline: none;
+	border: none;
+	background-image: linear-gradient(to right, #158CA4, #158CA4, #158CA4);
+	background-size: 200%;
+	font-size: 1.2rem;
+	color: #fff;
+	font-family: 'Poppins', sans-serif;
+	text-transform: uppercase;
+	margin: 1rem 0;
+	cursor: pointer;
+	transition: .5s;
+}
+.btn:hover{
+	background-position: right;
+}
+
+
+@media screen and (max-width: 1050px){
+	.container{
+		grid-gap: 5rem;
+	}
+}
+
+@media screen and (max-width: 1000px){
+	form{
+		width: 290px;
+	}
+
+	.login-content h2{
+        font-size: 2.4rem;
+        margin: 8px 0;
+	}
+
+	.img img{
+		width: 400px;
+	}
+}
+
+@media screen and (max-width: 900px){
+	.container{
+		grid-template-columns: 1fr;
+	}
+
+	.img{
+		display: none;
+	}
+
+	.wave{
+		display: none;
+	}
+
+	.login-content{
+		justify-content: center;
+	}
+}</style>
+
+<script>const inputs = document.querySelectorAll(".input");
+
+  function addcl() {
+    let parent = this.parentNode.parentNode;
+    parent.classList.add("focus");
+  }
+  
+  function remcl() {
+    let parent = this.parentNode.parentNode;
+    if (this.value == "") {
+      parent.classList.remove("focus");
+    }
+  }
+  
+  inputs.forEach(input => {
+    input.addEventListener("focus", addcl);
+    input.addEventListener("blur", remcl);
+  });
+  
+    </script>

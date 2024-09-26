@@ -31,7 +31,7 @@
         </div>
 
         <div class="sidebar">
-          <a href="homepage.html" >
+          <a href="honmepage.html" class="active">
             <span class="material-symbols-sharp">grid_view</span>
             <h3>Dashboard</h3>
           </a>
@@ -74,6 +74,7 @@
             <span class="material-symbols-sharp">history</span> <!-- New icon for audit trail -->
             <h3>Audit Trail</h3>
           </a>
+          
           <a href="#">
             <span class="material-symbols-sharp">logout</span>
             <h3>Logout</h3>
@@ -86,7 +87,7 @@
           <label id="dateLabel"></label>
         </div>
 
-        <h1>Current TAUkens</h1>
+        <h1>Dashboard</h1>
 
         <!-- Existing content -->
         <div class="insights">
@@ -94,14 +95,13 @@
             <span class="material-symbols-sharp">group</span>
             <div class="middle">
               <div class="left">
-                <h3>Total TAUkens</h3>
+                <h3>Total Gig Workers</h3>
                 <h1 id="totalApplicants">0</h1>
               </div>
             </div>
           </div>
-       
 
-          <!-- <div class="expenses">
+          <div class="expenses">
             <span class="material-symbols-sharp">person</span>
             <div class="middle">
               <div class="left">
@@ -109,38 +109,68 @@
                 <h1 id="totalClients">0</h1>
               </div>
             </div>
-          </div> -->
+          </div>
 
-          <!-- <div class="income">
+          <div class="income">
             <span class="material-symbols-sharp">groups</span>
-                <div class="middle">
-                <div class="left">
-                    <h3>Total Users</h3>
-                    <h1 id="totalUsers">0</h1>
-                </div>
+            <div class="middle">
+              <div class="left">
+                <h3>Total Users</h3>
+                <h1 id="totalUsers">0</h1>
+              </div>
             </div>
-          </div> -->
+          </div>
         </div>
 
-        <input type="text" id="addInput" placeholder="Add TAUkens">
-        <button>Add</button>
+        <div class="ranking-container">
+          <div class="line-graph-container">
+            <h2>Cash - Trade - Token</h2>
+            <canvas id="TopUp"></canvas>
+          </div>
+
+          <div class="line-graph-container">
+            <h2>Remaining Cash - Remaining Token</h2>
+            <canvas id="CashOut"></canvas>
+          </div>
+        </div>
+
+        <h1>Ranking</h1>
+        <div class="ranking-wrapper">
+          <div class="ranking-container">
+            <div class="ranking-chart-container">
+              <h2>Top Tasks</h2>
+              <canvas id="topTasksChart"></canvas>
+            </div>
+
+            <div class="ranking-chart-container">
+              <h2>Top Clients</h2>
+              <canvas id="topClientsChart"></canvas>
+            </div>
+
+            <div class="ranking-chart-container">
+              <h2>Top Gig Workers</h2>
+              <canvas id="topGigWorkersChart"></canvas>
+            </div>
+          </div>
+        </div>
 
         <div class="recent_order">
-          <h2>History</h2>
+          <h2>Recent Applications</h2>
           <table>
             <thead>
               <tr>
-                <th>Current Time</th>
-                <th>Taukens Added</th>
-                <th>Person</th>
-               
+                <th>Name</th>
+                <th>User Type</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="recentApplications">
               <!-- Dynamic content will be inserted here -->
             </tbody>
           </table>
-        
+          <a href="#">Show All</a>
         </div>
 
         <div id="myModal" class="modal">
@@ -176,13 +206,14 @@
 
         <div class="recent_updates">
           <h2>Recently Joined</h2>
-          <div class="updates" id="recentupdate"></div>
+          <div class="updates" id="recentJoinUpdates"></div>
         </div>
       </div>
     </div>
 
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
-    <script type="module" src="script/adminAddTokens.js"></script>
+    <script type="module" src="script/script.js"></script>
+    <script type="module" src="script/chart.js"></script>
   </body>
 </html>
