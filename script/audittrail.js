@@ -42,7 +42,7 @@ async function fetchAuditTrailData() {
       };
       const formattedTime = time.toLocaleString('en-US', options).replace(',', ' at');
 
-      return { displayName, userType, action, formattedTime };
+      return { displayName, userType, action, formattedTime, transactionDate: time }; // Include raw date for filtering
     } else {
       console.error('User document does not exist for user reference:', userRef.path);
       return null;
@@ -61,11 +61,20 @@ function renderTable() {
 
   const searchInput = document.getElementById('searchInput').value.toLowerCase();
   const userTypeFilter = document.getElementById('userTypeFilter').value;
+  const dateFrom = document.getElementById('dateFrom').value ? new Date(document.getElementById('dateFrom').value) : null;
+  const dateTo = document.getElementById('dateTo').value ? new Date(document.getElementById('dateTo').value) : null;
 
   const filteredData = auditDataArray.filter(data => {
     const matchesName = data.displayName.toLowerCase().includes(searchInput);
     const matchesUserType = userTypeFilter === '' || data.userType === userTypeFilter;
-    return matchesName && matchesUserType;
+
+    // Check date range conditions using the transactionDate
+    const transactionDate = new Date(data.transactionDate); // Use the raw date stored in the data
+
+    if (dateFrom && transactionDate < dateFrom) return false; // Transaction date is before fromDate
+    if (dateTo && transactionDate > dateTo) return false; // Transaction date is after toDate
+
+    return matchesName && matchesUserType; // Return true if all conditions match
   });
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -89,15 +98,25 @@ function renderTable() {
   document.getElementById('pageInfo').textContent = `Page ${currentPage + 1} of ${totalPages}`;
 }
 
-// Function to handle search input changes
+// Event listeners for input changes
 document.getElementById('searchInput').addEventListener('input', () => {
   currentPage = 0; // Reset to the first page on new search
   renderTable();
 });
 
-// Function to handle user type filter changes
 document.getElementById('userTypeFilter').addEventListener('change', () => {
   currentPage = 0; // Reset to the first page on new filter
+  renderTable();
+});
+
+// Function for date filtering
+document.getElementById('dateFrom').addEventListener('change', () => {
+  currentPage = 0; // Reset to the first page on new date filter
+  renderTable();
+});
+
+document.getElementById('dateTo').addEventListener('change', () => {
+  currentPage = 0; // Reset to the first page on new date filter
   renderTable();
 });
 

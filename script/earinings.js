@@ -12,25 +12,49 @@ import {
 document.addEventListener("DOMContentLoaded", async () => {
   const allUsersTable = document.getElementById("allUsers");
   const totalEarningsHeader = document.querySelector("h2#totalEarnings");
+  const earningsDayHeader = document.getElementById("earningsDay");
+  const noEarningsParagraph = document.getElementById("noEarnings");
 
-  let totalEarnings = 0; // Variable to track total earnings
+  let totalEarnings = 0;
 
-  // Fetch earnings history and populate the table
+  // Get the current date
+  const today = new Date();
+  const todayStart = new Date(today.setHours(0, 0, 0, 0)); // Start of the day
+  const todayEnd = new Date(today.setHours(23, 59, 59, 999)); // End of the day
+
+  // Format the current date to display
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  earningsDayHeader.textContent = `Earnings for this Day: ${new Date().toLocaleDateString(
+    undefined,
+    options
+  )}`;
+
+  // Fetch earnings history and populate the table for the current day
   async function fetchEarningsHistory() {
     try {
       const walletTopUpQuery = query(
         collection(db, "walletTopUp"),
-        where("status", "==", "approved"), // Filter by approved status
-        orderBy("amount", "desc") // Order by amount in descending order
+        where("status", "==", "approved"),
+        where("currentTime", ">=", todayStart),
+        where("currentTime", "<=", todayEnd),
+        orderBy("currentTime", "desc")
       );
       const walletTopUpSnapshot = await getDocs(walletTopUpQuery);
 
       allUsersTable.innerHTML = ""; // Clear the table before adding rows
 
-      // Loop through each approved transaction in walletTopUp
+      if (walletTopUpSnapshot.docs.length === 0) {
+        noEarningsParagraph.style.display = "block";
+        totalEarningsHeader.textContent = "Total Earnings for Today: 0.00";
+        return;
+      }
+
+      noEarningsParagraph.style.display = "none"; // Hide 'no earnings' if there are results
+
+      // Loop through each approved transaction
       for (const docSnap of walletTopUpSnapshot.docs) {
         const transactionData = docSnap.data();
-        const userRef = transactionData.userID;
+        const userRef = doc(db, "users", transactionData.userID);
         const { amount, method, typeoftransaction } = transactionData;
 
         // Calculate the 5% earnings deduction
@@ -66,9 +90,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         methodTd.textContent = method;
         tr.appendChild(methodTd);
 
-        // Earnings (5% of amount)
+        // Earnings
         const earningsTd = document.createElement("td");
-        earningsTd.textContent = earnings.toFixed(2); // Display earnings with 2 decimal places
+        earningsTd.textContent = earnings.toFixed(2); // Display with 2 decimal places
         tr.appendChild(earningsTd);
 
         // Transaction Type
@@ -79,8 +103,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         allUsersTable.appendChild(tr);
       }
 
-      // Display the total earnings
-      totalEarningsHeader.textContent = `Total Earnings: ${totalEarnings.toFixed(2)}`;
+      // Display the total earnings for today
+      totalEarningsHeader.textContent = `Total Earnings for Today: ${totalEarnings.toFixed(
+        2
+      )}`;
     } catch (error) {
       console.error("Error fetching earnings history:", error);
     }
@@ -89,3 +115,4 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Initial load of earnings history
   fetchEarningsHistory();
 });
+

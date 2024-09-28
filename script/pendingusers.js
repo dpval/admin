@@ -18,7 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchInput");
   const searchBtn = document.getElementById("searchBtn");
   const clientBtn = document.querySelector('button[data-filter="client"]');
-  const applicantBtn = document.querySelector('button[data-filter="applicant"]');
+  const applicantBtn = document.querySelector(
+    'button[data-filter="applicant"]'
+  );
   const themeToggler = document.querySelector(".theme-toggler");
 
   // Initialize selectedUserType
@@ -28,8 +30,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (themeToggler) {
     themeToggler.addEventListener("click", () => {
       document.body.classList.toggle("dark-theme-variables");
-      themeToggler.querySelector("span:nth-child(1)").classList.toggle("active");
-      themeToggler.querySelector("span:nth-child(2)").classList.toggle("active");
+      themeToggler
+        .querySelector("span:nth-child(1)")
+        .classList.toggle("active");
+      themeToggler
+        .querySelector("span:nth-child(2)")
+        .classList.toggle("active");
     });
   }
 
@@ -55,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
         userQuery = query(
           collection(db, "users"),
           where("usertype", "==", userType),
-          where("firsttimestatus", "==", "pending"),  // Ensure filtering for pending
+          where("firsttimestatus", "==", "pending"), // Ensure filtering for pending
           orderBy("created_time", "desc")
         );
       }
@@ -180,15 +186,15 @@ document.addEventListener("DOMContentLoaded", () => {
             <button id="blockedBtn">Blocked</button>
           </div>
         `;
-    
+
         const holdBtn = document.getElementById("holdBtn");
         const blockedBtn = document.getElementById("blockedBtn");
-    
+
         holdBtn.addEventListener("click", async () => {
           await updateUserStatus(userId, "hold");
           modal.style.display = "none"; // Automatically hide modal
         });
-    
+
         blockedBtn.addEventListener("click", async () => {
           await updateUserStatus(userId, "blocked");
           modal.style.display = "none"; // Automatically hide modal
@@ -218,26 +224,36 @@ document.addEventListener("DOMContentLoaded", () => {
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, { firsttimestatus: newStatus });
 
-      // Fetch user details for sending email
+      // Fetch user details for sending notifications
       const userDoc = await getDoc(userRef);
       const userData = userDoc.data();
       const userEmail = userData.email;
+      const userPhone = userData.phone_number;
 
-      // Send email notification based on the new status
+      // Prepare notification content
       let subject = "";
       let message = "";
+      let smsMessage = "";
 
       if (newStatus === "approved") {
         subject = "Your application has been approved!";
         message = `<p>Dear ${userData.display_name},</p>
-                       <p>Your application has been approved. You can now proceed to the next steps.</p>`;
+                   <p>Your application has been approved. You can now proceed to the next steps.</p>`;
+        smsMessage = `Hello ${userData.display_name}, your application has been approved.`;
       } else if (newStatus === "disapproved") {
         subject = "Your application has been disapproved.";
         message = `<p>Dear ${userData.display_name},</p>
-                       <p>We regret to inform you that your application has been disapproved. Please contact support for further information.</p>`;
+                   <p>We regret to inform you that your application has been disapproved. Please contact support for further information.</p>`;
+        smsMessage = `Hello ${userData.display_name}, your application has been disapproved.`;
       }
 
-      // Make a POST request to send an email notification
+      // Log email content
+      console.log("Sending email with the following content:");
+      console.log(`To: ${userEmail}`);
+      console.log(`Subject: ${subject}`);
+      console.log(`Message: ${message}`);
+
+      // Send email notification
       await fetch("http://localhost:3000/send-email", {
         method: "POST",
         headers: {
@@ -249,6 +265,31 @@ document.addEventListener("DOMContentLoaded", () => {
           html: message,
         }),
       });
+
+      console.log("Email sent successfully!");
+
+      // Send SMS notification (if phone number is available)
+      if (userPhone) {
+        // Log SMS content
+        console.log("Sending SMS with the following content:");
+        console.log(`To: ${userPhone}`);
+        console.log(`Message: ${smsMessage}`);
+
+        await fetch("http://localhost:3000/send-sms", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            to: userPhone,
+            message: smsMessage,
+          }),
+        });
+
+        console.log("SMS sent successfully!");
+      } else {
+        console.log("No phone number available for this user.");
+      }
 
       console.log(`User status updated to: ${newStatus}`);
     } catch (error) {

@@ -12,16 +12,14 @@
     <link rel="stylesheet" href="css/payment.css" />
     <link rel="stylesheet" href="css/rightsidebar.css" />
     <link rel="stylesheet" href="css/adminrightsidebar.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
-    <!-- For PDF Export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<!-- For Excel Export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
   </head>
   <body>
     <div class="container">
@@ -54,22 +52,26 @@
           </a>
 
           <!-- Payments dropdown -->
-          <a href="payment.html" onclick="togglePaymentDropdown()">
+          <a
+            href="payment.html"
+           
+            onclick="togglePaymentDropdown()"
+          >
             <span class="material-symbols-sharp">receipt_long</span>
             <h3>Payments</h3>
           </a>
           <div id="paymentDropdown" class="dropdown-content">
-            <a href="topup.html" >Top Up</a>
-            <a href="cashout.html"class="active">Cash Out</a>
+            <a href="topup.html">Top Up</a>
+            <a href="cashout.html">Cash Out</a>
             <!-- <a href="paymentalerts.html">Alerts</a> -->
             <a href="payment-history.html">Payment History</a>
-            <a href="earnings.html">Earnings</a>
-            <a href="sumarryofearnings.html">Summary of Earnings</a>
+            <a href="earnings.html" >Earnings</a>
+            <a href="sumarryofearnings.html" class="active">Summary of Earnings</a>
           </div>
           <a href="application.html">
             <span class="material-symbols-sharp">app_registration</span>
             <h3>Application</h3>
-        </a>
+          </a>
           <a href="report.html">
             <span class="material-symbols-sharp">report_gmailerrorred</span>
             <h3>Feedback Reports</h3>
@@ -126,47 +128,55 @@
           }
         };
       </script>
+    
       <main>
-        <h1>Payment Transaction</h1>
-        <div class="insights">
-        <!-- All Users Section -->
-        <div class="recent_order">
-          <h2>Wallet Cash Out List</h2>
+        <h1>Summary of Earnings</h1>
+        <div class="filter-container">
+          <label for="searchInput">Search by Name or Email:</label>
+          <input type="text" id="searchInput" placeholder="Enter name or email">
           
-          <!-- Filter buttons -->
-          <div class="filters">
-            <button id="filterPending">Pending</button>
-            <button id="filterApproved">Approved</button>
-            <button id="filterDisapproved">Disapproved</button>
-            <button id="refresh">Refresh</button>
-        </div>
-        <div class="export-options">
-          <button id="exportPdf">Export PDF</button>
-          <button id="exportExcel">Export Excel</button>
-          <button id="exportWord">Export Word</button>
-      </div>
-      
-              
+          <label for="dateFrom">From:</label>
+          <input type="date" id="dateFrom">
+          
+          <label for="dateTo">To:</label>
+          <input type="date" id="dateTo">
+          <label for="statusFilter">Transaction Type</label>
+          <select id="statusFilter">
+            <option value="">All</option>
+            <option value="TopUp">Top Up</option>
+            <option value="Cash Out">Cash Out</option>
+          </select>
+          
         
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Amount</th>
-                <th>Method</th>
-                <th>Account Name</th>
-                <th>Account Number</th>
-                <th>Note</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="allUsers">
-              <!-- Dynamic content will be inserted here -->
-            </tbody>
-          </table>
+          <button id="searchBtn">Search</button>
+          
+          
+          <button class="userTypeBtn" data-filter="admin">Refersh</button>
+          <button id="exportPDF">Export to PDF</button>
+          <button id="exportExcel">Export to Excel</button>
+          <button id="exportWord">Export to Word</button>
+
         </div>
-        
+        <div class="insights">
+          <!-- All Users Section -->
+          <div class="recent_order">
+            <h2 id="totalEarnings">Total Earnings</h2> <!-- Add id here -->
+            <table>
+              <thead>
+                <tr>
+                  <th>Client Name</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Earnings</th>
+                  <th>Transaction Type</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="allUsers">
+                <!-- Dynamic content will be inserted here -->
+              </tbody>
+            </table>
+          </div>          
         </div>
 
         <!-- The Modal -->
@@ -183,11 +193,9 @@
           </div>
         </div>
       </main>
-
-      
     </div>
     <!-- Include your JavaScript files -->
     <script type="module" src="firebase.js"></script>
-    <script type="module" src="script/cashout.js"></script>
+    <script type="module" src="script/summarryofearnings.js"></script>
   </body>
 </html>

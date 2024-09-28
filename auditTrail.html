@@ -87,12 +87,19 @@
 
           <!-- Search and Filter -->
           <input type="text" id="searchInput" placeholder="Search by name" />
+          <label for="dateFrom">From:</label>
+<input type="date" id="dateFrom">
+
+<label for="dateTo">To:</label>
+<input type="date" id="dateTo">
+
           <select id="userTypeFilter">
             <option value="">All User Types</option>
             <option value="admin">Admin</option>
             <option value="client">Client</option>
             <option value="applicant">Applicant</option>
           </select>
+          
 
           <button id="exportPdf">Export to PDF</button>
           <button id="exportWord">Export to Word</button>

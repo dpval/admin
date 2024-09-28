@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="css/payment.css" />
     <link rel="stylesheet" href="css/rightsidebar.css" />
     <link rel="stylesheet" href="css/adminrightsidebar.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -48,11 +50,7 @@
           </a>
 
           <!-- Payments dropdown -->
-          <a
-            href="payment.html"
-           
-            onclick="togglePaymentDropdown()"
-          >
+          <a href="payment.html" onclick="togglePaymentDropdown()">
             <span class="material-symbols-sharp">receipt_long</span>
             <h3>Payments</h3>
           </a>
@@ -61,7 +59,8 @@
             <a href="cashout.html">Cash Out</a>
             <!-- <a href="paymentalerts.html">Alerts</a> -->
             <a href="payment-history.html">Payment History</a>
-            <a href="earnings.html"  class="active">Earnings</a>
+            <a href="earnings.html" class="active">Earnings</a>
+            <a href="sumarryofearnings.html">Summary of Earnings</a>
           </div>
           <a href="application.html">
             <span class="material-symbols-sharp">app_registration</span>
@@ -76,11 +75,13 @@
             <h3>Add Categories</h3>
           </a>
           <a href="adminAddTokens.html">
-            <span class="material-symbols-sharp">monetization_on</span> <!-- New icon for currency -->
+            <span class="material-symbols-sharp">monetization_on</span>
+            <!-- New icon for currency -->
             <h3>Add TAUkens</h3>
           </a>
           <a href="auditTrail.html">
-            <span class="material-symbols-sharp">history</span> <!-- New icon for audit trail -->
+            <span class="material-symbols-sharp">history</span>
+            <!-- New icon for audit trail -->
             <h3>Audit Trail</h3>
           </a>
           <a href="#">
@@ -123,14 +124,15 @@
           }
         };
       </script>
-    
+
       <main>
-        <h1>Summary of Earnings</h1>
+        <h1 id="earningsDay">Earnings for this Day:</h1>
         <div class="insights">
           <!-- All Users Section -->
           <div class="recent_order">
-            <h2 id="totalEarnings">Total Earnings</h2> <!-- Add id here -->
-            <table>
+            <h2 id="totalEarnings">Total Earnings</h2>
+            
+            <table id="earningsTable">
               <thead>
                 <tr>
                   <th>Client Name</th>
@@ -144,7 +146,10 @@
                 <!-- Dynamic content will be inserted here -->
               </tbody>
             </table>
-          </div>          
+            <p id="noEarnings" style="display: none;">No earnings for this day.</p>
+    
+           
+          </div>
         </div>
 
         <!-- The Modal -->
