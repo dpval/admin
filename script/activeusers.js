@@ -8,7 +8,6 @@ import {
   where,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
-
 // Define time constants
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const currentTime = new Date().getTime();
@@ -85,7 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
           let statusColor = "#f8d7da"; // Light red
           if (isLogin instanceof Timestamp) {
             const lastLogin = isLogin.toMillis();
-            status = currentTime - lastLogin <= ONE_DAY_IN_MS ? "Active" : "Inactive";
+            status =
+              currentTime - lastLogin <= ONE_DAY_IN_MS ? "Active" : "Inactive";
             statusColor = status === "Active" ? "#d4edda" : "#f8d7da"; // Light green for active
           }
 
@@ -102,7 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const nameTd = document.createElement("td");
           const photoElement = createPhotoElement(photo_url);
           const nameText = document.createElement("span");
-          nameText.textContent = `${display_name || "N/A"} ${lastname || "N/A"}`;
+          nameText.textContent = `${display_name || "N/A"} ${
+            lastname || "N/A"
+          }`;
 
           nameTd.appendChild(photoElement);
           nameTd.appendChild(nameText);
@@ -140,7 +142,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchTerm = searchInput.value.toLowerCase();
 
     Array.from(activeUsersTable.querySelectorAll("tbody tr")).forEach((row) => {
-      const name = row.querySelector("td:nth-child(1) span").textContent.toLowerCase(); // Search based on name column
+      const name = row
+        .querySelector("td:nth-child(1) span")
+        .textContent.toLowerCase(); // Search based on name column
       row.style.display = name.includes(searchTerm) ? "" : "none";
     });
   });
@@ -155,7 +159,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("exportPdf").addEventListener("click", exportToPDF);
   document.getElementById("exportWord").addEventListener("click", exportToWord);
-  document.getElementById("exportExcel").addEventListener("click", exportToExcel);
+  document
+    .getElementById("exportExcel")
+    .addEventListener("click", exportToExcel);
 
   function exportToPDF() {
     const { jsPDF } = window.jspdf;
@@ -163,16 +169,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let rows = [];
     const rowsData = document.querySelectorAll("#activeUsers tbody tr");
-    rowsData.forEach(row => {
+    rowsData.forEach((row) => {
       const rowData = [];
-      row.querySelectorAll("td").forEach(cell => {
+      row.querySelectorAll("td").forEach((cell) => {
         rowData.push(cell.textContent);
       });
       rows.push(rowData);
     });
 
     doc.autoTable({
-      head: [['Name', 'UID', 'Status', 'Last Login']],
+      head: [["Name", "UID", "Status", "Last Login"]],
       body: rows,
     });
 
@@ -182,13 +188,16 @@ document.addEventListener("DOMContentLoaded", () => {
   function exportToWord() {
     let table = document.getElementById("activeUsers").outerHTML;
     let blob = new Blob([table], {
-      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     });
     saveAs(blob, "active_users.doc");
   }
 
   function exportToExcel() {
-    const wb = XLSX.utils.table_to_book(document.getElementById("activeUsers"), { sheet: "Active Users" });
+    const wb = XLSX.utils.table_to_book(
+      document.getElementById("activeUsers"),
+      { sheet: "Active Users" }
+    );
     XLSX.writeFile(wb, "active_users.xlsx");
   }
 
