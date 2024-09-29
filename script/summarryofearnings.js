@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const walletTopUpQuery = query(
         collection(db, "walletTopUp"),
         where("status", "==", "approved"), // Filter by approved status
-        orderBy("amount", "desc") // Order by amount in descending order
+        orderBy("currentTime") // Order by the current time
       );
       const walletTopUpSnapshot = await getDocs(walletTopUpQuery);
 
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const selectedType = statusFilter.value;
         const fromDate = dateFrom.value ? new Date(dateFrom.value) : null;
         const toDate = dateTo.value ? new Date(dateTo.value) : null;
-        const transactionDate = date ? new Date(date) : null;
+        const transactionDate = currentTime ? new Date(currentTime.seconds * 1000) : null; // Convert Firestore Timestamp to Date
 
         // Skip if the transaction type doesn't match the selected filter (if any filter is selected)
         if (selectedType && selectedType !== typeoftransaction) continue;
@@ -74,17 +74,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Fetch the user document to get the client name
         const userDoc = await getDoc(userRef);
         let clientName = "Unknown"; // Default value if user not found
+        let userEmail = ""; // To store the email for search
 
         if (userDoc.exists()) {
           const userData = userDoc.data();
           clientName = `${userData.display_name} ${userData.lastname}`;
+          userEmail = userData.email; // Store user email
         }
 
         // Check if the search term matches the client name or email
         if (
           searchTerm &&
           !clientName.toLowerCase().includes(searchTerm) &&
-          !userData.email.toLowerCase().includes(searchTerm)
+          !userEmail.toLowerCase().includes(searchTerm) // Corrected variable name to userEmail
         ) {
           continue;
         }
