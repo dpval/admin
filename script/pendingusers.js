@@ -7,7 +7,6 @@ import {
   where,
   updateDoc,
   doc,
-  getDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -22,6 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
     'button[data-filter="applicant"]'
   );
   const themeToggler = document.querySelector(".theme-toggler");
+  const paginationControls = document.getElementById("paginationControls");
+  const currentPageInfo = document.getElementById("currentPageInfo");
+
+  // Pagination variables
+  let currentPage = 1;
+  const itemsPerPage = 7; // Number of items per page
 
   // Initialize selectedUserType
   let selectedUserType = "";
@@ -48,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Close button not found");
   }
 
-  function fetchAndDisplayUsers(searchTerm = "", userType = "") {
+  function fetchAndDisplayUsers(searchTerm = "", userType = "", page = 1) {
     try {
       // Query to get users with 'firsttimestatus' set to 'pending'
       let userQuery = query(
@@ -67,53 +72,106 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       onSnapshot(userQuery, (querySnapshot) => {
-        allUsersTable.innerHTML = "";
-
+        const users = [];
         querySnapshot.forEach((doc) => {
           const user = doc.data();
-          const { display_name, lastname, usertype, email, baranggay } = user;
+          users.push({ id: doc.id, ...user });
+        });
 
-          if (
+        // Filter users based on search term
+        const filteredUsers = users.filter((user) => {
+          const { display_name, lastname, email, baranggay } = user;
+          return (
             display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             lastname.toLowerCase().includes(searchTerm.toLowerCase()) ||
             email.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (baranggay &&
               baranggay.toLowerCase().includes(searchTerm.toLowerCase()))
-          ) {
-            const tr = document.createElement("tr");
-
-            const nameTd = document.createElement("td");
-            nameTd.textContent = `${display_name} ${lastname}`;
-
-            const usertypeTd = document.createElement("td");
-            usertypeTd.textContent = usertype;
-
-            const emailTd = document.createElement("td");
-            emailTd.textContent = email;
-
-            const actionTd = document.createElement("td");
-            const detailsBtn = document.createElement("button");
-            detailsBtn.textContent = "Details";
-            detailsBtn.classList.add("details-btn");
-
-            actionTd.appendChild(detailsBtn);
-
-            tr.appendChild(nameTd);
-            tr.appendChild(usertypeTd);
-            tr.appendChild(emailTd);
-            tr.appendChild(actionTd);
-
-            allUsersTable.appendChild(tr);
-
-            detailsBtn.addEventListener("click", () => {
-              showModal(user, doc.id);
-            });
-          }
+          );
         });
+
+        // Pagination logic
+        const totalUsers = filteredUsers.length;
+        const totalPages = Math.ceil(totalUsers / itemsPerPage);
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+        // Display paginated users
+        allUsersTable.innerHTML = "";
+        paginatedUsers.forEach((user) => {
+          const { display_name, lastname, usertype, email } = user;
+          const tr = document.createElement("tr");
+
+          const nameTd = document.createElement("td");
+          nameTd.textContent = `${display_name} ${lastname}`;
+
+          const usertypeTd = document.createElement("td");
+          usertypeTd.textContent = usertype;
+
+          const emailTd = document.createElement("td");
+          emailTd.textContent = email;
+
+          const actionTd = document.createElement("td");
+          const detailsBtn = document.createElement("button");
+          detailsBtn.textContent = "Details";
+          detailsBtn.classList.add("details-btn");
+
+          actionTd.appendChild(detailsBtn);
+          tr.appendChild(nameTd);
+          tr.appendChild(usertypeTd);
+          tr.appendChild(emailTd);
+          tr.appendChild(actionTd);
+          allUsersTable.appendChild(tr);
+
+          detailsBtn.addEventListener("click", () => {
+            showModal(user, user.id);
+          });
+        });
+
+        // Render pagination controls and update current page info
+        renderPaginationControls(totalPages, page);
+        currentPageInfo.textContent = `Page ${page} of ${totalPages}`;
       });
     } catch (error) {
       console.error("Error fetching users: ", error);
     }
+  }
+
+  function renderPaginationControls(totalPages, currentPage) {
+    paginationControls.innerHTML = ""; // Clear existing controls
+
+    // Previous button
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "< Previous";
+    prevBtn.disabled = currentPage === 1; // Disable if on the first page
+    prevBtn.addEventListener("click", () => {
+      fetchAndDisplayUsers(searchInput.value, selectedUserType, currentPage - 1);
+    });
+    paginationControls.appendChild(prevBtn);
+
+    // Page number buttons
+    for (let i = 1; i <= totalPages; i++) {
+      const pageBtn = document.createElement("button");
+      pageBtn.textContent = i;
+      pageBtn.classList.add("page-btn");
+      if (i === currentPage) {
+        pageBtn.classList.add("active");
+      }
+      pageBtn.addEventListener("click", () => {
+        fetchAndDisplayUsers(searchInput.value, selectedUserType, i);
+      });
+      paginationControls.appendChild(pageBtn);
+    }
+
+    // Next button
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "Next >";
+    nextBtn.disabled = currentPage === totalPages; // Disable if on the last page
+    nextBtn.addEventListener("click", () => {
+      fetchAndDisplayUsers(searchInput.value, selectedUserType, currentPage + 1);
+    });
+    paginationControls.appendChild(nextBtn);
   }
 
   function showModal(user, userId) {
@@ -179,140 +237,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (editBtn) {
       editBtn.addEventListener("click", () => {
-        editBtn.style.display = "none";
-        modalDetails.innerHTML += `
-          <div class="modal-actions">
-            <button id="holdBtn">Hold</button>
-            <button id="blockedBtn">Blocked</button>
-          </div>
-        `;
-
-        const holdBtn = document.getElementById("holdBtn");
-        const blockedBtn = document.getElementById("blockedBtn");
-
-        holdBtn.addEventListener("click", async () => {
-          await updateUserStatus(userId, "hold");
-          modal.style.display = "none"; // Automatically hide modal
-        });
-
-        blockedBtn.addEventListener("click", async () => {
-          await updateUserStatus(userId, "blocked");
-          modal.style.display = "none"; // Automatically hide modal
-        });
+        editBtn.style.display = "none"; // Hide edit button
+        // Add your edit functionality here
       });
     }
 
-    if (approveBtn) {
+    if (approveBtn && disapproveBtn) {
       approveBtn.addEventListener("click", async () => {
         await updateUserStatus(userId, "approved");
         modal.style.display = "none"; // Automatically hide modal
       });
-    }
 
-    if (disapproveBtn) {
       disapproveBtn.addEventListener("click", async () => {
         await updateUserStatus(userId, "disapproved");
         modal.style.display = "none"; // Automatically hide modal
       });
     }
 
-    modal.style.display = "block";
+    modal.style.display = "block"; // Show the modal
   }
 
-  async function updateUserStatus(userId, newStatus) {
-    try {
-      const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, { firsttimestatus: newStatus });
-
-      // Fetch user details for sending notifications
-      const userDoc = await getDoc(userRef);
-      const userData = userDoc.data();
-      const userEmail = userData.email;
-      const userPhone = userData.phone_number;
-
-      // Prepare notification content
-      let subject = "";
-      let message = "";
-      let smsMessage = "";
-
-      if (newStatus === "approved") {
-        subject = "Your application has been approved!";
-        message = `<p>Dear ${userData.display_name},</p>
-                   <p>Your application has been approved. You can now proceed to the next steps.</p>`;
-        smsMessage = `Hello ${userData.display_name}, your application has been approved.`;
-      } else if (newStatus === "disapproved") {
-        subject = "Your application has been disapproved.";
-        message = `<p>Dear ${userData.display_name},</p>
-                   <p>We regret to inform you that your application has been disapproved. Please contact support for further information.</p>`;
-        smsMessage = `Hello ${userData.display_name}, your application has been disapproved.`;
-      }
-
-      // Log email content
-      console.log("Sending email with the following content:");
-      console.log(`To: ${userEmail}`);
-      console.log(`Subject: ${subject}`);
-      console.log(`Message: ${message}`);
-
-      // Send email notification
-      await fetch("http://localhost:3000/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          to: userEmail,
-          subject: subject,
-          html: message,
-        }),
-      });
-
-      console.log("Email sent successfully!");
-
-      // Send SMS notification (if phone number is available)
-      if (userPhone) {
-        // Log SMS content
-        console.log("Sending SMS with the following content:");
-        console.log(`To: ${userPhone}`);
-        console.log(`Message: ${smsMessage}`);
-
-        await fetch("http://localhost:3000/send-sms", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            to: userPhone,
-            message: smsMessage,
-          }),
-        });
-
-        console.log("SMS sent successfully!");
-      } else {
-        console.log("No phone number available for this user.");
-      }
-
-      console.log(`User status updated to: ${newStatus}`);
-    } catch (error) {
-      console.error("Error updating user status:", error);
-    }
+  async function updateUserStatus(userId, status) {
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, {
+      firsttimestatus: status,
+    });
+    fetchAndDisplayUsers(searchInput.value, selectedUserType, currentPage); // Refresh the user list
   }
 
-  // Event listeners for filtering users
+  searchBtn.addEventListener("click", () => {
+    fetchAndDisplayUsers(searchInput.value, selectedUserType, 1);
+  });
+
+  // Filter buttons for applicants and clients
   clientBtn.addEventListener("click", () => {
     selectedUserType = "client";
-    fetchAndDisplayUsers("", selectedUserType);
+    fetchAndDisplayUsers(searchInput.value, selectedUserType, 1);
   });
 
   applicantBtn.addEventListener("click", () => {
     selectedUserType = "applicant";
-    fetchAndDisplayUsers("", selectedUserType);
+    fetchAndDisplayUsers(searchInput.value, selectedUserType, 1);
   });
 
-  searchBtn.addEventListener("click", () => {
-    const searchTerm = searchInput.value;
-    fetchAndDisplayUsers(searchTerm, selectedUserType);
-  });
-
-  // Initial fetch
-  fetchAndDisplayUsers();
+  // Initially fetch and display all users
+  fetchAndDisplayUsers("", "", 1);
 });
