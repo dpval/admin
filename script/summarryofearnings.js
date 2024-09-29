@@ -42,6 +42,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Fetch earnings history and populate the table
   async function fetchEarningsHistory() {
     try {
+      totalEarnings = 0; // Reset total earnings each time the data is fetched
+
       const walletTopUpQuery = query(
         collection(db, "walletTopUp"),
         where("status", "==", "approved"), // Filter by approved status
@@ -87,8 +89,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           continue;
         }
 
-        // Calculate the 5% earnings deduction
-        const earnings = amount * 0.05;
+        // Calculate earnings based on method (100% for E-Wallet, 5% for others)
+        const earnings = method === "E-Wallet" ? amount : amount * 0.05;
 
         // Add the earnings to the total earnings
         totalEarnings += earnings;
@@ -111,7 +113,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         methodTd.textContent = method;
         tr.appendChild(methodTd);
 
-        // Earnings (5% of amount)
+        // Earnings (5% of amount or 100% if E-Wallet)
         const earningsTd = document.createElement("td");
         earningsTd.textContent = earnings.toFixed(2); // Display earnings with 2 decimal places
         tr.appendChild(earningsTd);
@@ -138,6 +140,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Event listener for search/filter button
   searchBtn.addEventListener("click", fetchEarningsHistory);
+
+  // Event listener for dateFrom input to load table automatically
+  dateFrom.addEventListener("change", fetchEarningsHistory);
+
+  // Event listener for dateTo input to load table automatically
+  dateTo.addEventListener("change", fetchEarningsHistory);
 
   // Refresh button to reload the data
   refreshBtn.addEventListener("click", () => {

@@ -30,87 +30,107 @@ document.addEventListener("DOMContentLoaded", async () => {
   )}`;
 
   // Fetch earnings history and populate the table for the current day
-  async function fetchEarningsHistory() {
-    try {
-      const walletTopUpQuery = query(
-        collection(db, "walletTopUp"),
-        where("status", "==", "approved"),
-        where("currentTime", ">=", todayStart),
-        where("currentTime", "<=", todayEnd),
-        orderBy("currentTime", "desc")
-      );
-      const walletTopUpSnapshot = await getDocs(walletTopUpQuery);
+ // Fetch earnings history and populate the table for the current day
+// Fetch earnings history and populate the table for the current day
+// Fetch earnings history and populate the table for the current day
+async function fetchEarningsHistory() {
+  try {
+    const walletTopUpQuery = query(
+      collection(db, "walletTopUp"),
+      where("status", "==", "approved"),
+      where("currentTime", ">=", todayStart),
+      where("currentTime", "<=", todayEnd),
+      orderBy("currentTime", "desc")
+    );
+    const walletTopUpSnapshot = await getDocs(walletTopUpQuery);
 
-      allUsersTable.innerHTML = ""; // Clear the table before adding rows
+    allUsersTable.innerHTML = ""; // Clear the table before adding rows
 
-      if (walletTopUpSnapshot.docs.length === 0) {
-        noEarningsParagraph.style.display = "block";
-        totalEarningsHeader.textContent = "Total Earnings for Today: 0.00";
-        return;
-      }
-
-      noEarningsParagraph.style.display = "none"; // Hide 'no earnings' if there are results
-
-      // Loop through each approved transaction
-      for (const docSnap of walletTopUpSnapshot.docs) {
-        const transactionData = docSnap.data();
-        const userRef = doc(db, "users", transactionData.userID);
-        const { amount, method, typeoftransaction } = transactionData;
-
-        // Calculate the 5% earnings deduction
-        const earnings = amount * 0.05;
-
-        // Fetch the user document to get the client name
-        const userDoc = await getDoc(userRef);
-        let clientName = "Unknown"; // Default value if user not found
-
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          clientName = `${userData.display_name} ${userData.lastname}`;
-        }
-
-        // Add the earnings to the total earnings
-        totalEarnings += earnings;
-
-        // Create table row
-        const tr = document.createElement("tr");
-
-        // Client Name
-        const clientNameTd = document.createElement("td");
-        clientNameTd.textContent = clientName;
-        tr.appendChild(clientNameTd);
-
-        // Amount
-        const amountTd = document.createElement("td");
-        amountTd.textContent = amount.toFixed(2);
-        tr.appendChild(amountTd);
-
-        // Method
-        const methodTd = document.createElement("td");
-        methodTd.textContent = method;
-        tr.appendChild(methodTd);
-
-        // Earnings
-        const earningsTd = document.createElement("td");
-        earningsTd.textContent = earnings.toFixed(2); // Display with 2 decimal places
-        tr.appendChild(earningsTd);
-
-        // Transaction Type
-        const transactionTypeTd = document.createElement("td");
-        transactionTypeTd.textContent = typeoftransaction;
-        tr.appendChild(transactionTypeTd);
-
-        allUsersTable.appendChild(tr);
-      }
-
-      // Display the total earnings for today
-      totalEarningsHeader.textContent = `Total Earnings for Today: ${totalEarnings.toFixed(
-        2
-      )}`;
-    } catch (error) {
-      console.error("Error fetching earnings history:", error);
+    if (walletTopUpSnapshot.docs.length === 0) {
+      noEarningsParagraph.style.display = "block";
+      totalEarningsHeader.textContent = "Total Earnings for Today: 0.00";
+      return;
     }
+
+    noEarningsParagraph.style.display = "none"; // Hide 'no earnings' if there are results
+
+    // Loop through each approved transaction
+    for (const docSnap of walletTopUpSnapshot.docs) {
+      const transactionData = docSnap.data();
+
+      // Check if userID is a DocumentReference and get its ID
+      let userID;
+      if (transactionData.userID instanceof Object && transactionData.userID.id) {
+        userID = transactionData.userID.id; // Extract document ID from DocumentReference
+      } else {
+        console.error("Invalid userID:", transactionData.userID);
+        continue; // Skip this iteration if userID is not valid
+      }
+
+      const userRef = doc(db, "users", userID);
+      const { amount, method, typeoftransaction } = transactionData;
+
+      // Calculate the earnings based on the method
+      let earnings;
+      if (method === "E-Wallet") {
+        earnings = amount; // 100% deduction for E-Wallet
+      } else {
+        earnings = amount * 0.05; // 5% deduction for other methods
+      }
+
+      // Fetch the user document to get the client name
+      const userDoc = await getDoc(userRef);
+      let clientName = "Unknown"; // Default value if user not found
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        clientName = `${userData.display_name} ${userData.lastname}`;
+      }
+
+      // Add the earnings to the total earnings
+      totalEarnings += earnings;
+
+      // Create table row
+      const tr = document.createElement("tr");
+
+      // Client Name
+      const clientNameTd = document.createElement("td");
+      clientNameTd.textContent = clientName;
+      tr.appendChild(clientNameTd);
+
+      // Amount
+      const amountTd = document.createElement("td");
+      amountTd.textContent = amount.toFixed(2);
+      tr.appendChild(amountTd);
+
+      // Method
+      const methodTd = document.createElement("td");
+      methodTd.textContent = method;
+      tr.appendChild(methodTd);
+
+      // Earnings
+      const earningsTd = document.createElement("td");
+      earningsTd.textContent = earnings.toFixed(2); // Display with 2 decimal places
+      tr.appendChild(earningsTd);
+
+      // Transaction Type
+      const transactionTypeTd = document.createElement("td");
+      transactionTypeTd.textContent = typeoftransaction;
+      tr.appendChild(transactionTypeTd);
+
+      allUsersTable.appendChild(tr);
+    }
+
+    // Display the total earnings for today
+    totalEarningsHeader.textContent = `Total Earnings for Today: ${totalEarnings.toFixed(
+      2
+    )}`;
+  } catch (error) {
+    console.error("Error fetching earnings history:", error);
   }
+}
+
+
 
   // Initial load of earnings history
   fetchEarningsHistory();
