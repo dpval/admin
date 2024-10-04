@@ -7,7 +7,7 @@ import {
   doc,
   updateDoc,
   getDoc,
-  Timestamp
+  Timestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 // Function to determine status based on expiration date
@@ -15,14 +15,14 @@ function determineStatus(expirationDate) {
   const currentDate = new Date();
   const expDate = new Date(expirationDate);
   const timeDiff = expDate - currentDate;
-  const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));  // Convert time difference to days
+  const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Convert time difference to days
 
   if (daysLeft <= 7) {
     return { status: "Needs Action", color: "#FF6347" }; // Red color for immediate action
   } else if (daysLeft <= 30) {
-    return { status: "Good", color: "#FFD700" };  // Yellow color for "Good"
+    return { status: "Good", color: "#FFD700" }; // Yellow color for "Good"
   } else if (daysLeft > 30) {
-    return { status: "Excellent", color: "#32CD32" };  // Green color for "Excellent"
+    return { status: "Excellent", color: "#32CD32" }; // Green color for "Excellent"
   } else {
     return { status: "N/A", color: "#D3D3D3" }; // Gray for invalid or missing dates
   }
@@ -41,7 +41,8 @@ async function sendEmailNotification(userData) {
                    <p>Your Barangay Clearance is about to expire. Please update it as soon as possible to avoid any interruptions.</p>`;
 
   try {
-    await fetch("http://localhost:3000/send-email", {  // Adjust the URL based on your server setup
+    await fetch("http://127.0.0.1:8080/send-email", {
+      // Adjust the URL based on your server setup
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -91,7 +92,12 @@ async function updateExpirationDate(userId, newExpirationDate) {
 }
 
 // Main function to fetch and display users with status and send email
-async function fetchAndDisplayUsers(searchTerm = "", fromDate = "", toDate = "", statusFilter = "") {
+async function fetchAndDisplayUsers(
+  searchTerm = "",
+  fromDate = "",
+  toDate = "",
+  statusFilter = ""
+) {
   // Query to fetch only users with 'firsttimestatus' as 'approved'
   let userQuery = query(
     collection(db, "users"),
@@ -100,7 +106,9 @@ async function fetchAndDisplayUsers(searchTerm = "", fromDate = "", toDate = "",
 
   // Listen for real-time updates to the query
   onSnapshot(userQuery, (querySnapshot) => {
-    const userAlertsTable = document.getElementById("userAlerts").querySelector("tbody");
+    const userAlertsTable = document
+      .getElementById("userAlerts")
+      .querySelector("tbody");
     userAlertsTable.innerHTML = ""; // Clear the table before appending new rows
 
     querySnapshot.forEach((userDoc) => {
@@ -124,12 +132,18 @@ async function fetchAndDisplayUsers(searchTerm = "", fromDate = "", toDate = "",
 
       // Apply Date Range Filter
       if (fromDate && user.expiration) {
-        const expirationDate = user.expiration.toDate().toISOString().split("T")[0];
+        const expirationDate = user.expiration
+          .toDate()
+          .toISOString()
+          .split("T")[0];
         if (expirationDate < fromDate) return; // Skip if expiration date is before the fromDate
       }
 
       if (toDate && user.expiration) {
-        const expirationDate = user.expiration.toDate().toISOString().split("T")[0];
+        const expirationDate = user.expiration
+          .toDate()
+          .toISOString()
+          .split("T")[0];
         if (expirationDate > toDate) return; // Skip if expiration date is after the toDate
       }
 
@@ -159,7 +173,9 @@ async function fetchAndDisplayUsers(searchTerm = "", fromDate = "", toDate = "",
       }
 
       // Append the name text next to the image
-      const nameText = document.createTextNode(`${user.display_name || "N/A"} ${user.lastname || "N/A"}`);
+      const nameText = document.createTextNode(
+        `${user.display_name || "N/A"} ${user.lastname || "N/A"}`
+      );
       nameTd.appendChild(nameText);
       tr.appendChild(nameTd);
 
@@ -239,20 +255,22 @@ function exportToPDF() {
   const doc = new jsPDF();
   const rows = [];
 
-  const userAlertsTable = document.getElementById("userAlerts").querySelector("tbody");
+  const userAlertsTable = document
+    .getElementById("userAlerts")
+    .querySelector("tbody");
   const dataRows = userAlertsTable.querySelectorAll("tr");
 
-  dataRows.forEach(row => {
+  dataRows.forEach((row) => {
     const rowData = [];
     const cells = row.querySelectorAll("td");
-    cells.forEach(cell => {
+    cells.forEach((cell) => {
       rowData.push(cell.textContent);
     });
     rows.push(rowData);
   });
 
   doc.autoTable({
-    head: [['Name', 'Barangay Clearance', 'Expired On', 'Status']],
+    head: [["Name", "Barangay Clearance", "Expired On", "Status"]],
     body: rows,
   });
 
@@ -270,7 +288,7 @@ function exportToExcel() {
 function exportToWord() {
   const userAlertsTable = document.getElementById("userAlerts").outerHTML;
   const blob = new Blob([userAlertsTable], {
-    type: "application/vnd.ms-word"
+    type: "application/vnd.ms-word",
   });
   saveAs(blob, "alertsinUsers.doc");
 }
@@ -282,4 +300,3 @@ document.getElementById("exportWord").addEventListener("click", exportToWord);
 
 // Initial fetch and display of users
 fetchAndDisplayUsers();
-
