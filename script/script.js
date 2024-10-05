@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
       usersCollection,
       where("usertype", "in", ["client", "applicant"]) // Filter for client and applicant user types
     );
-  
+
     onSnapshot(
       q,
       (snapshot) => {
@@ -111,7 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     );
   }
-  
 
   // Real-time listener for applicant count
   function listenToApplicantCount() {
@@ -219,50 +218,52 @@ document.addEventListener("DOMContentLoaded", () => {
       q,
       (snapshot) => {
         recentApplications.innerHTML = "";
-  
+
         let count = 0; // Counter to limit to 3 rows
-  
+
         snapshot.forEach((doc) => {
-          if (count < 3) { // Limit to 3 entries
+          if (count < 3) {
+            // Limit to 3 entries
             const user = doc.data();
-            const { display_name, lastname, usertype, email, firsttimestatus } = user;
-  
+            const { display_name, lastname, usertype, email, firsttimestatus } =
+              user;
+
             // Create table row
             const tr = document.createElement("tr");
-  
+
             // Create table cells
             const nameTd = document.createElement("td");
             nameTd.textContent = `${display_name} ${lastname}`;
-  
+
             const usertypeTd = document.createElement("td");
             usertypeTd.textContent = usertype;
-  
+
             const emailTd = document.createElement("td");
             emailTd.textContent = email;
-  
+
             const statusTd = document.createElement("td");
             statusTd.classList.add("warning");
             statusTd.textContent = firsttimestatus;
-  
+
             const actionTd = document.createElement("td");
             actionTd.classList.add("primary");
             actionTd.textContent = "Details";
-  
+
             // Append cells to row
             tr.appendChild(nameTd);
             tr.appendChild(usertypeTd);
             tr.appendChild(emailTd);
             tr.appendChild(statusTd);
             tr.appendChild(actionTd);
-  
+
             // Append row to table body
             recentApplications.appendChild(tr);
-  
+
             // Add event listener for the "Details" button
             actionTd.addEventListener("click", () => {
               showModal(doc.id, user);
             });
-  
+
             count++; // Increment counter
           }
         });
@@ -272,7 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     );
   }
-  
 
   // Show modal with user details
   function showModal(userId, user) {
