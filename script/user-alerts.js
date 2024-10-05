@@ -60,8 +60,9 @@ async function sendEmailNotification(userData) {
 }
 
 // Function to update expiration date and status in Firestore
+// Function to update expiration date and status in Firestore
 async function updateExpirationDate(userId, newExpirationDate) {
-  const userDocRef = doc(db, "users", userId);
+  const userDocRef = doc(db, "users", userId); // Reference to the user's document
 
   try {
     // Convert newExpirationDate to Firestore Timestamp
@@ -76,7 +77,7 @@ async function updateExpirationDate(userId, newExpirationDate) {
 
     // Update the expiration date
     await updateDoc(userDocRef, {
-      expiration: timestamp,
+      expiration: timestamp, // Save the new expiration date
     });
     console.log("Expiration date updated successfully");
 
@@ -91,6 +92,7 @@ async function updateExpirationDate(userId, newExpirationDate) {
   }
 }
 
+// Main function to fetch and display users with status and send email
 // Main function to fetch and display users with status and send email
 async function fetchAndDisplayUsers(
   searchTerm = "",
@@ -114,9 +116,12 @@ async function fetchAndDisplayUsers(
     querySnapshot.forEach((userDoc) => {
       const user = userDoc.data();
 
-      // Check if firsttimestatus is "approved"
-      if (user.firsttimestatus !== "approved") {
-        return; // Skip users who don't have firsttimestatus as "approved"
+      // Check if firsttimestatus is "approved" and usertype is "client" or "applicant"
+      if (
+        user.firsttimestatus !== "approved" ||
+        (user.usertype !== "client" && user.usertype !== "applicant")
+      ) {
+        return; // Skip users who don't have firsttimestatus as "approved" or are not clients/applicants
       }
 
       // Apply Search Filter
@@ -196,16 +201,18 @@ async function fetchAndDisplayUsers(
       const expirationTd = document.createElement("td");
       const expirationInput = document.createElement("input");
       expirationInput.type = "date";
+
       if (user.expiration) {
         const expDate = user.expiration.toDate().toISOString().substring(0, 10);
-        expirationInput.value = expDate;
+        expirationInput.value = expDate; // Prepopulate the input with the current expiration date
       }
-      expirationInput.addEventListener("change", (event) => {
-        const newExpirationDate = event.target.value;
-        updateExpirationDate(userDoc.id, newExpirationDate);
-        // Update status after expiration date is changed
+
+      expirationInput.addEventListener("change", async (event) => {
+        const newExpirationDate = event.target.value; // Get the new date value from the input
+        await updateExpirationDate(userDoc.id, newExpirationDate); // Call the function to update the expiration date
         fetchAndDisplayUsers(); // Refresh the user list to reflect changes
       });
+
       expirationTd.appendChild(expirationInput);
       tr.appendChild(expirationTd);
 
@@ -226,6 +233,7 @@ async function fetchAndDisplayUsers(
     });
   });
 }
+
 
 // Event Listeners for dynamic search on input
 document.getElementById("searchInput").addEventListener("input", () => {
