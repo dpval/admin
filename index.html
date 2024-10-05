@@ -47,7 +47,17 @@
                 <p id="errorMessage" style="color: red; display: none;"></p>
 
                 <!-- Login Button -->
-                <input type="submit" class="btn" value="Login">
+                <input type="submit" class="btn" value="Login" id="loginButton">
+
+<script>
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent form from submitting
+      document.getElementById('loginButton').click(); // Trigger button click
+    }
+  });
+</script>
+
             </form>
         </div>
     </div>
