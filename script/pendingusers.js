@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Pagination variables
   let currentPage = 1;
-  const itemsPerPage = 7; // Number of items per page
+  const itemsPerPage = 6; // Number of items per page
 
   // Initialize selectedUserType
   let selectedUserType = "";

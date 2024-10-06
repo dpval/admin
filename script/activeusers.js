@@ -12,6 +12,11 @@ import {
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 const currentTime = new Date().getTime();
 
+// Pagination variables
+let currentPage = 0; // Track current page
+const rowsPerPage = 6; // Number of rows per page
+let userDataArray = []; // Store the filtered user data for pagination
+
 document.addEventListener("DOMContentLoaded", () => {
   const activeUsersTable = document.getElementById("activeUsers");
   const searchInput = document.getElementById("searchInput");
@@ -73,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
       onSnapshot(userQuery, (querySnapshot) => {
         activeUserCount = 0;
         inactiveUserCount = 0;
-        activeUsersTable.querySelector("tbody").innerHTML = ""; // Clear previous data
+        userDataArray = []; // Clear the previous data
 
         querySnapshot.forEach((doc) => {
           const user = doc.data();
@@ -89,117 +94,96 @@ document.addEventListener("DOMContentLoaded", () => {
             statusColor = status === "Active" ? "#d4edda" : "#f8d7da"; // Light green for active
           }
 
-          // Increment counts for potential use (removed pie chart logic)
           if (status === "Active") {
             activeUserCount++;
           } else {
             inactiveUserCount++;
           }
 
-          const tr = document.createElement("tr");
-
-          // Name column with photo
-          const nameTd = document.createElement("td");
-          const photoElement = createPhotoElement(photo_url);
-          const nameText = document.createElement("span");
-          nameText.textContent = `${display_name || "N/A"} ${
-            lastname || "N/A"
-          }`;
-
-          nameTd.appendChild(photoElement);
-          nameTd.appendChild(nameText);
-
-          const uidTd = document.createElement("td");
-          uidTd.textContent = uid || "N/A";
-
-          const statusTd = document.createElement("td");
-          statusTd.textContent = status;
-          statusTd.style.backgroundColor = statusColor;
-          statusTd.style.color = status === "Active" ? "#155724" : "#721c24"; // Dark green for active, dark red for inactive
-          statusTd.style.padding = "5px";
-          statusTd.style.textAlign = "center";
-
-          const lastLoginTd = document.createElement("td");
-          lastLoginTd.textContent = formatDateTime(isLogin);
-
-          // Append all columns to the row
-          tr.appendChild(nameTd); // Name column with photo
-          tr.appendChild(uidTd);
-          tr.appendChild(statusTd);
-          tr.appendChild(lastLoginTd);
-
-          // Append the row to the table
-          activeUsersTable.querySelector("tbody").appendChild(tr);
+          // Push user data to the array for pagination
+          userDataArray.push({
+            displayName: `${display_name || "N/A"} ${lastname || "N/A"}`,
+            uid: uid || "N/A",
+            status: status,
+            statusColor: statusColor,
+            lastLogin: formatDateTime(isLogin),
+            photoUrl: photo_url,
+          });
         });
+
+        renderTable(); // Render the table with pagination
       });
     } catch (error) {
       console.error("Error fetching active users: ", error);
     }
   }
 
-  // Event listener for search input
-  searchInput.addEventListener("input", () => {
-    const searchTerm = searchInput.value.toLowerCase();
+  // Function to render the table
+  function renderTable() {
+    const tbody = activeUsersTable.querySelector("tbody");
+    tbody.innerHTML = ""; // Clear the previous rows
 
-    Array.from(activeUsersTable.querySelectorAll("tbody tr")).forEach((row) => {
-      const name = row
-        .querySelector("td:nth-child(1) span")
-        .textContent.toLowerCase(); // Search based on name column
-      row.style.display = name.includes(searchTerm) ? "" : "none";
+    const totalPages = Math.ceil(userDataArray.length / rowsPerPage);
+    const start = currentPage * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    userDataArray.slice(start, end).forEach((user) => {
+      const tr = document.createElement("tr");
+
+      // Name column with photo
+      const nameTd = document.createElement("td");
+      const photoElement = createPhotoElement(user.photoUrl);
+      const nameText = document.createElement("span");
+      nameText.textContent = user.displayName;
+
+      nameTd.appendChild(photoElement);
+      nameTd.appendChild(nameText);
+
+      const uidTd = document.createElement("td");
+      uidTd.textContent = user.uid;
+
+      const statusTd = document.createElement("td");
+      statusTd.textContent = user.status;
+      statusTd.style.backgroundColor = user.statusColor;
+      statusTd.style.color = user.status === "Active" ? "#155724" : "#721c24";
+      statusTd.style.padding = "5px";
+      statusTd.style.textAlign = "center";
+
+      const lastLoginTd = document.createElement("td");
+      lastLoginTd.textContent = user.lastLogin;
+
+      // Append all columns to the row
+      tr.appendChild(nameTd);
+      tr.appendChild(uidTd);
+      tr.appendChild(statusTd);
+      tr.appendChild(lastLoginTd);
+
+      // Append the row to the table
+      tbody.appendChild(tr);
     });
+
+    // Update pagination controls
+    document.getElementById("prevPage").disabled = currentPage === 0;
+    document.getElementById("nextPage").disabled = currentPage >= totalPages - 1;
+
+    document.getElementById("pageInfo").textContent = `Page ${currentPage + 1} of ${totalPages}`;
+  }
+
+  // Event listeners for pagination
+  document.getElementById("prevPage").addEventListener("click", () => {
+    if (currentPage > 0) {
+      currentPage--;
+      renderTable();
+    }
   });
 
-  // Event listener for filter buttons
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const userTypeFilter = button.getAttribute("data-filter");
-      fetchAndDisplayActiveUsers(userTypeFilter);
-    });
+  document.getElementById("nextPage").addEventListener("click", () => {
+    const totalPages = Math.ceil(userDataArray.length / rowsPerPage);
+    if (currentPage < totalPages - 1) {
+      currentPage++;
+      renderTable();
+    }
   });
-
-  document.getElementById("exportPdf").addEventListener("click", exportToPDF);
-  document.getElementById("exportWord").addEventListener("click", exportToWord);
-  document
-    .getElementById("exportExcel")
-    .addEventListener("click", exportToExcel);
-
-  function exportToPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    let rows = [];
-    const rowsData = document.querySelectorAll("#activeUsers tbody tr");
-    rowsData.forEach((row) => {
-      const rowData = [];
-      row.querySelectorAll("td").forEach((cell) => {
-        rowData.push(cell.textContent);
-      });
-      rows.push(rowData);
-    });
-
-    doc.autoTable({
-      head: [["Name", "UID", "Status", "Last Login"]],
-      body: rows,
-    });
-
-    doc.save("active_users.pdf");
-  }
-
-  function exportToWord() {
-    let table = document.getElementById("activeUsers").outerHTML;
-    let blob = new Blob([table], {
-      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    });
-    saveAs(blob, "active_users.doc");
-  }
-
-  function exportToExcel() {
-    const wb = XLSX.utils.table_to_book(
-      document.getElementById("activeUsers"),
-      { sheet: "Active Users" }
-    );
-    XLSX.writeFile(wb, "active_users.xlsx");
-  }
 
   // Initial fetch of active users with no filter
   fetchAndDisplayActiveUsers();

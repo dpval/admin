@@ -94,13 +94,15 @@ async function updateExpirationDate(userId, newExpirationDate) {
 
 // Main function to fetch and display users with status and send email
 // Main function to fetch and display users with status and send email
+const usersPerPage = 5; // Set the number of users per page
+let currentPage = 1; // Initialize current page
+
 async function fetchAndDisplayUsers(
   searchTerm = "",
   fromDate = "",
   toDate = "",
   statusFilter = ""
 ) {
-  // Query to fetch only users with 'firsttimestatus' as 'approved'
   let userQuery = query(
     collection(db, "users"),
     orderBy("created_time", "desc")
@@ -108,11 +110,7 @@ async function fetchAndDisplayUsers(
 
   // Listen for real-time updates to the query
   onSnapshot(userQuery, (querySnapshot) => {
-    const userAlertsTable = document
-      .getElementById("userAlerts")
-      .querySelector("tbody");
-    userAlertsTable.innerHTML = ""; // Clear the table before appending new rows
-
+    const users = []; // Store all users in an array
     querySnapshot.forEach((userDoc) => {
       const user = userDoc.data();
 
@@ -121,7 +119,7 @@ async function fetchAndDisplayUsers(
         user.firsttimestatus !== "approved" ||
         (user.usertype !== "client" && user.usertype !== "applicant")
       ) {
-        return; // Skip users who don't have firsttimestatus as "approved" or are not clients/applicants
+        return; // Skip users who don't meet the criteria
       }
 
       // Apply Search Filter
@@ -158,13 +156,34 @@ async function fetchAndDisplayUsers(
         if (statusInfo.status !== statusFilter) return; // Skip if status doesn't match
       }
 
-      // Create the table row and populate it with data
+      // Add filtered users to the array
+      users.push({
+        id: userDoc.id,
+        ...user,
+      });
+    });
+
+    // Calculate total pages
+    const totalPages = Math.ceil(users.length / usersPerPage);
+
+    // Determine the starting and ending indices for slicing the users array
+    const start = (currentPage - 1) * usersPerPage;
+    const end = start + usersPerPage;
+
+    // Slice the users for the current page
+    const paginatedUsers = users.slice(start, end);
+
+    const userAlertsTable = document
+      .getElementById("userAlerts")
+      .querySelector("tbody");
+    userAlertsTable.innerHTML = ""; // Clear the table before appending new rows
+
+    // Display paginated users
+    paginatedUsers.forEach((user) => {
       const tr = document.createElement("tr");
 
       // Name column with photo
       const nameTd = document.createElement("td");
-
-      // Create the image element for the photo
       if (user.photo_url) {
         const img = document.createElement("img");
         img.src = user.photo_url;
@@ -173,11 +192,8 @@ async function fetchAndDisplayUsers(
         img.style.height = "25px"; // Adjust the size of the image
         img.style.borderRadius = "50%"; // Make the image circular
         img.style.marginRight = "10px"; // Add some space between the image and text
-
         nameTd.appendChild(img); // Append the image to the nameTd
       }
-
-      // Append the name text next to the image
       const nameText = document.createTextNode(
         `${user.display_name || "N/A"} ${user.lastname || "N/A"}`
       );
@@ -197,22 +213,19 @@ async function fetchAndDisplayUsers(
       }
       tr.appendChild(clearanceTd);
 
-      // Expired on column with input
+      // Expiration column with input
       const expirationTd = document.createElement("td");
       const expirationInput = document.createElement("input");
       expirationInput.type = "date";
-
       if (user.expiration) {
         const expDate = user.expiration.toDate().toISOString().substring(0, 10);
         expirationInput.value = expDate; // Prepopulate the input with the current expiration date
       }
-
       expirationInput.addEventListener("change", async (event) => {
         const newExpirationDate = event.target.value; // Get the new date value from the input
-        await updateExpirationDate(userDoc.id, newExpirationDate); // Call the function to update the expiration date
+        await updateExpirationDate(user.id, newExpirationDate); // Call the function to update the expiration date
         fetchAndDisplayUsers(); // Refresh the user list to reflect changes
       });
-
       expirationTd.appendChild(expirationInput);
       tr.appendChild(expirationTd);
 
@@ -231,9 +244,67 @@ async function fetchAndDisplayUsers(
       // Append the row to the table
       userAlertsTable.appendChild(tr);
     });
+
+    // Update pagination controls
+    document.getElementById(
+      "pageInfo"
+    ).textContent = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById("prevPage").disabled = currentPage === 1;
+    document.getElementById("nextPage").disabled = currentPage === totalPages;
   });
 }
 
+// Pagination controls
+document.getElementById("prevPage").addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    fetchAndDisplayUsers(); // Refresh the user list
+  }
+});
+
+document.getElementById("nextPage").addEventListener("click", () => {
+  const totalPages = Math.ceil(users.length / usersPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    fetchAndDisplayUsers(); // Refresh the user list
+  }
+});
+
+// Pagination controls
+document.getElementById("prevPage").addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    fetchAndDisplayUsers(); // Refresh the user list
+  }
+});
+
+document.getElementById("nextPage").addEventListener("click", () => {
+  const totalPages = Math.ceil(users.length / usersPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    fetchAndDisplayUsers(); // Refresh the user list
+  }
+});
+
+// Function to update expiration date (as previously defined)
+
+// Pagination controls
+document.getElementById("prevPage").addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    fetchAndDisplayUsers(); // Refresh the user list
+  }
+});
+
+document.getElementById("nextPage").addEventListener("click", () => {
+  const totalPages = Math.ceil(users.length / usersPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    fetchAndDisplayUsers(); // Refresh the user list
+  }
+});
+
+// Function to update expiration date (as previously defined)
 
 // Event Listeners for dynamic search on input
 document.getElementById("searchInput").addEventListener("input", () => {
@@ -305,6 +376,17 @@ function exportToWord() {
 document.getElementById("exportPDF").addEventListener("click", exportToPDF);
 document.getElementById("exportExcel").addEventListener("click", exportToExcel);
 document.getElementById("exportWord").addEventListener("click", exportToWord);
+document.getElementById("prevPage").addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    fetchAndDisplayUsers(); // Re-fetch users with the updated page
+  }
+});
+
+document.getElementById("nextPage").addEventListener("click", () => {
+  currentPage++;
+  fetchAndDisplayUsers(); // Re-fetch users with the updated page
+});
 
 // Initial fetch and display of users
 fetchAndDisplayUsers();
