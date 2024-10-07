@@ -4,6 +4,8 @@ import {
   getDocs,
   doc,
   getDoc,
+  query,
+  orderBy,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 let auditDataArray = []; // Store audit data for pagination
@@ -12,7 +14,10 @@ const rowsPerPage = 6; // Number of rows to display per page
 
 async function fetchAuditTrailData() {
   const auditTrailRef = collection(db, 'auditTrail');
-  const snapshot = await getDocs(auditTrailRef);
+  
+  // Query to order by 'currentTime' in descending order
+  const orderedAuditTrailQuery = query(auditTrailRef, orderBy('currentTime', 'desc'));
+  const snapshot = await getDocs(orderedAuditTrailQuery);
 
   const promises = snapshot.docs.map(async (auditDoc) => {
     const auditData = auditDoc.data();
@@ -53,6 +58,9 @@ async function fetchAuditTrailData() {
   auditDataArray = auditDataArray.filter(data => data !== null);
   renderTable();
 }
+
+// The rest of your code remains the same
+
 
 // Function to render the table
 function renderTable() {
