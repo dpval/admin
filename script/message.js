@@ -5,6 +5,8 @@ import {
   doc,
   getDoc,
   query,
+  addDoc,
+  Timestamp,
   orderBy,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
@@ -78,7 +80,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           // Add event listener for reply button to show the modal
           replyBtn.addEventListener("click", () => {
             emailSubjectInput.value = "Concern in Mobile App"; // Set predefined subject
-            emailMessageTextarea.value = "Thank you for your message. We will get back to you shortly."; // Predefined message
+            emailMessageTextarea.value =
+              "Thank you for your message. We will get back to you shortly."; // Predefined message
             showModal(email, `${display_name} ${lastname}`);
           });
         }
@@ -94,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       // Create the email message in HTML format
       const emailMessage = `<p>Dear ${clientName},</p><p>${message}</p>`;
-  
+
       // Store the email information in Firestore
       await addDoc(collection(db, "mail"), {
         to: [toEmail], // 'to' field as an array (Firebase requires this)
@@ -105,23 +108,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
       });
-  
-      console.log(`Email data stored in Firestore for ${toEmail} with subject: ${subject}`);
+
+      console.log(
+        `Email data stored in Firestore for ${toEmail} with subject: ${subject}`
+      );
       alert(`Email sent successfully to ${toEmail}`);
-      
+
       closeModal(); // Close the modal after sending email
     } catch (error) {
       console.error("Error storing email in Firestore:", error);
       alert("An error occurred while sending the email.");
     }
   }
-  
 
   // Event listener for send email button in the modal
   sendEmailBtn.addEventListener("click", async () => {
     const subject = emailSubjectInput.value;
     const message = emailMessageTextarea.value;
-    await sendEmailNotification(currentEmail, currentClientName, subject, message);
+    await sendEmailNotification(
+      currentEmail,
+      currentClientName,
+      subject,
+      message
+    );
   });
 
   // Event listeners to close modal
