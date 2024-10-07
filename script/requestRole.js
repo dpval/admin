@@ -130,26 +130,27 @@ function displayRequests(requests) {
 
 
 // Function to send email
-function sendEmail(toEmail, subject, body) {
-  fetch("http://localhost:3000/send-email", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      to: toEmail,
-      subject: subject,
-      message: body,
-    }),
-  })
-    .then((response) => response.text())
-    .then((data) => {
-      console.log("Email sent:", data);
-    })
-    .catch((error) => {
-      console.error("Error sending email:", error);
+async function sendEmail(toEmail, subject, body) {
+  const message = {
+    text: body, // Plain text version of the email content
+    html: `<p>${body}</p>`, // HTML version of the email content
+  };
+
+  try {
+    // Store the email information in Firestore
+    await addDoc(collection(db, "mail"), {
+      to: [toEmail], // 'to' field as an array (Firebase requires this)
+      subject: subject, // Email subject
+      message: message, // Message content (text and HTML)
+      timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
     });
+
+    console.log(`Email data stored in Firestore for ${toEmail}`);
+  } catch (error) {
+    console.error("Error storing email in Firestore:", error);
+  }
 }
+
 
 // Function to approve the request and change usertype
 async function approveRequest(

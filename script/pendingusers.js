@@ -7,6 +7,8 @@ import {
   where,
   updateDoc,
   doc,
+  addDoc,
+  Timestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -24,14 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const paginationControls = document.getElementById("paginationControls");
   const currentPageInfo = document.getElementById("currentPageInfo");
 
-  // Pagination variables
   let currentPage = 1;
-  const itemsPerPage = 6; // Number of items per page
-
-  // Initialize selectedUserType
+  const itemsPerPage = 6;
   let selectedUserType = "";
 
-  // Check if themeToggler exists
   if (themeToggler) {
     themeToggler.addEventListener("click", () => {
       document.body.classList.toggle("dark-theme-variables");
@@ -44,21 +42,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Check if close button exists
   if (closeBtnModal) {
     closeBtnModal.addEventListener("click", () => {
       modal.style.display = "none";
     });
-  } else {
-    console.error("Close button not found");
   }
 
   function fetchAndDisplayUsers(searchTerm = "", userType = "", page = 1) {
     try {
-      // Query to get users with 'firsttimestatus' set to 'pending'
       let userQuery = query(
         collection(db, "users"),
-        where("firsttimestatus", "==", "pending"), // Filter users with firsttimestatus = pending
+        where("firsttimestatus", "==", "pending"),
         orderBy("created_time", "desc")
       );
 
@@ -66,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
         userQuery = query(
           collection(db, "users"),
           where("usertype", "==", userType),
-          where("firsttimestatus", "==", "pending"), // Ensure filtering for pending
+          where("firsttimestatus", "==", "pending"),
           orderBy("created_time", "desc")
         );
       }
@@ -78,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
           users.push({ id: doc.id, ...user });
         });
 
-        // Filter users based on search term
         const filteredUsers = users.filter((user) => {
           const { display_name, lastname, email, baranggay } = user;
           return (
@@ -90,14 +83,12 @@ document.addEventListener("DOMContentLoaded", () => {
           );
         });
 
-        // Pagination logic
         const totalUsers = filteredUsers.length;
         const totalPages = Math.ceil(totalUsers / itemsPerPage);
         const startIndex = (page - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
 
-        // Display paginated users
         allUsersTable.innerHTML = "";
         paginatedUsers.forEach((user) => {
           const { display_name, lastname, usertype, email } = user;
@@ -129,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         });
 
-        // Render pagination controls and update current page info
         renderPaginationControls(totalPages, page);
         currentPageInfo.textContent = `Page ${page} of ${totalPages}`;
       });
@@ -139,18 +129,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderPaginationControls(totalPages, currentPage) {
-    paginationControls.innerHTML = ""; // Clear existing controls
+    paginationControls.innerHTML = "";
 
-    // Previous button
     const prevBtn = document.createElement("button");
     prevBtn.textContent = "< Previous";
-    prevBtn.disabled = currentPage === 1; // Disable if on the first page
+    prevBtn.disabled = currentPage === 1;
     prevBtn.addEventListener("click", () => {
-      fetchAndDisplayUsers(searchInput.value, selectedUserType, currentPage - 1);
+      fetchAndDisplayUsers(
+        searchInput.value,
+        selectedUserType,
+        currentPage - 1
+      );
     });
     paginationControls.appendChild(prevBtn);
 
-    // Page number buttons
     for (let i = 1; i <= totalPages; i++) {
       const pageBtn = document.createElement("button");
       pageBtn.textContent = i;
@@ -164,12 +156,15 @@ document.addEventListener("DOMContentLoaded", () => {
       paginationControls.appendChild(pageBtn);
     }
 
-    // Next button
     const nextBtn = document.createElement("button");
     nextBtn.textContent = "Next >";
-    nextBtn.disabled = currentPage === totalPages; // Disable if on the last page
+    nextBtn.disabled = currentPage === totalPages;
     nextBtn.addEventListener("click", () => {
-      fetchAndDisplayUsers(searchInput.value, selectedUserType, currentPage + 1);
+      fetchAndDisplayUsers(
+        searchInput.value,
+        selectedUserType,
+        currentPage + 1
+      );
     });
     paginationControls.appendChild(nextBtn);
   }
@@ -220,13 +215,8 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="modal-actions">
         ${
           firsttimestatus === "approved"
-            ? `
-          <button id="editBtn">Edit</button>
-        `
-            : `
-          <button id="approveBtn">Approve</button>
-          <button id="disapproveBtn">Disapprove</button>
-        `
+            ? `<button id="editBtn">Edit</button>`
+            : `<button id="approveBtn">Approve</button><button id="disapproveBtn">Disapprove</button>`
         }
       </div>
     `;
@@ -237,49 +227,77 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (editBtn) {
       editBtn.addEventListener("click", () => {
-        editBtn.style.display = "none"; // Hide edit button
-        // Add your edit functionality here
+        editBtn.style.display = "none";
       });
     }
 
     if (approveBtn && disapproveBtn) {
       approveBtn.addEventListener("click", async () => {
-        await updateUserStatus(userId, "approved");
-        modal.style.display = "none"; // Automatically hide modal
+        await updateUserStatus(userId, "approved", email, display_name);
+        modal.style.display = "none";
       });
 
       disapproveBtn.addEventListener("click", async () => {
-        await updateUserStatus(userId, "disapproved");
-        modal.style.display = "none"; // Automatically hide modal
+        await updateUserStatus(userId, "disapproved", email, display_name);
+        modal.style.display = "none";
       });
     }
 
-    modal.style.display = "block"; // Show the modal
+    modal.style.display = "block";
   }
 
-  async function updateUserStatus(userId, status) {
+  async function updateUserStatus(userId, status, email, displayName) {
     const userRef = doc(db, "users", userId);
-    await updateDoc(userRef, {
-      firsttimestatus: status,
-    });
-    fetchAndDisplayUsers(searchInput.value, selectedUserType, currentPage); // Refresh the user list
+    await updateDoc(userRef, { firsttimestatus: status });
+
+    // Store the email information in Firestore
+    let subject, text;
+    if (status === "approved") {
+      subject = "Account Approved";
+      text = `Hi ${displayName}, your account has been approved!`;
+    } else if (status === "disapproved") {
+      subject = "Account Disapproved";
+      text = `Hi ${displayName}, your account has been disapproved. Please contact support for more details.`;
+    }
+
+    await sendEmail(email, subject, text);
+  }
+
+  async function sendEmail(to, subject, text) {
+    const message = {
+      text: text, // Plain text email content
+      html: `<p>${text}</p>`, // HTML version of the same content
+    };
+
+    try {
+      // Create a new document in the "mail" collection in Firestore
+      await addDoc(collection(db, "mail"), {
+        to: [to], // 'to' field as an array (Firebase requires this)
+        message: message, // 'message' field containing text and HTML
+        subject: subject, // 'subject' of the email
+        timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
+      });
+
+      console.log("Email data stored in Firestore for:", to);
+    } catch (error) {
+      console.error("Error storing email in Firestore:", error);
+    }
   }
 
   searchBtn.addEventListener("click", () => {
-    fetchAndDisplayUsers(searchInput.value, selectedUserType, 1);
+    const searchTerm = searchInput.value.trim();
+    fetchAndDisplayUsers(searchTerm, selectedUserType, currentPage);
   });
 
-  // Filter buttons for applicants and clients
   clientBtn.addEventListener("click", () => {
     selectedUserType = "client";
-    fetchAndDisplayUsers(searchInput.value, selectedUserType, 1);
+    fetchAndDisplayUsers(searchInput.value, selectedUserType, currentPage);
   });
 
   applicantBtn.addEventListener("click", () => {
     selectedUserType = "applicant";
-    fetchAndDisplayUsers(searchInput.value, selectedUserType, 1);
+    fetchAndDisplayUsers(searchInput.value, selectedUserType, currentPage);
   });
 
-  // Initially fetch and display all users
-  fetchAndDisplayUsers("", "", 1);
+  fetchAndDisplayUsers();
 });

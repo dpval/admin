@@ -276,23 +276,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Function to send email notification
   async function sendEmailNotification({ to, subject, message }) {
     try {
-      const response = await fetch("http://localhost:3000/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Store the email information in Firestore
+      await addDoc(collection(db, "mail"), {
+        to: [to], // 'to' field as an array (Firebase requires this)
+        subject: subject,
+        message: {
+          text: message, // Optional plain text version of the message
+          html: `<p>${message}</p>`, // HTML version of the message
         },
-        body: JSON.stringify({ to, subject, message }),
+        timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
       });
-      if (!response.ok) {
-        throw new Error("Failed to send email notification.");
-      }
-
-      const result = await response.json();
-      console.log("Email sent successfully:", result);
+  
+      console.log(`Email data stored in Firestore for ${to} with subject: ${subject}`);
     } catch (error) {
-      console.error("Error sending email notification:", error);
+      console.error("Error storing email in Firestore:", error);
     }
   }
+  
 
   // Export to PDF
   async function exportToPDF() {

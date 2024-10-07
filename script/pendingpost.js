@@ -398,12 +398,14 @@ import {
   where,
   doc,
   getDoc,
+  addDoc,
   updateDoc,
   serverTimestamp,
   runTransaction,
   collectionGroup,
   addDoc,
   orderBy,
+  Timestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 // Pagination variables
@@ -672,24 +674,44 @@ export async function fetchClientPosts() {
   });
 
   // Function to send email via Node.js backend
-  function sendEmail(to, subject, text) {
-    fetch("http://localhost:3000/send-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ to, subject, text }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("Email sent successfully");
-        } else {
-          console.error("Failed to send email:", response.statusText);
-        }
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error);
+  // function sendEmail(to, subject, text) {
+  //   fetch("http://localhost:3000/send-email", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ to, subject, text }),
+  //   })
+  //     .then((response) => {
+  //       if (response.ok) {
+  //         console.log("Email sent successfully");
+  //       } else {
+  //         console.error("Failed to send email:", response.statusText);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error sending email:", error);
+  //     });
+  // }
+  async function sendEmail(to, subject, text) {
+    const message = {
+      text: text, // Plain text email content
+      html: `<p>${text}</p>`, // HTML version of the same content
+    };
+  
+    try {
+      // Create a new document in the "mail" collection in Firestore
+      await addDoc(collection(db, "mail"), {
+        to: [to],            // 'to' field as an array (Firebase requires this)
+        message: message,    // 'message' field containing text and HTML
+        subject: subject,    // 'subject' of the email
+        timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
       });
+  
+      console.log("Email data stored in Firestore for:", to);
+    } catch (error) {
+      console.error("Error storing email in Firestore:", error);
+    }
   }
 
   // Helper function to get user email

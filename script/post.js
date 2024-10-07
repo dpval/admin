@@ -278,26 +278,27 @@ disapproveBtn.addEventListener("click", async () => {
     return userDoc.exists() ? userDoc.data().email : null;
   }
 
-  function sendEmail(toEmail, subject, body) {
-    fetch("http://localhost:3000/send-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        to: toEmail,
+  async function sendEmail(toEmail, subject, body) {
+    try {
+      const message = {
+        text: body, // Optional plain text version of the message
+        html: `<p>${body}</p>`, // HTML version of the message
+      };
+  
+      // Store the email information in Firestore
+      await addDoc(collection(db, "mail"), {
+        to: [toEmail], // 'to' field as an array (Firebase requires this)
         subject: subject,
-        message: body,
-      }),
-    })
-      .then((response) => response.text())
-      .then((data) => {
-        console.log("Email sent:", data);
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error);
+        message: message,
+        timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
       });
+  
+      console.log(`Email data stored in Firestore for ${toEmail}`);
+    } catch (error) {
+      console.error("Error storing email in Firestore:", error);
+    }
   }
+  
 
   closeModal.addEventListener("click", () => {
     modal.style.display = "none";

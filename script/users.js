@@ -209,39 +209,39 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, { firsttimestatus: newStatus });
-
+  
       // Fetch user details for sending email
       const userDoc = await getDoc(userRef);
       const userData = userDoc.data();
       const userEmail = userData.email;
-
-      // Send email notification based on the new status
+  
+      // Prepare email subject and message based on the new status
       let subject = "";
       let message = "";
-
+  
       if (newStatus === "approved") {
         subject = "Your application has been approved!";
         message = `<p>Dear ${userData.display_name},</p>
-                       <p>Your application has been approved. You can now proceed to the next steps.</p>`;
+                   <p>Your application has been approved. You can now proceed to the next steps.</p>`;
       } else if (newStatus === "disapproved") {
         subject = "Your application has been disapproved.";
         message = `<p>Dear ${userData.display_name},</p>
-                       <p>We regret to inform you that your application has been disapproved. Please contact support for further information.</p>`;
+                   <p>We regret to inform you that your application has been disapproved. Please contact support for further information.</p>`;
       }
-
-      // Make a POST request to send an email notification
-      await fetch("http://localhost:3000/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+  
+      // Store the email data in Firestore for sending
+      await addDoc(collection(db, "mail"), {
+        to: [userEmail], // 'to' field as an array (Firebase requires this)
+        subject: subject,
+        message: {
+          text: message.replace(/<[^>]*>/g, ''), // Plain text version
+          html: message, // HTML version
         },
-        body: JSON.stringify({
-          to: userEmail,
-          subject: subject,
-          message: message,
-        }),
+        timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
       });
-
+  
+      console.log(`Email data stored in Firestore for ${userEmail} with subject: ${subject}`);
+  
       // Refresh UI and close modal
       fetchAndDisplayUsers(searchInput.value.trim(), selectedUserType);
       modal.style.display = "none";
@@ -249,6 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error updating user status or sending email: ", error);
     }
   }
+  
 
   searchBtn.addEventListener("click", () => {
     const searchTerm = searchInput.value.trim();

@@ -283,23 +283,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Function to send email notification
   async function sendEmailNotification({ to, subject, message }) {
     try {
-      const response = await fetch("http://localhost:3000/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Create the email message in HTML format
+      const emailMessage = `<p>${message}</p>`; // Simple HTML message
+  
+      // Store the email information in Firestore
+      await addDoc(collection(db, "mail"), {
+        to: [to], // 'to' field as an array (Firebase requires this)
+        subject: subject,
+        message: {
+          text: message, // Plain text version of the message
+          html: emailMessage, // HTML version of the message
         },
-        body: JSON.stringify({ to, subject, message }),
+        timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
       });
-
-      if (response.ok) {
-        console.log(`Email sent successfully to ${to}`);
-      } else {
-        console.error("Failed to send email");
-      }
+  
+      console.log(`Email data stored in Firestore for ${to} with subject: ${subject}`);
     } catch (error) {
-      console.error("Error sending email:", error);
+      console.error("Error storing email in Firestore:", error);
     }
   }
+  
 
   // Filter and Refresh button event listeners
   filterPendingBtn.addEventListener("click", () =>

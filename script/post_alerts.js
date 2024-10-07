@@ -105,21 +105,22 @@ async function sendEmailNotification(toEmail, clientName, status) {
     const message = `<p>Dear ${clientName},</p>
                      <p>Your task is marked as <b>${status}</b>. Please take the necessary actions.</p>`;
 
-    await fetch("http://localhost:3000/send-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    // Store the email information in Firestore
+    await addDoc(collection(db, "mail"), {
+      to: [toEmail], // 'to' field as an array (Firebase requires this)
+      subject: subject,
+      message: {
+        text: message, // Optional plain text version of the message
+        html: message, // HTML version of the message
       },
-      body: JSON.stringify({
-        to: toEmail,
-        subject: subject,
-        message: message,
-      }),
+      timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
     });
-    console.log(`Email sent to ${toEmail} for ${status} status.`);
+
+    console.log(`Email data stored in Firestore for ${toEmail} with status: ${status}`);
   } catch (error) {
-    console.error("Error sending email notification:", error);
+    console.error("Error storing email in Firestore:", error);
   }
 }
+
 
 document.addEventListener("DOMContentLoaded", fetchClientPosts);

@@ -92,33 +92,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Send email via server
   async function sendEmailNotification(toEmail, clientName, subject, message) {
     try {
+      // Create the email message in HTML format
       const emailMessage = `<p>Dear ${clientName},</p><p>${message}</p>`;
-
-      const response = await fetch("http://localhost:3000/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+  
+      // Store the email information in Firestore
+      await addDoc(collection(db, "mail"), {
+        to: [toEmail], // 'to' field as an array (Firebase requires this)
+        subject: subject,
+        message: {
+          text: message, // Optional plain text version of the message
+          html: emailMessage, // HTML version of the message
         },
-        body: JSON.stringify({
-          to: toEmail,
-          subject: subject,
-          message: emailMessage,
-        }),
+        timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
       });
-
-      if (response.ok) {
-        console.log(`Email sent to ${toEmail} with subject: ${subject}`);
-        alert(`Email sent successfully to ${toEmail}`);
-      } else {
-        alert("Failed to send email. Please try again.");
-      }
-
+  
+      console.log(`Email data stored in Firestore for ${toEmail} with subject: ${subject}`);
+      alert(`Email sent successfully to ${toEmail}`);
+      
       closeModal(); // Close the modal after sending email
     } catch (error) {
-      console.error("Error sending email notification:", error);
+      console.error("Error storing email in Firestore:", error);
       alert("An error occurred while sending the email.");
     }
   }
+  
 
   // Event listener for send email button in the modal
   sendEmailBtn.addEventListener("click", async () => {
