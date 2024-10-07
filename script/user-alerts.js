@@ -5,6 +5,7 @@ import {
   query,
   orderBy,
   doc,
+  addDoc,
   updateDoc,
   getDoc,
   Timestamp,
@@ -37,29 +38,30 @@ function formatDate(timestamp) {
 // Function to send an email notification when the status is "Needs Action"
 async function sendEmailNotification(userData) {
   const subject = "Urgent: Barangay Clearance Update Required";
-  const message = `<p>Dear ${userData.display_name},</p>
-                   <p>Your Barangay Clearance is about to expire. Please update it as soon as possible to avoid any interruptions.</p>`;
+  const message = {
+    text: `Dear ${userData.display_name},\nYour Barangay Clearance is about to expire. Please update it as soon as possible to avoid any interruptions.`,
+    html: `<p>Dear ${userData.display_name},</p>
+           <p>Your Barangay Clearance is about to expire. Please update it as soon as possible to avoid any interruptions.</p>`,
+    subject: subject // Add subject within the message object
+  };
 
   try {
-    await fetch("http://127.0.0.1:8080/send-email", {
-      // Adjust the URL based on your server setup
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        to: userData.email,
-        subject: subject,
-        message: message,
-      }),
+    // Create a new document in the "mail" collection in Firestore
+    await addDoc(collection(db, "mail"), {
+      to: [userData.email], // 'to' field as an array
+      message: message,     // 'message' field containing text, HTML, and subject
+      timestamp: Timestamp.now(), // Using Firestore's Timestamp
     });
-    console.log("Email sent successfully to:", userData.email);
+
+    console.log("Email data stored in Firestore for:", userData.email);
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Error storing email in Firestore:", error);
   }
 }
 
-// Function to update expiration date and status in Firestore
+
+
+
 // Function to update expiration date and status in Firestore
 async function updateExpirationDate(userId, newExpirationDate) {
   const userDocRef = doc(db, "users", userId); // Reference to the user's document
