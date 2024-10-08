@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       allUsersTable.innerHTML = ""; // Clear the table before adding rows
 
       // Loop through each top-up entry
+      // Loop through each top-up entry
       for (const docSnap of querySnapshot.docs) {
         const walletData = docSnap.data();
         const walletTopUpId = docSnap.id;
@@ -60,6 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           note,
           recepit,
           status,
+          currentTime, // Include currentTime
         } = walletData;
 
         // Fetch the user document to get the display_name, lastname, and email
@@ -111,6 +113,21 @@ document.addEventListener("DOMContentLoaded", async () => {
           receiptLink.target = "_blank";
           receiptTd.appendChild(receiptLink);
           tr.appendChild(receiptTd);
+
+          // Date
+          const dateTd = document.createElement("td");
+          // Format the currentTime to a readable format
+          const formattedDate = currentTime.toDate().toLocaleString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            hour12: true,
+          });
+          dateTd.textContent = formattedDate; // Set the formatted date
+          tr.appendChild(dateTd);
 
           // Actions: Conditional display of Approve/Disapprove buttons or text
           const actionsTd = document.createElement("td");
@@ -185,77 +202,79 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Approve top-up and update the user's wallet and admin earnings  // Approve top-up and update the user's wallet and admin earnings
-    // Approve top-up and update the user's wallet and admin earnings
-    async function approveTopUp(
-        walletTopUpId,
-        walletID,
-        adminID,
-        userRef,
-        finalAmount,
-        deduction,
-        clientName,
-        email,
-        amount
-      ) {
-        try {
-          // Update top-up status to "Approved"
-          const topUpRef = doc(db, "walletTopUp", walletTopUpId);
-          await updateDoc(topUpRef, { status: "approved" });
-    
-          // Update user's wallet balance using the walletID from walletTopUp collection
-          const walletRef = doc(db, walletID.path);
-          const walletDoc = await getDoc(walletRef);
-    
-          if (walletDoc.exists()) {
-            const walletData = walletDoc.data();
-            const newBalance = walletData.balance + finalAmount;
-            await updateDoc(walletRef, { balance: newBalance });
-          } else {
-            console.error("No wallet found for user");
-          }
-    
-          // Update admin cash fund using adminID reference
-          const adminCashRef = doc(db, adminID.path);
-          const adminCashDoc = await getDoc(adminCashRef);
-    
-          if (adminCashDoc.exists()) {
-            const adminData = adminCashDoc.data();
-            const newEarnings = adminData.earnings + deduction;
-            await updateDoc(adminCashRef, { earnings: newEarnings });
-          } else {
-            console.error("No admin earnings record found");
-          }
-    
-          // Create document in /walletNotification collection for user
-          const walletNotificationRef = collection(db, "walletNotification");
-          await addDoc(walletNotificationRef, {
-            currentTime: Timestamp.now(), // Firestore Timestamp for current time
-            tokenDeduct: finalAmount,
-            type: "Plus",
-            typeofTransaction: "Approved TopUp",
-            userID: userRef, // Reference to user document
-            walletID: walletRef, // Reference to wallet document
-          });
-    
-          // Create document in /admin_WalletNotification collection
-          const adminWalletNotificationRef = collection(db, "admin_WalletNotification");
-          await addDoc(adminWalletNotificationRef, {
-            amount: deduction, // The 5% deduction
-            currentTime: Timestamp.now(), // Firestore Timestamp for current time
-            type: "Top Up",
-          });
-    
-          // Send email notification for approval
-          await sendEmailNotification({
-            to: email,
-            subject: "Top-Up Approved",
-            message: `Dear ${clientName},<br>Your top-up of ${amount} has been approved. After a 5% deduction, a total of ${finalAmount} TAUken has been added to your wallet.`,
-          });
-        } catch (error) {
-          console.error("Error approving top-up:", error);
-        }
+  // Approve top-up and update the user's wallet and admin earnings
+  async function approveTopUp(
+    walletTopUpId,
+    walletID,
+    adminID,
+    userRef,
+    finalAmount,
+    deduction,
+    clientName,
+    email,
+    amount
+  ) {
+    try {
+      // Update top-up status to "Approved"
+      const topUpRef = doc(db, "walletTopUp", walletTopUpId);
+      await updateDoc(topUpRef, { status: "approved" });
+
+      // Update user's wallet balance using the walletID from walletTopUp collection
+      const walletRef = doc(db, walletID.path);
+      const walletDoc = await getDoc(walletRef);
+
+      if (walletDoc.exists()) {
+        const walletData = walletDoc.data();
+        const newBalance = walletData.balance + finalAmount;
+        await updateDoc(walletRef, { balance: newBalance });
+      } else {
+        console.error("No wallet found for user");
       }
-    
+
+      // Update admin cash fund using adminID reference
+      const adminCashRef = doc(db, adminID.path);
+      const adminCashDoc = await getDoc(adminCashRef);
+
+      if (adminCashDoc.exists()) {
+        const adminData = adminCashDoc.data();
+        const newEarnings = adminData.earnings + deduction;
+        await updateDoc(adminCashRef, { earnings: newEarnings });
+      } else {
+        console.error("No admin earnings record found");
+      }
+
+      // Create document in /walletNotification collection for user
+      const walletNotificationRef = collection(db, "walletNotification");
+      await addDoc(walletNotificationRef, {
+        currentTime: Timestamp.now(), // Firestore Timestamp for current time
+        tokenDeduct: finalAmount,
+        type: "Plus",
+        typeofTransaction: "Approved TopUp",
+        userID: userRef, // Reference to user document
+        walletID: walletRef, // Reference to wallet document
+      });
+
+      // Create document in /admin_WalletNotification collection
+      const adminWalletNotificationRef = collection(
+        db,
+        "admin_WalletNotification"
+      );
+      await addDoc(adminWalletNotificationRef, {
+        amount: deduction, // The 5% deduction
+        currentTime: Timestamp.now(), // Firestore Timestamp for current time
+        type: "Top Up",
+      });
+
+      // Send email notification for approval
+      await sendEmailNotification({
+        to: email,
+        subject: "Top-Up Approved",
+        message: `Dear ${clientName},<br>Your top-up of ${amount} has been approved. After a 5% deduction, a total of ${finalAmount} TAUken has been added to your wallet.`,
+      });
+    } catch (error) {
+      console.error("Error approving top-up:", error);
+    }
+  }
 
   // Disapprove top-up
   async function disapproveTopUp(
@@ -282,27 +301,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Function to send email notification
   async function sendEmailNotification({ to, subject, message }) {
-  try {
-    // Create the email message in HTML format
-    const emailMessage = `<p>${message}</p>`; // Simple HTML message
+    try {
+      // Create the email message in HTML format
+      const emailMessage = `<p>${message}</p>`; // Simple HTML message
 
-    // Store the email information in Firestore
-    await addDoc(collection(db, "mail"), {
-      to: [to], // 'to' field as an array (Firebase requires this)
-      subject: subject,
-      message: {
-        text: message, // Plain text version of the message
-        html: emailMessage, // HTML version of the message
-      },
-      timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
-    });
+      // Store the email information in Firestore
+      await addDoc(collection(db, "mail"), {
+        to: [to], // 'to' field as an array (Firebase requires this)
+        subject: subject,
+        message: {
+          text: message, // Plain text version of the message
+          html: emailMessage, // HTML version of the message
+        },
+        timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
+      });
 
-    console.log(`Email data stored in Firestore for ${to} with subject: ${subject}`);
-  } catch (error) {
-    console.error("Error storing email in Firestore:", error);
+      console.log(
+        `Email data stored in Firestore for ${to} with subject: ${subject}`
+      );
+    } catch (error) {
+      console.error("Error storing email in Firestore:", error);
+    }
   }
-}
-
 
   // Filter and Refresh button event listeners
   filterPendingBtn.addEventListener("click", () =>
@@ -316,42 +336,47 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
   refreshBtn.addEventListener("click", () => fetchWalletTopUps());
 
+  // Function to export to Word
+  function exportToWord() {
+    const table = document.querySelector("table").outerHTML;
+    const blob = new Blob(
+      [
+        '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>' +
+          table +
+          "</body></html>",
+      ],
+      {
+        type: "application/msword",
+      }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "wallet_top_up_list.doc";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
+  // Function to export to Excel
+  function exportToExcel() {
+    const table = document.querySelector("table").outerHTML;
+    const blob = new Blob(["\uFEFF" + table], {
+      type: "application/vnd.ms-excel",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "wallet_top_up_list.xls";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
-// Function to export to Word
-function exportToWord() {
-  const table = document.querySelector("table").outerHTML;
-  const blob = new Blob(['<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>' + table + '</body></html>'], {
-      type: 'application/msword'
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "wallet_top_up_list.doc";
-  a.click();
-  URL.revokeObjectURL(url);
-}
+  // Add event listener for the button
 
-// Function to export to Excel
-function exportToExcel() {
-  const table = document.querySelector("table").outerHTML;
-  const blob = new Blob(['\uFEFF' + table], {
-      type: 'application/vnd.ms-excel'
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "wallet_top_up_list.xls";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// Add event listener for the button
-
-
-document.getElementById("exportWord").addEventListener("click", exportToWord);
-document.getElementById("exportExcel").addEventListener("click", exportToExcel);
-
+  document.getElementById("exportWord").addEventListener("click", exportToWord);
+  document
+    .getElementById("exportExcel")
+    .addEventListener("click", exportToExcel);
 
   // Initial fetch to show all data
   fetchWalletTopUps();
