@@ -18,9 +18,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const filterApprovedBtn = document.getElementById("filterApproved");
   const filterDisapprovedBtn = document.getElementById("filterDisapproved");
   const refreshBtn = document.getElementById("refresh");
+  let currentPage = 1;
+  const recordsPerPage = 5; // Adjust as per your requirement
+  let totalPages = 1; // This will be calculated later
+
+  const prevPageBtn = document.getElementById("prevPage");
+  const nextPageBtn = document.getElementById("nextPage");
+  const pageInfo = document.getElementById("pageInfo");
 
   // Fetch wallet top-ups based on status filter
-  async function fetchWalletTopUps(status = null) {
+  async function fetchWalletTopUps(status = null, page = 1) {
     try {
       let walletTopUpQuery;
 
@@ -43,11 +50,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const querySnapshot = await getDocs(walletTopUpQuery);
 
+      const totalRecords = querySnapshot.size; // Get the total number of records
+      totalPages = Math.ceil(totalRecords / recordsPerPage); // Calculate total pages
+
+      // Paginate records
+      const startAtIndex = (page - 1) * recordsPerPage;
+      const endAtIndex = startAtIndex + recordsPerPage;
+
+      const paginatedDocs = querySnapshot.docs.slice(startAtIndex, endAtIndex);
+
+
       allUsersTable.innerHTML = ""; // Clear the table before adding rows
 
       // Loop through each top-up entry
       // Loop through each top-up entry
-      for (const docSnap of querySnapshot.docs) {
+      for (const docSnap of paginatedDocs) {
         const walletData = docSnap.data();
         const walletTopUpId = docSnap.id;
         const userRef = walletData.userID;
@@ -195,11 +212,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else {
           console.error("No user found for reference: ", userRef.id);
         }
-      }
+      }updatePaginationControls();
     } catch (error) {
       console.error("Error fetching wallet top-ups:", error);
     }
   }
+   // Update pagination controls based on current state
+   function updatePaginationControls() {
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+    prevPageBtn.disabled = currentPage === 1;
+    nextPageBtn.disabled = currentPage === totalPages;
+  }
+
+  // Event listeners for pagination buttons
+  prevPageBtn.addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      fetchWalletTopUps(null, currentPage);
+    }
+  });
+
+  nextPageBtn.addEventListener("click", () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      fetchWalletTopUps(null, currentPage);
+    }
+  });
+
 
   // Approve top-up and update the user's wallet and admin earnings  // Approve top-up and update the user's wallet and admin earnings
   // Approve top-up and update the user's wallet and admin earnings

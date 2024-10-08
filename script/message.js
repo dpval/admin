@@ -7,7 +7,10 @@ import {
   query,
   addDoc,
   Timestamp,
+  deleteDoc,
   orderBy,
+  limit,
+  startAfter
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -19,8 +22,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const closeModalBtn = document.getElementsByClassName("close")[0];
   const cancelBtn = document.getElementById("cancelBtn");
 
+  // Pagination elements
+  const prevPageButton = document.getElementById("prevPage");
+  const nextPageButton = document.getElementById("nextPage");
+  const pageInfo = document.getElementById("pageInfo");
+
   let currentEmail = ""; // Store current email and name for sending
   let currentClientName = "";
+
+  let pageSize = 5; // Number of messages per page
+  let lastVisible = null; // Track the last document of the current page
+  let firstVisible = null; // Track the first document for previous button
+  let currentPage = 1; // Track the current page
 
   // Show the modal
   function showModal(email, clientName) {
@@ -34,17 +47,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     emailModal.style.display = "none";
   }
 
-  // Fetch all messages from Firestore
-  async function fetchAllMessages() {
+  // Fetch all messages from Firestore with pagination
+  async function fetchAllMessages(page = 1, direction = 'next') {
     try {
-      const q = query(
-        collection(db, "admin_messageofusers"),
-        orderBy("createdtime", "desc")
-      );
-      const querySnapshot = await getDocs(q);
-
       allMessagesTable.innerHTML = ""; // Clear existing table rows
 
+      let q;
+      if (direction === 'next') {
+        if (page === 1) {
+          // First page query, ordered by createdtime
+          q = query(collection(db, "admin_messageofusers"), orderBy("createdtime", "desc"), limit(pageSize));
+        } else {
+          // For next pages, use `startAfter`
+          q = query(collection(db, "admin_messageofusers"), orderBy("createdtime", "desc"), startAfter(lastVisible), limit(pageSize));
+        }
+      } else if (direction === 'prev' && firstVisible) {
+        // For previous page, use the firstVisible to go back
+        q = query(collection(db, "admin_messageofusers"), orderBy("createdtime", "desc"), startAfter(firstVisible), limit(pageSize));
+      }
+
+      const querySnapshot = await getDocs(q);
+
+      // Track the first and last visible document for pagination
+      firstVisible = querySnapshot.docs[0];
+      lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+      // Render messages to the table
       for (const docSnap of querySnapshot.docs) {
         const messageData = docSnap.data();
         const userRef = messageData.sender; // Reference to /users/{userId}
@@ -66,11 +94,20 @@ document.addEventListener("DOMContentLoaded", async () => {
           messageTd.textContent = userMessage;
 
           const actionTd = document.createElement("td");
+
+          // Create Reply button with Pencil Icon
           const replyBtn = document.createElement("button");
-          replyBtn.textContent = "Reply";
+          replyBtn.innerHTML = '<i class="fa fa-pencil" style="color:orange"></i>'; // Assuming FontAwesome is used for the pencil icon
           replyBtn.classList.add("details-btn");
 
-          actionTd.appendChild(replyBtn); // Append reply button to action cell
+          // Create Delete button with Trash Icon
+          const deleteBtn = document.createElement("button");
+          deleteBtn.innerHTML = '<i class="fa fa-trash" style="color:red"></i>'; // Assuming FontAwesome is used for the trash icon
+          deleteBtn.classList.add("delete-btn");
+
+          // Append buttons to action cell
+          actionTd.appendChild(replyBtn);
+          actionTd.appendChild(deleteBtn);
           tr.appendChild(nameTd);
           tr.appendChild(messageTd);
           tr.appendChild(actionTd);
@@ -84,13 +121,40 @@ document.addEventListener("DOMContentLoaded", async () => {
               "Thank you for your message. We will get back to you shortly."; // Predefined message
             showModal(email, `${display_name} ${lastname}`);
           });
+
+          // Add event listener for delete button to delete message
+          deleteBtn.addEventListener("click", async () => {
+            if (confirm(`Are you sure you want to delete the message from ${display_name} ${lastname}?`)) {
+              await deleteDoc(doc(db, "admin_messageofusers", docSnap.id));
+              alert("Message deleted successfully.");
+              fetchAllMessages(currentPage); // Refresh the table after deletion
+            }
+          });
         }
       }
+
+      // Update pagination controls
+      pageInfo.textContent = `Page ${currentPage}`;
+      prevPageButton.disabled = currentPage === 1;
+      nextPageButton.disabled = querySnapshot.docs.length < pageSize;
     } catch (error) {
       console.error("Error fetching all messages:", error);
       alert("Failed to fetch messages. Please check the console for details.");
     }
   }
+
+  // Event listener for pagination
+  prevPageButton.addEventListener("click", async () => {
+    if (currentPage > 1) {
+      currentPage--;
+      await fetchAllMessages(currentPage, 'prev');
+    }
+  });
+
+  nextPageButton.addEventListener("click", async () => {
+    currentPage++;
+    await fetchAllMessages(currentPage, 'next');
+  });
 
   // Send email via server
   async function sendEmailNotification(toEmail, clientName, subject, message) {
@@ -137,5 +201,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   closeModalBtn.addEventListener("click", closeModal);
   cancelBtn.addEventListener("click", closeModal);
 
-  fetchAllMessages(); // Fetch all messages on page load
+  fetchAllMessages(); // Fetch the first page of messages on page load
 });

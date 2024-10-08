@@ -12,13 +12,13 @@ import {
 // Format the date to "September 28, 2024 at 9:11:28 AM"
 function formatDate(firebaseDate) {
   const date = new Date(firebaseDate.seconds * 1000); // Convert Firebase Timestamp to JavaScript Date
-  return date.toLocaleString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
+  return date.toLocaleString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
     hour12: true,
   });
 }
@@ -38,9 +38,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   const exportPDFBtn = document.getElementById("exportPDF");
   const exportExcelBtn = document.getElementById("exportExcel");
   const exportWordBtn = document.getElementById("exportWord");
+  // Pagination variables
+  let currentPage = 1;
+  const recordsPerPage = 10; // Adjust as per your requirement
+  let totalPages = 1; // This will be calculated based on the total records
+
+  const prevPageBtn = document.getElementById("prevPage");
+  const nextPageBtn = document.getElementById("nextPage");
+  const pageInfo = document.getElementById("pageInfo");
 
   // Fetch earnings history and populate the table
-  async function fetchEarningsHistory() {
+  async function fetchEarningsHistory(page = 1) {
     try {
       totalEarnings = 0; // Reset total earnings each time the data is fetched
 
@@ -50,21 +58,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         orderBy("currentTime") // Order by the current time
       );
       const walletTopUpSnapshot = await getDocs(walletTopUpQuery);
+      const totalRecords = walletTopUpSnapshot.size; // Get the total number of records
+      totalPages = Math.ceil(totalRecords / recordsPerPage); // Calculate total pages
 
+      // Paginate records
+      const startAtIndex = (page - 1) * recordsPerPage;
+      const endAtIndex = startAtIndex + recordsPerPage;
+
+      const paginatedDocs = walletTopUpSnapshot.docs.slice(
+        startAtIndex,
+        endAtIndex
+      );
       allUsersTable.innerHTML = ""; // Clear the table before adding rows
 
       // Loop through each approved transaction in walletTopUp
-      for (const docSnap of walletTopUpSnapshot.docs) {
+      for (const docSnap of paginatedDocs) {
         const transactionData = docSnap.data();
         const userRef = transactionData.userID;
-        const { amount, method, typeoftransaction, date, currentTime } = transactionData;
+        const { amount, method, typeoftransaction, date, currentTime } =
+          transactionData;
 
         // Apply filters (search, date, transaction type)
         const searchTerm = searchInput.value.toLowerCase();
         const selectedType = statusFilter.value;
         const fromDate = dateFrom.value ? new Date(dateFrom.value) : null;
         const toDate = dateTo.value ? new Date(dateTo.value) : null;
-        const transactionDate = currentTime ? new Date(currentTime.seconds * 1000) : null; // Convert Firestore Timestamp to Date
+        const transactionDate = currentTime
+          ? new Date(currentTime.seconds * 1000)
+          : null; // Convert Firestore Timestamp to Date
 
         // Skip if the transaction type doesn't match the selected filter (if any filter is selected)
         if (selectedType && selectedType !== typeoftransaction) continue;
@@ -132,14 +153,37 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         allUsersTable.appendChild(tr);
       }
-
+      updatePaginationControls();
       // Display the total earnings
-      totalEarningsHeader.textContent = `Total Earnings: ${totalEarnings.toFixed(2)}`;
+      totalEarningsHeader.textContent = `Total Earnings: ${totalEarnings.toFixed(
+        2
+      )}`;
     } catch (error) {
       console.error("Error fetching earnings history:", error);
     }
   }
+  // Update pagination controls
+  function updatePaginationControls() {
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
 
+    prevPageBtn.disabled = currentPage === 1;
+    nextPageBtn.disabled = currentPage === totalPages;
+  }
+
+  // Event listeners for pagination buttons
+  prevPageBtn.addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      fetchEarningsHistory(currentPage);
+    }
+  });
+
+  nextPageBtn.addEventListener("click", () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      fetchEarningsHistory(currentPage);
+    }
+  });
   // Event listener for search/filter button
   searchBtn.addEventListener("click", fetchEarningsHistory);
 
@@ -168,7 +212,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Export to Excel
   exportExcelBtn.addEventListener("click", () => {
-    const workbook = XLSX.utils.table_to_book(document.getElementById("allUsers"));
+    const workbook = XLSX.utils.table_to_book(
+      document.getElementById("allUsers")
+    );
     XLSX.writeFile(workbook, "earnings-report.xlsx");
   });
 

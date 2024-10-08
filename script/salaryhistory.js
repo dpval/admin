@@ -2,82 +2,107 @@ import { db } from "../firebase.js";
 import {
   collection,
   getDocs,
-  doc,
-  getDoc,
-  updateDoc,
-  setDoc,
   query,
   where,
-  increment,
+  orderBy,
+  limit,
+  startAfter
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const allUsersTable = document.getElementById("allUsers");
-  const adminTAUkensDisplay = document.getElementById("adminTAUkens"); // Element to display admin TAUkens
+  const prevPageButton = document.getElementById("prevPage");
+  const nextPageButton = document.getElementById("nextPage");
+  const pageInfo = document.getElementById("pageInfo");
 
-  // Function to fetch and display admin TAUkens
-  async function fetchAdminTAUkens() {
-      const docRef = doc(db, "admin_CashFunds", "V1eVx88jTZdaaHru6zRK"); // Replace with the actual document ID
-      const docSnap = await getDoc(docRef);
+  let pageSize = 2; // Number of items per page
+  let lastVisible = null; // Track the last document of the current page
+  let firstVisible = null; // Track the first document of the current page
+  let currentPage = 1; // Track the current page number
 
-      if (docSnap.exists()) {
-          const adminTAUkensValue = docSnap.data().adminTAUkens; // Replace with the actual field name
-          document.getElementById("adminTAUkensValue").innerText = `Current Admin TAUkens: ${adminTAUkensValue}`;
-      } else {
-          document.getElementById("adminTAUkensValue").innerText = "No data available.";
+  async function fetchSalaryHistory(page = 1) {
+    try {
+      allUsersTable.innerHTML = ""; // Clear the table before adding rows
+
+      let historyQuery;
+      if (page === 1) {
+        // Initial page query, order by timestamp and limit the number of results
+        historyQuery = query(
+          collection(db, "admin_WalletNotification"),
+          where("typeofTransaction", "==", "Salary Pay for PostTask"),
+          orderBy("currentTime"),
+          limit(pageSize)
+        );
+      } else if (page > 1 && lastVisible) {
+        // If navigating to the next page, use `startAfter` to load the next set of results
+        historyQuery = query(
+          collection(db, "admin_WalletNotification"),
+          where("typeofTransaction", "==", "Salary Pay for PostTask"),
+          orderBy("currentTime"),
+          startAfter(lastVisible),
+          limit(pageSize)
+        );
       }
-  }
 
-  // Function to fetch and display wallet notifications with filter
-  async function fetchWalletNotifications() {
-      const notificationsRef = collection(db, "admin_WalletNotification");
-      const filteredQuery = query(notificationsRef, where("typeofTransaction", "==", "Salary Pay for PostTask"));
-      const snapshot = await getDocs(filteredQuery);
-      
-      // Clear any existing rows
-      allUsersTable.innerHTML = "";
+      const historySnapshot = await getDocs(historyQuery);
 
-      // Check if there are documents in the collection
-      if (snapshot.empty) {
-          allUsersTable.innerHTML = "<tr><td colspan='4'>No notifications available.</td></tr>";
-          return;
-      }
+      // Store the first and last visible documents for navigation
+      firstVisible = historySnapshot.docs[0];
+      lastVisible = historySnapshot.docs[historySnapshot.docs.length - 1];
 
-      // Loop through each document in the snapshot
-      snapshot.forEach(doc => {
-          const data = doc.data();
-          
-          // Create a new row for each document
-          const row = document.createElement("tr");
-          
-          // Format the currentTime
-          const formattedDate = formatDate(data.currentTime); // Assuming currentTime is a Firestore Timestamp
-          
-          row.innerHTML = `
-              <td>${data.amount}</td> <!-- Ensure these match your Firestore field names -->
-              <td>${formattedDate}</td> <!-- Display formatted date -->
-              <td>${data.type}</td>
-              <td>${data.typeofTransaction}</td>
-          `;
-          allUsersTable.appendChild(row); // Append the row to the table body
+      // Loop through each document in the snapshot and create table rows
+      historySnapshot.forEach(doc => {
+        const data = doc.data();
+        const formattedDate = formatDate(data.currentTime); // Format the Firestore Timestamp
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${data.amount}</td>
+          <td>${formattedDate}</td>
+          <td>${data.type}</td>
+          <td>${data.typeofTransaction}</td>
+        `;
+
+        allUsersTable.appendChild(row); // Append the row to the table body
       });
+
+      // Update pagination controls
+      pageInfo.textContent = `Page ${currentPage}`;
+      prevPageButton.disabled = currentPage === 1;
+      nextPageButton.disabled = historySnapshot.empty || historySnapshot.docs.length < pageSize;
+
+    } catch (error) {
+      console.error("Error fetching salary history:", error);
+    }
   }
 
   // Helper function to format Firestore Timestamp to desired format
   function formatDate(timestamp) {
-      const date = new Date(timestamp.seconds * 1000); // Convert Firestore Timestamp to JavaScript Date
-      return date.toLocaleString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-          second: 'numeric',
-          hour12: true,
-      }).replace(',', ' at'); // Format to "September 18, 2024 at 5:01:03 PM"
+    const date = new Date(timestamp.seconds * 1000); // Convert Firestore Timestamp to JavaScript Date
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true,
+    }).replace(',', ' at'); // Format to "September 18, 2024 at 5:01:03 PM"
   }
 
-  // Fetch both admin TAUkens and wallet notifications on page load
-  await fetchAdminTAUkens();
-  await fetchWalletNotifications();
+  // Pagination controls
+  prevPageButton.addEventListener("click", async () => {
+    if (currentPage > 1) {
+      currentPage--;
+      await fetchSalaryHistory(currentPage);
+    }
+  });
+
+  nextPageButton.addEventListener("click", async () => {
+    currentPage++;
+    await fetchSalaryHistory(currentPage);
+  });
+
+  // Initial fetch
+  await fetchSalaryHistory(currentPage);
 });

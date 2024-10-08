@@ -14,19 +14,36 @@ document.addEventListener("DOMContentLoaded", async () => {
   const exportExcelBtn = document.getElementById("exportExcel");
   const exportWordBtn = document.getElementById("exportWord");
 
+    // Pagination variables
+    let currentPage = 1;
+    const recordsPerPage = 6; // Adjust as per your requirement
+    let totalPages = 1; // This will be calculated based on the total records
+  
+    const prevPageBtn = document.getElementById("prevPage");
+    const nextPageBtn = document.getElementById("nextPage");
+    const pageInfo = document.getElementById("pageInfo");
+
   // Fetch payment history and populate the table
-  async function fetchPaymentHistory() {
+  async function fetchPaymentHistory(page = 1) {
     try {
       const paymentHistoryQuery = query(
         collection(db, "walletTopUp"),
         orderBy("amount", "desc")
       );
       const querySnapshot = await getDocs(paymentHistoryQuery);
+      const totalRecords = querySnapshot.size; // Get the total number of records
+      totalPages = Math.ceil(totalRecords / recordsPerPage); // Calculate total pages
+
+      // Paginate records
+      const startAtIndex = (page - 1) * recordsPerPage;
+      const endAtIndex = startAtIndex + recordsPerPage;
+
+      const paginatedDocs = querySnapshot.docs.slice(startAtIndex, endAtIndex);
 
       allUsersTable.innerHTML = ""; // Clear the table before adding rows
 
       // Loop through each payment history record
-      for (const docSnap of querySnapshot.docs) {
+      for (const docSnap of paginatedDocs) {
         const paymentData = docSnap.data();
         const userRef = paymentData.userID;
         const {
@@ -87,12 +104,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else {
           console.error("No user found for reference: ", userRef.id);
         }
-      }
+      } updatePaginationControls();
     } catch (error) {
       console.error("Error fetching payment history:", error);
     }
   }
+// Update pagination controls
+function updatePaginationControls() {
+  pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
 
+  prevPageBtn.disabled = currentPage === 1;
+  nextPageBtn.disabled = currentPage === totalPages;
+}
+
+// Event listeners for pagination buttons
+prevPageBtn.addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    fetchPaymentHistory(currentPage);
+  }
+});
+
+nextPageBtn.addEventListener("click", () => {
+  if (currentPage < totalPages) {
+    currentPage++;
+    fetchPaymentHistory(currentPage);
+  }
+});
   // Export to PDF
  // Export to PDF
 // Export to PDF

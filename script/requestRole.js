@@ -298,11 +298,11 @@ async function exportToWord(requests) {
 // Add buttons for exporting
 function addExportButtons(requests) {
   const exportDiv = document.createElement('div');
-  exportDiv.innerHTML = `
-    <button id="exportPDF">Export to PDF</button>
-    <button id="exportExcel">Export to Excel</button>
-    <button id="exportWord">Export to Word</button>
-  `;
+  // exportDiv.innerHTML = `
+  //   <button id="exportPDF">Export to PDF</button>
+  //   <button id="exportExcel">Export to Excel</button>
+  //   <button id="exportWord">Export to Word</button>
+  // `;
   document.body.appendChild(exportDiv);
 
   // Attach event listeners to the buttons

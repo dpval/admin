@@ -19,6 +19,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const filterDisapprovedBtn = document.getElementById("filterDisapproved");
   const refreshBtn = document.getElementById("refresh");
 
+  // Pagination variables
+  let currentPage = 1;
+  const recordsPerPage = 1; // Adjust as per your requirement
+  let totalPages = 1; // This will be calculated based on the total records
+
+  const prevPageBtn = document.getElementById("prevPage");
+  const nextPageBtn = document.getElementById("nextPage");
+  const pageInfo = document.getElementById("pageInfo");
+
   // Format Firestore Timestamp into a readable date
   function formatTimestamp(timestamp) {
     const date = timestamp.toDate();
@@ -35,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Fetch cash-out requests based on status filter
-  async function fetchCashOutRequests(status = null) {
+  async function fetchCashOutRequests(status = null, page = 1) {
     try {
       let cashOutQuery;
 
@@ -58,6 +67,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const querySnapshot = await getDocs(cashOutQuery);
 
+      const totalRecords = querySnapshot.size; // Get the total number of records
+      totalPages = Math.ceil(totalRecords / recordsPerPage); // Calculate total page
+      // Paginate records
+      const startAtIndex = (page - 1) * recordsPerPage;
+      const endAtIndex = startAtIndex + recordsPerPage;
+
+      const paginatedDocs = querySnapshot.docs.slice(startAtIndex, endAtIndex);
       allUsersTable.innerHTML = ""; // Clear the table before adding rows
 
       // Fetch all related users before processing the cash-out requests
@@ -68,7 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       // Loop through each cash-out request
-      for (const docSnap of querySnapshot.docs) {
+      for (const docSnap of paginatedDocs) {
         const cashOutData = docSnap.data();
         const cashOutId = docSnap.id;
         const userRef = cashOutData.userID;
@@ -190,11 +206,33 @@ document.addEventListener("DOMContentLoaded", async () => {
           console.error("No user found for reference: ", userRef);
         }
       }
+      updatePaginationControls();
     } catch (error) {
       console.error("Error fetching cash-out requests:", error);
     }
   }
+  // Update pagination controls
+  function updatePaginationControls() {
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
 
+    prevPageBtn.disabled = currentPage === 1;
+    nextPageBtn.disabled = currentPage === totalPages;
+  }
+
+  // Event listeners for pagination buttons
+  prevPageBtn.addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      fetchCashOutRequests(null, currentPage);
+    }
+  });
+
+  nextPageBtn.addEventListener("click", () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      fetchCashOutRequests(null, currentPage);
+    }
+  });
   // Approve cash-out and update the user's wallet and admin earnings
   async function approveCashOut(
     cashOutId,
@@ -286,13 +324,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
       });
-  
-      console.log(`Email data stored in Firestore for ${to} with subject: ${subject}`);
+
+      console.log(
+        `Email data stored in Firestore for ${to} with subject: ${subject}`
+      );
     } catch (error) {
       console.error("Error storing email in Firestore:", error);
     }
   }
-  
 
   // Export to PDF
   async function exportToPDF() {
