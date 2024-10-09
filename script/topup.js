@@ -37,14 +37,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           collection(db, "walletTopUp"),
           where("typeoftransaction", "==", "TopUp"),
           where("status", "==", status),
-          orderBy("amount", "desc")
+          orderBy("currentTime", "desc")
         );
       } else {
         // Fetch all records when no status filter is applied
         walletTopUpQuery = query(
           collection(db, "walletTopUp"),
           where("typeoftransaction", "==", "TopUp"),
-          orderBy("amount", "desc")
+          orderBy("currentTime", "desc")
         );
       }
 

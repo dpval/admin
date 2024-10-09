@@ -50,6 +50,13 @@ async function fetchClientPosts(filters = {}, page = 1) {
           where("status", "==", filters.status)
         );
       }
+      if (filters.urgent) {
+        // Assuming `urgent` is stored as "Urgent" or "Not Urgent"
+        postTaskQuery = query(
+          postTaskQuery,
+          where("urgent", "==", filters.urgent)
+        );
+      }
 
       const postTaskSnapshot = await getDocs(postTaskQuery);
       postTaskSnapshot.forEach((postDoc) => {
@@ -101,7 +108,7 @@ function paginatePosts(page) {
       <td>${postData.barangay}</td>
       <td>${postData.applicationcount}</td>
       <td>${postData.status}</td>
-      <td>${postData.urgent ? "Yes" : "No"}</td>
+      <td>${postData.urgent === "Urgent" ? "Urgent" : "Not Urgent"}</td> <!-- Handle the urgent string here -->
     `;
     allPosts.appendChild(row);
   });
@@ -141,18 +148,20 @@ function applyFilters() {
   const dateFrom = document.getElementById("dateFrom").value;
   const dateTo = document.getElementById("dateTo").value;
   const statusFilter = document.getElementById("statusFilter").value;
+  const urgentFilter = document.getElementById("urgentFilter").value; // Assuming urgent filter
 
   fetchClientPosts(
     {
       dateFrom: dateFrom || null,
       dateTo: dateTo || null,
       status: statusFilter || null,
+      urgent: urgentFilter || null, // Filter by "Urgent" or "Not Urgent"
     },
     currentPage
   );
 }
 
-// Export functions
+// Export to Word
 function exportToWord(posts) {
   let html = `<h1>Client Posts</h1><table style="width:100%; border-collapse: collapse;">
                 <tr>
@@ -178,7 +187,7 @@ function exportToWord(posts) {
                 }</td>
                 <td style="border: 1px solid black;">${post.status}</td>
                 <td style="border: 1px solid black;">${
-                  post.urgent ? "Yes" : "No"
+                  post.urgent === "Urgent" ? "Urgent" : "Not Urgent"
                 }</td>
               </tr>`;
   });
@@ -194,6 +203,7 @@ function exportToWord(posts) {
   URL.revokeObjectURL(url);
 }
 
+// Export to Excel
 function exportToExcel(posts) {
   const formattedData = posts.map((post) => ({
     Date: new Date(post.createdtime.seconds * 1000).toLocaleString(),
@@ -202,7 +212,7 @@ function exportToExcel(posts) {
     Barangay: post.barangay,
     "Application Count": post.applicationcount,
     Status: post.status,
-    Urgent: post.urgent ? "Yes" : "No",
+    Urgent: post.urgent === "Urgent" ? "Urgent" : "Not Urgent", // Handle urgent field here
   }));
 
   const worksheet = XLSX.utils.json_to_sheet(formattedData);
@@ -223,32 +233,54 @@ function exportToExcel(posts) {
   XLSX.writeFile(workbook, "client_posts.xlsx");
 }
 
-// Event listeners for dynamic filtering by date range
-document.getElementById("dateFrom").addEventListener("input", applyFilters);
-document.getElementById("dateTo").addEventListener("input", applyFilters);
-document
-  .getElementById("statusFilter")
-  .addEventListener("change", applyFilters);
-
-// Event listener for Refresh button
-document.getElementById("refreshBtn").addEventListener("click", () => {
-  document.getElementById("dateFrom").value = "";
-  document.getElementById("dateTo").value = "";
-  document.getElementById("statusFilter").value = "";
-  fetchClientPosts(); // Fetch all posts without any filter
-});
-
-// Event listener for Search button
-document.getElementById("searchBtn").addEventListener("click", applyFilters);
-
-document.getElementById("exportWord").addEventListener("click", () => {
-  fetchClientPosts().then((posts) => exportToWord(posts));
-});
-document.getElementById("exportExcel").addEventListener("click", () => {
-  fetchClientPosts().then((posts) => exportToExcel(posts));
-});
-
-// Fetch all posts on page load
 document.addEventListener("DOMContentLoaded", () => {
+  // Fetch elements and add event listeners only if they exist
+  const dateFrom = document.getElementById("dateFrom");
+  const dateTo = document.getElementById("dateTo");
+  const statusFilter = document.getElementById("statusFilter");
+  const urgentFilter = document.getElementById("urgentFilter");
+  const searchBtn = document.getElementById("searchBtn");
+  const refreshBtn = document.getElementById("refreshBtn");
+  const exportWordBtn = document.getElementById("exportWord");
+  const exportExcelBtn = document.getElementById("exportExcel");
+
+  // Check if each element exists before attaching event listeners
+  if (dateFrom) {
+    dateFrom.addEventListener("input", applyFilters);
+  }
+  if (dateTo) {
+    dateTo.addEventListener("input", applyFilters);
+  }
+  if (statusFilter) {
+    statusFilter.addEventListener("change", applyFilters);
+  }
+  if (urgentFilter) {
+    urgentFilter.addEventListener("change", applyFilters);
+  }
+  if (searchBtn) {
+    searchBtn.addEventListener("click", applyFilters);
+  }
+  if (refreshBtn) {
+    refreshBtn.addEventListener("click", () => {
+      // Reset filter fields and fetch posts
+      if (dateFrom) dateFrom.value = "";
+      if (dateTo) dateTo.value = "";
+      if (statusFilter) statusFilter.value = "";
+      if (urgentFilter) urgentFilter.value = "";
+      fetchClientPosts(); // Fetch all posts without any filter
+    });
+  }
+  if (exportWordBtn) {
+    exportWordBtn.addEventListener("click", () => {
+      fetchClientPosts().then((posts) => exportToWord(posts));
+    });
+  }
+  if (exportExcelBtn) {
+    exportExcelBtn.addEventListener("click", () => {
+      fetchClientPosts().then((posts) => exportToExcel(posts));
+    });
+  }
+
+  // Fetch all posts on page load
   fetchClientPosts();
 });
