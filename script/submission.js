@@ -4,11 +4,13 @@ import {
   getDocs,
   query,
   where,
+  doc,
+  updateDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 // Variables for pagination
 let currentPage = 1;
-const postsPerPage = 10; // Number of posts per page
+const postsPerPage = 5; // Number of posts per page
 let totalPages = 1;
 let currentPosts = [];
 
@@ -21,6 +23,10 @@ async function fetchClientPosts(filters = {}, page = 1) {
   noPostsMessage.style.display = "none"; // Hide 'no post' message by default
 
   const posts = []; // Array to store posts data
+  const currentDate = new Date(); // Get the current date and time
+  const philippineTime = new Date().toLocaleString("en-US", {
+    timeZone: 'Asia/Manila',
+  });
 
   try {
     const usersCollection = collection(db, "users");
@@ -35,13 +41,13 @@ async function fetchClientPosts(filters = {}, page = 1) {
       if (filters.dateFrom) {
         postTaskQuery = query(
           postTaskQuery,
-          where("createdtime", ">=", new Date(filters.dateFrom))
+          where("date", ">=", new Date(filters.dateFrom))
         );
       }
       if (filters.dateTo) {
         postTaskQuery = query(
           postTaskQuery,
-          where("createdtime", "<=", new Date(filters.dateTo))
+          where("date", "<=", new Date(filters.dateTo))
         );
       }
       if (filters.status) {
@@ -51,7 +57,6 @@ async function fetchClientPosts(filters = {}, page = 1) {
         );
       }
       if (filters.urgent) {
-        // Assuming `urgent` is stored as "Urgent" or "Not Urgent"
         postTaskQuery = query(
           postTaskQuery,
           where("urgent", "==", filters.urgent)
@@ -59,8 +64,23 @@ async function fetchClientPosts(filters = {}, page = 1) {
       }
 
       const postTaskSnapshot = await getDocs(postTaskQuery);
-      postTaskSnapshot.forEach((postDoc) => {
+      postTaskSnapshot.forEach(async (postDoc) => {
         const postData = postDoc.data();
+
+        // Get the timestamp and convert it to a Date object
+        const postDate = new Date(postData.date.seconds * 1000);
+
+        // Logic to update status based on conditions
+        if (new Date(philippineTime) > postDate && postData.status !== "Salary Sent Back") {
+          if (postData.status !== "Archived") {
+            // If it's not already Archived or Salary Sent Back, set status to Archived
+            await updateDoc(doc(db, `users/${userDoc.id}/postTask`, postDoc.id), {
+              status: "Archived",
+            });
+            console.log(`Status set to Archived for post ${postDoc.id}`);
+          }
+        }
+
         posts.push(postData); // Add post data to the array
         hasPosts = true; // Mark that we have at least one post
       });
@@ -91,7 +111,7 @@ function paginatePosts(page) {
   paginatedPosts.forEach((postData) => {
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${new Date(postData.createdtime.seconds * 1000).toLocaleString(
+      <td>${new Date(postData.date.seconds * 1000).toLocaleString(
         "en-US",
         {
           month: "long",
@@ -105,7 +125,7 @@ function paginatePosts(page) {
       )}</td>
       <td>${postData.category}</td>
       <td>${postData.subcategory}</td>
-      <td>${postData.barangay}</td>
+      <td>${postData.location}</td>
       <td>${postData.applicationcount}</td>
       <td>${postData.status}</td>
       <td>${
@@ -163,6 +183,7 @@ function applyFilters() {
   );
 }
 
+
 // Export to Word
 function exportToWord(posts) {
   let html = `<h1>Client Posts</h1><table style="width:100%; border-collapse: collapse;">
@@ -170,7 +191,7 @@ function exportToWord(posts) {
                   <th style="border: 1px solid black;">Date</th>
                   <th style="border: 1px solid black;">Category</th>
                   <th style="border: 1px solid black;">Subcategory</th>
-                  <th style="border: 1px solid black;">Barangay</th>
+                  <th style="border: 1px solid black;">Location</th>
                   <th style="border: 1px solid black;">Application Count</th>
                   <th style="border: 1px solid black;">Status</th>
                   <th style="border: 1px solid black;">Urgent</th>
@@ -179,11 +200,11 @@ function exportToWord(posts) {
   posts.forEach((post) => {
     html += `<tr>
                 <td style="border: 1px solid black;">${new Date(
-                  post.createdtime.seconds * 1000
+                  post.date.seconds * 1000
                 ).toLocaleString()}</td>
                 <td style="border: 1px solid black;">${post.category}</td>
                 <td style="border: 1px solid black;">${post.subcategory}</td>
-                <td style="border: 1px solid black;">${post.barangay}</td>
+                <td style="border: 1px solid black;">${post.location}</td>
                 <td style="border: 1px solid black;">${
                   post.applicationcount
                 }</td>
@@ -208,10 +229,10 @@ function exportToWord(posts) {
 // Export to Excel
 function exportToExcel(posts) {
   const formattedData = posts.map((post) => ({
-    Date: new Date(post.createdtime.seconds * 1000).toLocaleString(),
+    Date: new Date(post.date.seconds * 1000).toLocaleString(),
     Category: post.category,
     Subcategory: post.subcategory,
-    Barangay: post.barangay,
+    Location: post.location,
     "Application Count": post.applicationcount,
     Status: post.status,
     Urgent: post.urgent === "Urgent" ? "Urgent" : "Not Urgent", // Handle urgent field here
@@ -283,6 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Fetch all posts on page load
-  fetchClientPosts();
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchClientPosts(); // Fetch all posts on page load
+  });
 });
