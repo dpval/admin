@@ -108,7 +108,9 @@ function paginatePosts(page) {
       <td>${postData.barangay}</td>
       <td>${postData.applicationcount}</td>
       <td>${postData.status}</td>
-      <td>${postData.urgent === "Urgent" ? "Urgent" : "Not Urgent"}</td> <!-- Handle the urgent string here -->
+      <td>${
+        postData.urgent === "Urgent" ? "Urgent" : "Not Urgent"
+      }</td> <!-- Handle the urgent string here -->
     `;
     allPosts.appendChild(row);
   });

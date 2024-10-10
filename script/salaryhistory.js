@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const nextPageButton = document.getElementById("nextPage");
   const pageInfo = document.getElementById("pageInfo");
 
-  let pageSize = 2; // Number of items per page
+  let pageSize = 10; // Number of items per page
   let lastVisible = null; // Track the last document of the current page
   let firstVisible = null; // Track the first document of the current page
   let currentPage = 1; // Track the current page number

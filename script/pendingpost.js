@@ -821,7 +821,7 @@ function showModal(postData) {
   postImage.src = postData.image;
   postDescription.textContent = postData.description;
   postStartingTime.textContent = new Date(
-    postData.startingtime.seconds * 1000
+    postData.date.seconds * 1000
   ).toLocaleString();
   postCategory.textContent = postData.category;
   postSubCategory.textContent = postData.subcategory;

@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let activeUserCount = 0;
   let inactiveUserCount = 0;
+  let filteredDataArray = []; // Array to store filtered results for search
 
   // Format the date and time
   function formatDateTime(timestamp) {
@@ -111,6 +112,8 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         });
 
+        // Copy userDataArray to filteredDataArray initially (for filtering)
+        filteredDataArray = [...userDataArray];
         renderTable(); // Render the table with pagination
       });
     } catch (error) {
@@ -123,11 +126,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const tbody = activeUsersTable.querySelector("tbody");
     tbody.innerHTML = ""; // Clear the previous rows
 
-    const totalPages = Math.ceil(userDataArray.length / rowsPerPage);
+    const totalPages = Math.ceil(filteredDataArray.length / rowsPerPage);
     const start = currentPage * rowsPerPage;
     const end = start + rowsPerPage;
 
-    userDataArray.slice(start, end).forEach((user) => {
+    filteredDataArray.slice(start, end).forEach((user) => {
       const tr = document.createElement("tr");
 
       // Name column with photo
@@ -178,13 +181,29 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("nextPage").addEventListener("click", () => {
-    const totalPages = Math.ceil(userDataArray.length / rowsPerPage);
+    const totalPages = Math.ceil(filteredDataArray.length / rowsPerPage);
     if (currentPage < totalPages - 1) {
       currentPage++;
       renderTable();
     }
   });
 
+  // Function to filter the data based on search input
+  function filterData(query) {
+    query = query.toLowerCase();
+    filteredDataArray = userDataArray.filter((user) =>
+      user.displayName.toLowerCase().includes(query)
+    );
+    currentPage = 0; // Reset to first page
+    renderTable();
+  }
+
+  // Listen for input event to search dynamically
+  searchInput.addEventListener("input", (event) => {
+    filterData(event.target.value);
+  });
+
   // Initial fetch of active users with no filter
   fetchAndDisplayActiveUsers();
 });
+
