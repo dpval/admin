@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Pagination variables
   let currentPage = 1;
-  const recordsPerPage = 1; // Adjust as per your requirement
+  const recordsPerPage = 9; // Adjust as per your requirement
   let totalPages = 1; // This will be calculated based on the total records
 
   const prevPageBtn = document.getElementById("prevPage");
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Query by status if a filter is applied
         cashOutQuery = query(
           collection(db, "walletTopUp"),
-          where("typeoftransaction", "==", "Cash Out"),
+          where("typeoftransaction", "==", "CashOut"),
           where("status", "==", status),
           orderBy("amount", "desc")
         );
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Fetch all records when no status filter is applied
         cashOutQuery = query(
           collection(db, "walletTopUp"),
-          where("typeoftransaction", "==", "Cash Out"),
+          where("typeoftransaction", "==", "CashOut"),
           orderBy("amount", "desc")
         );
       }
@@ -234,9 +234,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
   // Approve cash-out and update the user's wallet and admin earnings
+  // Approve cash-out and update the user's wallet and admin earnings
   async function approveCashOut(
     cashOutId,
-    walletID,
+    walletID, // Ensure this is either a DocumentReference or a valid path string
     adminID,
     userRef,
     clientName,
@@ -248,14 +249,30 @@ document.addEventListener("DOMContentLoaded", async () => {
       const cashOutRef = doc(db, "walletTopUp", cashOutId);
       await updateDoc(cashOutRef, { status: "approved" });
 
-      // Update user's wallet balance (deduct the amount)
-      const walletRef = doc(db, walletID.path);
+      // Check if walletID is a DocumentReference or a string path
+      let walletRef;
+      if (typeof walletID === "object" && walletID.path) {
+        // It's a DocumentReference
+        walletRef = walletID;
+      } else if (typeof walletID === "string") {
+        // It's a string, create a DocumentReference
+        walletRef = doc(
+          db,
+          walletID.startsWith("/") ? walletID.slice(1) : walletID
+        );
+      } else {
+        throw new Error("Invalid walletID");
+      }
+
       const walletDoc = await getDoc(walletRef);
 
       if (walletDoc.exists()) {
         const walletData = walletDoc.data();
         const newBalance = walletData.balance - amount; // Deduct cash-out amount
         await updateDoc(walletRef, { balance: newBalance });
+        console.log(
+          `Wallet ${walletRef.id} updated. New balance: ${newBalance}`
+        );
       } else {
         console.error("No wallet found for user");
       }
