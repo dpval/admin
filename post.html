@@ -125,39 +125,87 @@
       --------------- -->
 
       <main>
-        <div class="charts-container">
-          <!-- Pending Posts -->
-          <div class="analytics-item pending-posts-container">
-            <h3>Pending Posts</h3>
-            <div class="circle-status">
-              <canvas id="pendingPostsChart"></canvas>
-              <p class="count">10</p> <!-- Static count for now -->
+       
+        <h1>Post Task Analytics</h1>
+        <div class="ranking-wrapper">
+          <div class="ranking-container">
+            <div class="ranking-chart-container">
+              <h2>Top Category</h2>
+              <canvas id="topCategorysChart"></canvas>
             </div>
-          </div>
-      
-          <!-- Submission Line Graph -->
-          <div class="analytics-item submission-status-container">
-            <h3>Submission Status</h3>
-            <canvas id="submissionStatusChart"></canvas>
-          </div>
-      
-          <!-- Alerts -->
-          <div class="analytics-item alerts-container">
-            <h3>Alerts</h3>
-            <div class="alert-warning">
-              <span class="material-symbols-sharp large-icon">warning</span>
-              <p>No new alerts</p>
+
+            <div class="ranking-chart-container">
+              <h2>Top Location</h2>
+              <canvas id="topLocationsChart"></canvas>
             </div>
-          </div>
-      
-          <!-- Archive Posts Bar Graph -->
-          <div class="analytics-item archive-posts-container">
-            <h3>Archive Posts</h3>
-            <canvas id="archivePostsChart"></canvas>
+
+            <div class="ranking-chart-container">
+              <h2>Top Date Posting</h2>
+              <canvas id="topDatesChart"></canvas>
+            </div>
           </div>
         </div>
+
+        <div class="recent_order">
+          <!-- <h2>Total for Past 30days</h2> -->
+        
+          <table>
+            <thead>
+              <tr>
+                <th>Client Name</th>
+                <th>Category</th>
+                <th>Sub-Category</th>
+                <th>Starting Time</th>
+                <th>Status</th>
+                <th>Action</th>
+                <!-- New column for actions -->
+              </tr>
+            </thead>
+            <tbody id="allUsers">
+              <!-- Dynamic content will be inserted here -->
+            </tbody>
+          </table>
+        </div>
       </main>
-      
+      <style>body {
+        font-family: Arial, sans-serif; /* Font for the body */
+    }
+    
+    main {
+        padding: 20px; /* Add some padding */
+    }
+    
+    .ranking-wrapper {
+        display: flex;
+        flex-direction: column; /* Stack elements vertically */
+        align-items: center; /* Center-align children */
+    }
+    
+    .ranking-container {
+        display: flex;
+        justify-content: space-between; /* Space charts evenly */
+        width: 100%; /* Full width for the container */
+        max-width: 1200px; /* Limit the width */
+        margin-bottom: 20px; /* Add some space below */
+    }
+    
+    .ranking-chart-container {
+        flex: 1; /* Allow charts to grow equally */
+        margin: 0 10px; /* Add space between charts */
+        min-width: 300px; /* Minimum width for each chart */
+    }
+    
+    .ranking-chart-container h2 {
+        text-align: center; /* Center-align chart titles */
+    }
+    
+    canvas {
+        width: 100%; /* Make canvas fill the container */
+        height: 200px; /* Set a fixed height for the charts */
+        background-color: #f0f0f0; /* Background color for the canvas */
+        border: 1px solid #ccc; /* Add border to canvas */
+    }
+    </style>
       
       <!-- end main -->
 
@@ -172,5 +220,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <!-- Include your chart scripts -->
     <script src="script/charts.js"></script>
+    <script type="module" src="script/chartsfortops.js"></script>
+    <script type="module" src="script/archivePost.js"></script>
   </body>
 </html>

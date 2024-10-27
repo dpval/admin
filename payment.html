@@ -173,20 +173,70 @@
         <div class="transaction">
           <h1>Payment Transaction</h1>
           <div class="ranking-container">
-              <div class="ranking-chart-container">
-                  <h2>TopUp Transactions</h2>
-                  <canvas id="topUpGraph"></canvas>
-              </div>
-              <div class="ranking-chart-container">
-                  <h2>CashOut Transactions</h2>
-                  <canvas id="cashOutGraph"></canvas>
-              </div>
-              <div class="ranking-chart-container">
-                  <h2>Earnings</h2>
-                  <canvas id="earningsGraph"></canvas>
-              </div>
+            <div class="line-graph-container">
+              <h2>Top Up TAUkens</h2>
+              <canvas id="topUpChart"></canvas>
+            </div>
+  
+            <div class="line-graph-container">
+              <h2>Cash Out TAUkens</h2>
+              <canvas id="cashOutChart"></canvas>
+            </div>
           </div>
       </div>
+      <style>/* General body styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        
+        /* Transaction section */
+        .transaction {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Title styling */
+        .transaction h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        /* Ranking container styling */
+        .ranking-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px; /* Space between the charts */
+        }
+        
+        /* Individual graph container styling */
+        .line-graph-container {
+            flex: 1; /* Make charts equally take available space */
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Chart titles */
+        .line-graph-container h2 {
+            text-align: center;
+            color: #555;
+        }
+        
+        /* Canvas element styling */
+        canvas {
+            width: 100% !important; /* Ensures canvas takes full width */
+            height: auto !important; /* Maintain aspect ratio */
+            max-height: 400px; /* Limit height to maintain a compact layout */
+        }
+        </style>
       
         <!-- <div class="insights">
           <div class="recent_order">
@@ -223,7 +273,7 @@
       </main>
       
 <!--rightsidebar-->
-<div class="right">
+<!-- <div class="right">
   <div class="top">
     <button id="menu_bar">
       <span class="material-symbols-sharp">menu</span>
@@ -252,85 +302,14 @@
     </div>
   </div>
 
+</div> -->
 </div>
-</div>
 
 
-    <!-- Include your JavaScript files -->
-    <script type="module" src="firebase.js"></script>
-    <script type="module" src="script/payment.js"></script>
-    <script>
-      // TopUp line graph
-      const ctxTopUp = document.getElementById('topUpGraph').getContext('2d');
-      const topUpChart = new Chart(ctxTopUp, {
-        type: 'line',
-        data: {
-          labels: ['January', 'February', 'March', 'April', 'May', 'June'], // Example labels
-          datasets: [{
-            label: 'TopUp Transactions',
-            data: [120, 150, 180, 130, 170, 210], // Example data
-            borderColor: 'rgba(75, 192, 192, 1)',
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-
-      // CashOut line graph
-      const ctxCashOut = document.getElementById('cashOutGraph').getContext('2d');
-      const cashOutChart = new Chart(ctxCashOut, {
-        type: 'line',
-        data: {
-          labels: ['January', 'February', 'March', 'April', 'May', 'June'], // Example labels
-          datasets: [{
-            label: 'CashOut Transactions',
-            data: [100, 120, 140, 110, 160, 190], // Example data
-            borderColor: 'rgba(255, 99, 132, 1)',
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-
-      // Earnings line graph
-      const ctxEarnings = document.getElementById('earningsGraph').getContext('2d');
-      const earningsChart = new Chart(ctxEarnings, {
-        type: 'line',
-        data: {
-          labels: ['January', 'February', 'March', 'April', 'May', 'June'], // Example labels
-          datasets: [{
-            label: 'Earnings',
-            data: [50, 70, 90, 80, 100, 130], // Example data
-            borderColor: 'rgba(54, 162, 235, 1)',
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-    </script>
+<script type="module" src="firebase.js"></script>
+<script type="module" src="script/script.js"></script>
+<script type="module" src="script/chartsfortops.js"></script>
+<script type="module" src="script/chart.js"></script>
+    
   </body>
 </html>

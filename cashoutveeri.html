@@ -19,6 +19,12 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
+    <!-- For PDF Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- For Excel Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
   </head>
   <body>
     <div class="container">
@@ -32,58 +38,20 @@
           </div>
         </div>
         <div class="sidebar">
-          <a href="homepage.html">
-            <span class="material-symbols-sharp">grid_view</span>
-            <h3>Dashboard</h3>
-          </a>
-          <a href="user.html">
-            <span class="material-symbols-sharp">person_outline</span>
-            <h3>Users</h3>
-          </a>
-          <a href="post.html">
-            <span class="material-symbols-sharp">insights</span>
-            <h3>Post</h3>
-          </a>
-          <a href="message.html">
-            <span class="material-symbols-sharp">mail_outline</span>
-            <h3>Messages</h3>
-            <span class="msg_count">0</span>
-          </a>
-
+          
+         
           <!-- Payments dropdown -->
-          <a href="payment.html" onclick="togglePaymentDropdown()">
+          <a href="paymentverifier.html" onclick="togglePaymentDropdown()">
             <span class="material-symbols-sharp">receipt_long</span>
             <h3>Payments</h3>
           </a>
           <div id="paymentDropdown" class="dropdown-content">
-            <a href="topup.html" class="active">Top Up</a>
-            <a href="cashout.html">Cash Out</a>
-            <!-- <a href="paymentalerts.html">Alerts</a> -->
-            <a href="payment-history.html">Payment History</a>
-            <a href="earnings.html">Earnings</a>
-            <a href="sumarryofearnings.html">Summary of Earnings</a>
+            <a href="topupveri.html" >Top Up</a>
+            <a href="cashoutveeri.html"class="active">Cash Out</a>
+           
           </div>
-          <a href="application.html">
-            <span class="material-symbols-sharp">app_registration</span>
-            <h3>Application</h3>
-        </a>
-          <a href="report.html">
-            <span class="material-symbols-sharp">report_gmailerrorred</span>
-            <h3>Feedback Reports</h3>
-          </a>
-          <a href="categorymanagement.html">
-            <span class="material-symbols-sharp">add</span>
-            <h3>Add Categories</h3>
-          </a>
-          <a href="adminAddTokens.html">
-            <span class="material-symbols-sharp">monetization_on</span> <!-- New icon for currency -->
-            <h3>Add TAUkens</h3>
-          </a>
-          <a href="auditTrail.html">
-            <span class="material-symbols-sharp">history</span> <!-- New icon for audit trail -->
-            <h3>Audit Trail</h3>
-          </a>
-          <a href="#">
+        
+          <a href="index.html" id="logoutLink">
             <span class="material-symbols-sharp">logout</span>
             <h3>Logout</h3>
           </a>
@@ -128,7 +96,7 @@
         <div class="insights">
         <!-- All Users Section -->
         <div class="recent_order">
-          <h2>Wallet Top Up List</h2>
+          <h2>Wallet Cash Out List</h2>
           
           <!-- Filter buttons -->
           <div class="filters">
@@ -136,22 +104,24 @@
             <button id="filterApproved">Approved</button>
             <button id="filterDisapproved">Disapproved</button>
             <button id="refresh">Refresh</button>
-            <!-- Export buttons -->
-            <!-- <button id="exportToPDFButton">Export to PDF</button> -->
-            <button id="exportWord">Export to Word</button>
-            <button id="exportExcel"style="background-color: #28a745; color: white;">Export to Excel</button>
         </div>
+        <div class="export-options">
+          <button id="exportPdf">Export PDF</button>
+          <button id="exportExcel">Export Excel</button>
+          <button id="exportWord">Export Word</button>
+      </div>
+      
+              
         
           <table>
             <thead>
               <tr>
-                <th>Client Name</th>
+                <th>Name</th>
                 <th>Amount</th>
                 <th>Method</th>
                 <th>Account Name</th>
                 <th>Account Number</th>
                 <th>Note</th>
-                <th>Receipt</th>
                 <th>Date</th>
                 <th>Actions</th>
               </tr>
@@ -187,13 +157,7 @@
       
     </div>
     <!-- Include your JavaScript files -->
-
-<!-- Your JavaScript files -->
-<script type="module" src="firebase.js"></script>
-<script type="module" src="script/topup.js"></script>
-
-
-    
-    
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="script/cashout.js"></script>
   </body>
 </html>
