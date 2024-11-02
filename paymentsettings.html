@@ -94,7 +94,7 @@
           <!-- Payments dropdown -->
           <a
             href="payment.html"
-            class="active"
+          
             onclick="togglePaymentDropdown()"
           >
             <span class="material-symbols-sharp">receipt_long</span>
@@ -107,7 +107,7 @@
             <a href="payment-history.html">Payment History</a>
             <a href="earnings.html">Earnings</a>
             <a href="sumarryofearnings.html">Summary of Earnings</a>
-            <a href="paymentsettings.html">Settings</a>
+            <a href="paymentsettings.html"  class="active">Settings</a>
           </div>
           <a href="application.html">
             <span class="material-symbols-sharp">app_registration</span>
@@ -172,19 +172,46 @@
     
       <main>
         <div class="transaction">
-          <h1>Payment Transaction</h1>
-          <div class="ranking-container">
-            <div class="line-graph-container">
-              <h2>Top Up TAUkens</h2>
-              <canvas id="topUpChart"></canvas>
-            </div>
-  
-            <div class="line-graph-container">
-              <h2>Cash Out TAUkens</h2>
-              <canvas id="cashOutChart"></canvas>
+            <h1>Payment Transaction</h1>
+            <div class="ranking-container">
+              <div class="line-graph-container">
+                <h2>Top Up Conversion Rate</h2>
+                <button onclick="addTopUp()">Add Top-Up</button>
+                <table id="topuptable">
+                  <thead>
+                    <tr>
+                      <th>Number of TAUkens</th>
+                      <th>Amount</th>
+                      <th>Earnings</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Dynamic content will be inserted here -->
+                  </tbody>
+                </table>
+              </div>
+          
+              <div class="line-graph-container">
+                <h2>Cash Out Conversion Rate</h2>
+                <button onclick="addCashOut()">Add</button>
+                <table id="cashouttable">
+                  <thead>
+                    <tr>
+                      <th>Number of TAUkens</th>
+                      <th>Amount</th>
+                      <th>Earnings</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Dynamic content will be inserted here -->
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-      </div>
+          
       <style>/* General body styling */
         body {
             font-family: Arial, sans-serif;
@@ -308,9 +335,7 @@
 
 
 <script type="module" src="firebase.js"></script>
-<script type="module" src="script/script.js"></script>
-<script type="module" src="script/chartsfortops.js"></script>
-<script type="module" src="script/chart.js"></script>
+<script type="module" src="script/PAYMENTSETTING.js"></script>
     
   </body>
 </html>
