@@ -68,15 +68,15 @@ async function fetchEarningsHistory() {
       }
 
       const userRef = doc(db, "users", userID);
-      const { amount, method, typeoftransaction } = transactionData;
+      const { amount,token,earnings, method, typeoftransaction } = transactionData;
 
-      // Calculate the earnings based on the method
-      let earnings;
-      if (method === "E-Wallet") {
-        earnings = amount; // 100% deduction for E-Wallet
-      } else {
-        earnings = amount * 0.05; // 5% deduction for other methods
-      }
+      // // Calculate the earnings based on the method
+      // let earnings;
+      // if (method === "E-Wallet") {
+      //   earnings = amount; // 100% deduction for E-Wallet
+      // } else {
+      //   earnings = amount * 0.05; // 5% deduction for other methods
+      // }
 
       // Fetch the user document to get the client name
       const userDoc = await getDoc(userRef);
@@ -102,17 +102,19 @@ async function fetchEarningsHistory() {
       const amountTd = document.createElement("td");
       amountTd.textContent = amount.toFixed(2);
       tr.appendChild(amountTd);
+      // Amount
+      const tokenTd = document.createElement("td");
+      tokenTd.textContent = token;
+      tr.appendChild(tokenTd);
+      // Amount
+      const earningsTd = document.createElement("td");
+      earningsTd.textContent = earnings;
+      tr.appendChild(earningsTd);
 
       // Method
       const methodTd = document.createElement("td");
       methodTd.textContent = method;
       tr.appendChild(methodTd);
-
-      // Earnings
-      const earningsTd = document.createElement("td");
-      earningsTd.textContent = earnings.toFixed(2); // Display with 2 decimal places
-      tr.appendChild(earningsTd);
-
       // Transaction Type
       const transactionTypeTd = document.createElement("td");
       transactionTypeTd.textContent = typeoftransaction;

@@ -14,9 +14,9 @@ import {
 
 document.addEventListener("DOMContentLoaded", async () => {
   const allUsersTable = document.getElementById("allUsers");
-  const filterPendingBtn = document.getElementById("filterPending");
-  const filterApprovedBtn = document.getElementById("filterApproved");
-  const filterDisapprovedBtn = document.getElementById("filterDisapproved");
+  // const filterPendingBtn = document.getElementById("filterPending");
+  // const filterApprovedBtn = document.getElementById("filterApproved");
+  // const filterDisapprovedBtn = document.getElementById("filterDisapproved");
   const refreshBtn = document.getElementById("refresh");
 
   // Pagination variables
@@ -92,6 +92,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const adminID = cashOutData.adminID;
         const {
           amount,
+          token,
+          earnings,
           method,
           nameofAccount,
           numberofAccount,
@@ -119,6 +121,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           const amountTd = document.createElement("td");
           amountTd.textContent = amount;
           tr.appendChild(amountTd);
+            // Amount
+            const tokenTd = document.createElement("td");
+            tokenTd.textContent = token;
+            tr.appendChild(tokenTd);
+            // Amount
+            const earningsTd = document.createElement("td");
+            earningsTd.textContent = earnings;
+            tr.appendChild(earningsTd);
 
           // Method
           const methodTd = document.createElement("td");
@@ -368,46 +378,88 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Export to Excel
-  async function exportToExcel() {
-    const table = document.getElementById("allUsers");
-    const workbook = XLSX.utils.table_to_book(table, {
-      sheet: "CashOutRequests",
+  function exportToExcel() {
+    // Get the table element and clone it to preserve the original structure
+    const table = document.querySelector("table");
+    const clonedTable = table.cloneNode(true);
+  
+    // Calculate the totals
+    let totalAmount = 0;
+    let totalTokens = 0;
+    let totalEarnings = 0;
+  
+    // Assuming specific columns for Amount, Tokens, and Earnings (e.g., 2nd, 3rd, and 4th)
+    Array.from(clonedTable.rows).forEach((row, index) => {
+      if (index !== 0) { // Skip the header row
+        totalAmount += parseFloat(row.cells[1].innerText) || 0;
+        totalTokens += parseFloat(row.cells[2].innerText) || 0;
+        totalEarnings += parseFloat(row.cells[3].innerText) || 0;
+      }
     });
-    XLSX.writeFile(workbook, "cash_out_requests.xlsx");
+  
+    // Insert title rows at the top
+    const titleRow1 = clonedTable.insertRow(0);
+    titleRow1.innerHTML = `<td colspan="4" style="text-align:center; font-weight:bold; font-size:20px;">Transaction Report for Cash Out in Our Wallet</td>`;
+    
+    const titleRow2 = clonedTable.insertRow(1);
+    titleRow2.innerHTML = `<td colspan="4" style="text-align:center; font-weight:bold; font-size:16px;">System: Trade Are Us</td>`;
+  
+    // Add a total row at the bottom
+    const totalRow = clonedTable.insertRow(-1);
+    totalRow.innerHTML = `
+      <td><strong>Total:</strong></td>
+      <td>${totalAmount.toFixed(2)}</td>
+      <td>${totalTokens.toFixed(2)}</td>
+      <td>${totalEarnings.toFixed(2)}</td>
+    `;
+  
+    // Export the modified table to Excel
+    const tableHTML = clonedTable.outerHTML;
+    const blob = new Blob(["\uFEFF" + tableHTML], {
+      type: "application/vnd.ms-excel",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "wallet_cash_out_list.xls";
+    a.click();
+  
+    // Clean up by revoking the URL
+    URL.revokeObjectURL(url);
   }
 
   // Export to Word
-  async function exportToWord() {
-    const table = document.getElementById("allUsers");
-    let html = table.outerHTML;
-    let blob = new Blob([html], {
-      type: "application/msword",
-    });
-    let link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "cash_out_requests.doc";
-    link.click();
-  }
+  // async function exportToWord() {
+  //   const table = document.getElementById("allUsers");
+  //   let html = table.outerHTML;
+  //   let blob = new Blob([html], {
+  //     type: "application/msword",
+  //   });
+  //   let link = document.createElement("a");
+  //   link.href = URL.createObjectURL(blob);
+  //   link.download = "cash_out_requests.doc";
+  //   link.click();
+  // }
 
-  // Event listeners for export buttons
-  document.getElementById("exportPdf").addEventListener("click", exportToPDF);
+  // // Event listeners for export buttons
+  // document.getElementById("exportPdf").addEventListener("click", exportToPDF);
   document
     .getElementById("exportExcel")
     .addEventListener("click", exportToExcel);
-  document.getElementById("exportWord").addEventListener("click", exportToWord);
+  // document.getElementById("exportWord").addEventListener("click", exportToWord);
 
-  // Event listeners for filtering
-  filterPendingBtn.addEventListener("click", () => {
-    fetchCashOutRequests("pending");
-  });
+  // // Event listeners for filtering
+  // filterPendingBtn.addEventListener("click", () => {
+  //   fetchCashOutRequests("pending");
+  // });
 
-  filterApprovedBtn.addEventListener("click", () => {
-    fetchCashOutRequests("approved");
-  });
+  // filterApprovedBtn.addEventListener("click", () => {
+  //   fetchCashOutRequests("approved");
+  // });
 
-  filterDisapprovedBtn.addEventListener("click", () => {
-    fetchCashOutRequests("disapproved");
-  });
+  // filterDisapprovedBtn.addEventListener("click", () => {
+  //   fetchCashOutRequests("disapproved");
+  // });
 
   refreshBtn.addEventListener("click", () => {
     fetchCashOutRequests(); // Fetch all without filter

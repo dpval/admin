@@ -14,9 +14,9 @@ import {
 
 document.addEventListener("DOMContentLoaded", async () => {
   const allUsersTable = document.getElementById("allUsers");
-  const filterPendingBtn = document.getElementById("filterPending");
-  const filterApprovedBtn = document.getElementById("filterApproved");
-  const filterDisapprovedBtn = document.getElementById("filterDisapproved");
+  // const filterPendingBtn = document.getElementById("filterPending");
+  // const filterApprovedBtn = document.getElementById("filterApproved");
+  // const filterDisapprovedBtn = document.getElementById("filterDisapproved");
   const refreshBtn = document.getElementById("refresh");
   let currentPage = 1;
   const recordsPerPage = 5; // Adjust as per your requirement
@@ -72,13 +72,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         const adminID = walletData.adminID;
         const {
           amount,
+          token,
+          earnings,
           method,
           nameofAccount,
           numberofAccount,
           note,
-          recepit,
           status,
-          currentTime, // Include currentTime
+          currentTime
+           // Include currentTime
         } = walletData;
 
         // Fetch the user document to get the display_name, lastname, and email
@@ -101,6 +103,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           const amountTd = document.createElement("td");
           amountTd.textContent = amount;
           tr.appendChild(amountTd);
+          // Amount
+          const tokenTd = document.createElement("td");
+          tokenTd.textContent = token;
+          tr.appendChild(tokenTd);
+          // Amount
+          const earningsTd = document.createElement("td");
+          earningsTd.textContent = earnings;
+          tr.appendChild(earningsTd);
 
           // Method
           const methodTd = document.createElement("td");
@@ -122,14 +132,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           noteTd.textContent = note;
           tr.appendChild(noteTd);
 
-          // Receipt (Link to the image, opens in a new tab)
-          const receiptTd = document.createElement("td");
-          const receiptLink = document.createElement("a");
-          receiptLink.href = recepit;
-          receiptLink.textContent = "View Receipt";
-          receiptLink.target = "_blank";
-          receiptTd.appendChild(receiptLink);
-          tr.appendChild(receiptTd);
+          // // Receipt (Link to the image, opens in a new tab)
+          // const receiptTd = document.createElement("td");
+          // const receiptLink = document.createElement("a");
+          // receiptLink.href = recepit;
+          // receiptLink.textContent = "View Receipt";
+          // receiptLink.target = "_blank";
+          // receiptTd.appendChild(receiptLink);
+          // tr.appendChild(receiptTd);
 
           // Date
           const dateTd = document.createElement("td");
@@ -365,15 +375,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Filter and Refresh button event listeners
-  filterPendingBtn.addEventListener("click", () =>
-    fetchWalletTopUps("pending")
-  );
-  filterApprovedBtn.addEventListener("click", () =>
-    fetchWalletTopUps("approved")
-  );
-  filterDisapprovedBtn.addEventListener("click", () =>
-    fetchWalletTopUps("disapproved")
-  );
+  // filterPendingBtn.addEventListener("click", () =>
+  //   fetchWalletTopUps("pending")
+  // );
+  // filterApprovedBtn.addEventListener("click", () =>
+  //   fetchWalletTopUps("approved")
+  // );
+  // filterDisapprovedBtn.addEventListener("click", () =>
+  //   fetchWalletTopUps("disapproved")
+  // );
   refreshBtn.addEventListener("click", () => fetchWalletTopUps());
 
   // Function to export to Word
@@ -399,8 +409,43 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Function to export to Excel
   function exportToExcel() {
-    const table = document.querySelector("table").outerHTML;
-    const blob = new Blob(["\uFEFF" + table], {
+    // Get the table element and clone it to preserve the original structure
+    const table = document.querySelector("table");
+    const clonedTable = table.cloneNode(true);
+  
+    // Calculate the totals
+    let totalAmount = 0;
+    let totalTokens = 0;
+    let totalEarnings = 0;
+  
+    // Assuming specific columns for Amount, Tokens, and Earnings (e.g., 2nd, 3rd, and 4th)
+    Array.from(clonedTable.rows).forEach((row, index) => {
+      if (index !== 0) { // Skip the header row
+        totalAmount += parseFloat(row.cells[1].innerText) || 0;
+        totalTokens += parseFloat(row.cells[2].innerText) || 0;
+        totalEarnings += parseFloat(row.cells[3].innerText) || 0;
+      }
+    });
+  
+    // Insert title rows at the top
+    const titleRow1 = clonedTable.insertRow(0);
+    titleRow1.innerHTML = `<td colspan="4" style="text-align:center; font-weight:bold; font-size:20px;">Transaction Report for Top Up in Our Wallet</td>`;
+    
+    const titleRow2 = clonedTable.insertRow(1);
+    titleRow2.innerHTML = `<td colspan="4" style="text-align:center; font-weight:bold; font-size:16px;">System: Trade Are Us</td>`;
+  
+    // Add a total row at the bottom
+    const totalRow = clonedTable.insertRow(-1);
+    totalRow.innerHTML = `
+      <td><strong>Total:</strong></td>
+      <td>${totalAmount.toFixed(2)}</td>
+      <td>${totalTokens.toFixed(2)}</td>
+      <td>${totalEarnings.toFixed(2)}</td>
+    `;
+  
+    // Export the modified table to Excel
+    const tableHTML = clonedTable.outerHTML;
+    const blob = new Blob(["\uFEFF" + tableHTML], {
       type: "application/vnd.ms-excel",
     });
     const url = URL.createObjectURL(blob);
@@ -408,8 +453,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     a.href = url;
     a.download = "wallet_top_up_list.xls";
     a.click();
+  
+    // Clean up by revoking the URL
     URL.revokeObjectURL(url);
   }
+  
 
   // Add event listener for the button
 

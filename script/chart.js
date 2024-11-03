@@ -221,7 +221,7 @@ async function updateCharts() {
 
     // Only include transactions from August to December
     if (amount > 0 && amountsByMonth.hasOwnProperty(month)) {
-      if (transactionType === "Cash Out") {
+      if (transactionType === "CashOut") {
         amountsByMonth[month].cashOut += amount; // Sum cash out amounts
       } else if (transactionType === "TopUp") {
         amountsByMonth[month].topUp += amount; // Sum top-up amounts
