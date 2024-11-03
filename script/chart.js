@@ -17,7 +17,7 @@
 //                 borderColor: 'rgb(255, 159, 64)',
 //                 fill: false,
 //             },
-         
+
 //         ],
 //     },
 //     options: {
@@ -115,7 +115,7 @@
 
 //   // Fetch documents from the collection
 //   const snapshot = await getDocs(walletTopUpRef);
-  
+
 //   // Initialize data structure to hold amounts by month
 //   const amountsByMonth = {
 //     August: 0,
@@ -150,7 +150,7 @@
 //   // Prepare data for the chart
 //   const labels = Object.keys(amountsByMonth); // Months as labels
 //   const cashOutData = Object.values(amountsByMonth); // Corresponding amounts
-  
+
 //   // Create or update the chart
 //   new Chart(cashVsTokenChart, {
 //     type: 'line',
@@ -190,15 +190,17 @@ import {
 // Function to fetch data from Firebase and update the charts
 async function updateCharts() {
   // Get contexts for both charts
-  const cashOutChartCtx = document.getElementById('cashOutChart').getContext('2d');
-  const topUpChartCtx = document.getElementById('topUpChart').getContext('2d');
+  const cashOutChartCtx = document
+    .getElementById("cashOutChart")
+    .getContext("2d");
+  const topUpChartCtx = document.getElementById("topUpChart").getContext("2d");
 
   // Reference to the walletTopUp collection in Firebase
-  const walletTopUpRef = collection(db, 'walletTopUp');
+  const walletTopUpRef = collection(db, "walletTopUp");
 
   // Fetch documents from the collection
   const snapshot = await getDocs(walletTopUpRef);
-  
+
   // Initialize data structures to hold amounts by month
   const amountsByMonth = {
     August: { cashOut: 0, topUp: 0 },
@@ -209,15 +211,17 @@ async function updateCharts() {
   };
 
   // Process each document in the snapshot
-  snapshot.forEach(doc => {
+  snapshot.forEach((doc) => {
     const data = doc.data();
     const amount = data.amount; // Get the amount
     const currentTime = data.currentTime.toDate(); // Convert Firestore timestamp to Date object
-    const month = currentTime.toLocaleString('default', { month: 'long' }); // Get the month name
+    const month = currentTime.toLocaleString("default", { month: "long" }); // Get the month name
     const transactionType = data.typeoftransaction; // Get the transaction type
 
     // Log each transaction processed
-    console.log(`Processing transaction: ${amount} in ${month} of type ${transactionType}`);
+    console.log(
+      `Processing transaction: ${amount} in ${month} of type ${transactionType}`
+    );
 
     // Only include transactions from August to December
     if (amount > 0 && amountsByMonth.hasOwnProperty(month)) {
@@ -232,23 +236,27 @@ async function updateCharts() {
   // Log the summarized amounts for each month
   console.log("Summary of Cash Out and Top Up Amounts:");
   for (const month in amountsByMonth) {
-    console.log(`${month}: Cash Out: ${amountsByMonth[month].cashOut}, Top Up: ${amountsByMonth[month].topUp}`);
+    console.log(
+      `${month}: Cash Out: ${amountsByMonth[month].cashOut}, Top Up: ${amountsByMonth[month].topUp}`
+    );
   }
 
   // Prepare data for cash out chart
   const cashOutLabels = Object.keys(amountsByMonth); // Months as labels
-  const cashOutData = Object.values(amountsByMonth).map(monthData => monthData.cashOut); // Cash out amounts
-  
+  const cashOutData = Object.values(amountsByMonth).map(
+    (monthData) => monthData.cashOut
+  ); // Cash out amounts
+
   // Create cash out chart
   new Chart(cashOutChartCtx, {
-    type: 'line',
+    type: "line",
     data: {
       labels: cashOutLabels,
       datasets: [
         {
-          label: 'Cash Out Amount',
+          label: "Cash Out Amount",
           data: cashOutData,
-          borderColor: 'rgb(75, 192, 192)', // Line color for Cash Out
+          borderColor: "rgb(75, 192, 192)", // Line color for Cash Out
           fill: false,
         },
       ],
@@ -258,25 +266,27 @@ async function updateCharts() {
       plugins: {
         legend: {
           display: true,
-          position: 'top',
+          position: "top",
         },
       },
     },
   });
 
   // Prepare data for top up chart
-  const topUpData = Object.values(amountsByMonth).map(monthData => monthData.topUp); // Top-up amounts
-  
+  const topUpData = Object.values(amountsByMonth).map(
+    (monthData) => monthData.topUp
+  ); // Top-up amounts
+
   // Create top up chart
   new Chart(topUpChartCtx, {
-    type: 'line',
+    type: "line",
     data: {
       labels: cashOutLabels,
       datasets: [
         {
-          label: 'Top Up Amount',
+          label: "Top Up Amount",
           data: topUpData,
-          borderColor: 'rgb(255, 159, 64)', // Line color for Top Up
+          borderColor: "rgb(255, 159, 64)", // Line color for Top Up
           fill: false,
         },
       ],
@@ -286,7 +296,7 @@ async function updateCharts() {
       plugins: {
         legend: {
           display: true,
-          position: 'top',
+          position: "top",
         },
       },
     },
