@@ -1,59 +1,52 @@
-import { db } from "./firebase.js";
+import { db } from "../firebase.js";
 import {
   collection,
-  getDocs
+  getDocs,
+  query,
+  orderBy,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
-async function loadMessages() {
-  const querySnapshot = await getDocs(collection(db, "emergency"));
-  const allUsersContainer = document.getElementById("allUsers");
-  const locations = [];
+async function fetchEmergencyData() {
+  try {
+    // Reference to the 'emergency' collection
+    const emergencyCollection = collection(db, "emergency");
 
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    const row = document.createElement("tr");
+    // Create a query to order data by date (optional)
+    const emergencyQuery = query(emergencyCollection, orderBy("date", "desc"));
 
-    row.innerHTML = `
-      <td>${data.name}</td>
-      <td>${data.contactnumber}</td>
-      <td>${data.email}</td>
-      <td>${data.emergencymessage}</td>
-      <td>${data.emergencytype}</td>
-      <td>${new Date(data.date.seconds * 1000).toLocaleString()}</td>
-    `;
+    // Fetch documents from the collection
+    const querySnapshot = await getDocs(emergencyQuery);
 
-    allUsersContainer.appendChild(row);
+    // Get the table body element
+    const tableBody = document.getElementById("allUsers");
 
-    // Collect coordinates for map pins
-    if (data.latlong) {
-      locations.push({
-        name: data.name,
-        lat: data.latlong.latitude,
-        lng: data.latlong.longitude
-      });
-    }
-  });
+    // Iterate through each document in the snapshot
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
 
-  // Initialize the map with collected coordinates
-  initMap(locations);
-}
+      // Create a new row for each document
+      const row = document.createElement("tr");
 
-// Initialize the map
-function initMap(locations) {
-  const map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 12,
-    center: locations.length ? { lat: locations[0].lat, lng: locations[0].lng } : { lat: 14.960181, lng: 120.89831 }
-  });
+      // Add cells for each field
+      row.innerHTML = `
+  <td>${data.name} ${data.lastname}</td> <!-- Combine name and lastname -->
+  <td>${data.contactnumber}</td>
+  <td>${data.email}</td>
+  <td>${data.date
+    .toDate()
+    .toLocaleString()}</td> <!-- Convert Firestore timestamp -->
+  <td>${data.emergencymessage}</td>
+  <td>${data.emergencytype}</td>
+  <td>${data.status}</td>
+`;
 
-  // Add markers for each location
-  locations.forEach((location) => {
-    new google.maps.Marker({
-      position: { lat: location.lat, lng: location.lng },
-      map: map,
-      title: location.name
+      // Append the row to the table body
+      tableBody.appendChild(row);
     });
-  });
+  } catch (error) {
+    console.error("Error fetching emergency data:", error);
+  }
 }
 
-// Load messages on page load
-window.onload = loadMessages;
+// Call the function to fetch and display data
+fetchEmergencyData();
