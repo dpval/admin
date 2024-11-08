@@ -22,41 +22,65 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-      /* Ensure the container takes the full width */
-/* Ranking Section */
-.transaction {
-    margin-bottom: 2rem;
-   
-    padding-bottom: 20px;
-    padding-left: 10px;
-    padding-right: 10px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-    flex: 1;
-    margin-right: 1rem;
-   
+   .display-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
-.ranking-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-   
+.display-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  flex: 1;
+  text-align: center;
 }
 
-.ranking-chart-container {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-    flex: 1;
+.display-card h2 {
+  margin-bottom: 1rem;
 }
 
-.ranking-chart-container h2 {
-    margin-top: 0;
+.content {
+  display: 25%;
+  flex-direction: column;
+  align-items: center;
 }
+
+.content input[type="number"] {
+  width: 50%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.additional-container {
+  display: flex;
+  justify-content: center; /* Center the new text field container */
+  margin-top: 1.5rem; /* Add spacing to separate it from the above section */
+}
+
+.new-text-field-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  width: 30%; /* Adjust the size as needed */
+  text-align: left;
+}
+
+.new-text-field-container label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.new-text-field-container input[type="text"] {
+  width: 90%; /* Smaller width for better alignment */
+  padding: 0.4rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
 
 
     </style>
@@ -171,7 +195,45 @@
       </script>
     
       <main>
-        <div class="transaction">
+        <main>
+          <div class="display-container">
+            <!-- Earnings Display Container -->
+            <div class="display-card">
+              <h2>Earnings</h2>
+              <div class="content">
+               
+              </div>
+            </div>
+        
+            <!-- Cashout Display Container -->
+            <div class="display-card">
+              <h2>Cashout</h2>
+              <div class="content">
+                
+              </div>
+            </div>
+        
+            <!-- Top UP Display Container -->
+            <div class="display-card">
+              <h2>Top UP</h2>
+              <div class="content">
+               
+              </div>
+            </div>
+        
+          </div>
+         
+        </main>
+        <div class="additional-container">
+          <div class="new-text-field-container">
+            <label for="additionalInput">Percentage:</label>
+            <input type="text" id="additionalInput" placeholder="Enter text here" />
+          </div>
+        </div>
+        
+ 
+        
+        <!-- <div class="transaction">
             <h1>Payment Transaction</h1>
             <div class="ranking-container">
               <div class="line-graph-container">
@@ -186,13 +248,13 @@
                       <th>Action</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody> -->
                     <!-- Dynamic content will be inserted here -->
-                  </tbody>
+                  <!-- </tbody>
                 </table>
-              </div>
+              </div> -->
           
-              <div class="line-graph-container">
+              <!-- <div class="line-graph-container">
                 <h2>Cash Out Conversion Rate</h2>
                 <button onclick="addCashOut()">Add</button>
                 <table id="cashouttable">
@@ -204,67 +266,15 @@
                       <th>Action</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody> -->
                     <!-- Dynamic content will be inserted here -->
-                  </tbody>
+                  <!-- </tbody>
                 </table>
               </div>
-            </div>
+            </div> -->
           </div>
           
-      <style>/* General body styling */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        
-        /* Transaction section */
-        .transaction {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Title styling */
-        .transaction h1 {
-            text-align: center;
-            color: #333;
-        }
-        
-        /* Ranking container styling */
-        .ranking-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px; /* Space between the charts */
-        }
-        
-        /* Individual graph container styling */
-        .line-graph-container {
-            flex: 1; /* Make charts equally take available space */
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Chart titles */
-        .line-graph-container h2 {
-            text-align: center;
-            color: #555;
-        }
-        
-        /* Canvas element styling */
-        canvas {
-            width: 100% !important; /* Ensures canvas takes full width */
-            height: auto !important; /* Maintain aspect ratio */
-            max-height: 400px; /* Limit height to maintain a compact layout */
-        }
-        </style>
+     
       
         <!-- <div class="insights">
           <div class="recent_order">
@@ -293,13 +303,8 @@
                   </div>
                 </div>
               </div> -->
-
-           
-            </div>
-          </div>
-  
-      </main>
-      
+             
+              
 <!--rightsidebar-->
 <!-- <div class="right">
   <div class="top">

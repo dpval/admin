@@ -71,7 +71,7 @@
             <a href="payment-history.html">Payment History</a>
             <a href="earnings.html" >Earnings</a>
             <a href="sumarryofearnings.html" class="active">Summary of Earnings</a>
-            <a href="paymentsettings.html">Settings</a>
+            <!-- <a href="paymentsettings.html">Settings</a> -->
           </div>
           <a href="application.html">
             <span class="material-symbols-sharp">app_registration</span>
@@ -138,7 +138,7 @@
         <h1>Summary of Earnings</h1>
         <div class="filter-container">
           <label for="searchInput">Search by Name or Email:</label>
-          <input type="text" id="searchInput" placeholder="Enter name or email">
+          <input type="text" id="searchInput" style="width: 200px; height: 40px" placeholder="Enter name or email">
           
           <label for="dateFrom">From:</label>
           <input type="date" id="dateFrom">
@@ -163,8 +163,51 @@
           <!-- <button id="exportPDF"style="background-color: #ff5733; color: white;">Export to PDF</button> -->
           <button id="exportExcel"style="background-color: #28a745; color: white;">Export to Excel</button>
           <!-- <button id="exportWord">Export to Word</button> -->
+           
           
+          <style>
+            .additional-container {
+              border: 1px solid #ccc;
+              padding: 10px;
+              margin: -150px 0;
+              border-radius: 5px;
+              background-color: #f9f9f9;
+              box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+              float: right; /* Float the container to the right */
+              position: relative; /* Ensure proper placement */
+              top: 0; /* Align to the top */
+              right: 0; /* Align to the right */
+            }
+          
+            .new-text-field-container {
+              display: inline-block;
+              margin-right: 10px;
+            }
+          
+            #additionalInput {
+              width: 40px;
+              padding: 5px;
+              border: 1px solid #ccc;
+              border-radius: 3px;
+            }
+          
+            label {
+              display: inline-block;
+              margin-bottom: 5px;
+            }
+          </style>
+          
+        <div class="additional-container">
+  <div class="new-text-field-container">
+    <label>This is the Percentage that our system earns in Top Up and Cashout</label> <br>
+    <label for="additionalInput">Percentage:</label>
+    <input type="text" id="additionalInput" placeholder="Enter text here" />
+    <button id="updateButton">Update</button> <!-- Added Update button -->
+  </div>
+</div>
 
+          
+          <script type="module" src="paymentsetting.js"></script>
         </div>
         <div class="insights">
           <!-- All Users Section -->

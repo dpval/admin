@@ -190,7 +190,30 @@
       <button id="nextPage">Next &gt;</button>
     </div>
   </div>
-  
+  <!-- Map Container -->
+<div id="mapContainer" style="height: 400px; width: 100%; margin-top: 20px;">
+  <!-- Google Map will be displayed here -->
+</div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtMEAsHDVWXxmaZT40m6eAEFTc9ZW5jq4&callback=initMap" async defer></script>
+<script>
+  // Initialize and add the map
+  function initMap() {
+    // The location for your map (example location, you can change this)
+    const location = { lat: 14.53335, lng: 121.3929 }; // Coordinates for your location
+
+    // Create a map centered at the given location
+    const map = new google.maps.Map(document.getElementById("mapContainer"), {
+      zoom: 15,
+      center: location,
+    });
+
+    // Add a marker to the map at the given location
+    const marker = new google.maps.Marker({
+      position: location,
+      map: map,
+    });
+  }
+</script>
 
 <!-- Modal structure -->
 <div id="emailModal" class="modal">
@@ -203,7 +226,7 @@
     <textarea id="emailMessage" rows="5">Thank you for your message. We will get back to you shortly.</textarea>
     <button id="sendEmailBtn">Send Email</button>
     <button id="cancelBtn">Cancel</button>
-  </div>
+  </div>                                                      
 </div>
 
 
