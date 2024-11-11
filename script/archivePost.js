@@ -80,7 +80,7 @@ export async function fetchClientPosts() {
         });
 
         // Extract the walletID path from DocumentReference
-        const walletIDPath = postData.walletID.path;  // Extract the full document path from DocumentReference
+        const walletIDPath = postData.walletID.path; // Extract the full document path from DocumentReference
 
         // Create table row
         const row = document.createElement("tr");
@@ -102,17 +102,32 @@ export async function fetchClientPosts() {
         if (status === "Archived") {
           const sendButton = row.querySelector(".send-notification-btn");
           sendButton.addEventListener("click", async () => {
-            // Retrieve walletID, salary, application count, and uid
             const walletID = sendButton.getAttribute("data-wallet-id");
             const salary = parseFloat(sendButton.getAttribute("data-salary"));
-            const applicationCount = parseInt(sendButton.getAttribute("data-application-count"));
-            const uid = sendButton.getAttribute("data-uid");
+            const applicationCount = parseInt(
+              sendButton.getAttribute("data-application-count")
+            );
+            const uid = sendButton.getAttribute("data-uid"); // Retrieve the uid here
+
+            // Check if uid is defined and not null/undefined
+            if (!uid) {
+              console.error("UID is not defined.");
+              return;
+            }
 
             // Multiply salary by applicationCount to get the total
             const totalAmount = salary * applicationCount;
 
             // Call the function to update the wallet and status
-            await updateWallet(walletID, totalAmount, postID, uid);
+            try {
+              await updateWallet(walletID, totalAmount, postID, uid);
+              console.log("Update successful, refreshing the page...");
+
+              // Refresh the page after the update
+              window.location.reload();
+            } catch (error) {
+              console.error("Error during update:", error);
+            }
           });
         }
       });
@@ -131,7 +146,9 @@ async function updateWallet(walletID, amount, postID, uid) {
 
     // Ensure walletPath contains exactly two segments (collection/documentID)
     if (walletPath.split("/").length !== 2) {
-      throw new Error("Invalid wallet path. Expected format: 'collection/documentID'.");
+      throw new Error(
+        "Invalid wallet path. Expected format: 'collection/documentID'."
+      );
     }
 
     // Get the wallet document reference
@@ -153,7 +170,7 @@ async function updateWallet(walletID, amount, postID, uid) {
 
       // Update the post status to "Salary Sent Back"
       await updateDoc(doc(db, `${uid}/postTask`, postID), {
-        status: "Salary Sent Back"
+        status: "Salary Sent Back",
       });
       console.log(`Post ${postID} status updated to 'Salary Sent Back'.`);
 
@@ -175,9 +192,6 @@ async function updateWallet(walletID, amount, postID, uid) {
   }
 }
 
-
-
-
 // Function to send email notification
 async function sendEmailNotification(toEmail, clientName, status) {
   try {
@@ -197,7 +211,9 @@ async function sendEmailNotification(toEmail, clientName, status) {
       timestamp: Timestamp.now(), // Firestore's timestamp for when the email is created
     });
 
-    console.log(`Email data stored in Firestore for ${toEmail} with ${status} status.`);
+    console.log(
+      `Email data stored in Firestore for ${toEmail} with ${status} status.`
+    );
   } catch (error) {
     console.error("Error storing email in Firestore:", error);
   }
